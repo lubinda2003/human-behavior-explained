@@ -1,5 +1,19 @@
 [
   {
+    "id": "post-1789921317168-tmyu5",
+    "topic": "The Bystander Effect (Diffusion of Responsibility)",
+    "title": "Why Crowds Freeze When Someone Needs Help",
+    "pillar": "Strange Human Behavior",
+    "coreConcept": "In emergencies, personal responsibility divides by the number of witnesses present unless explicitly directed.",
+    "publicationDate": "2026-09-20T16:21:57.800Z",
+    "sources": [
+      "Darley & Latané (1968), J Pers Soc Psychol"
+    ],
+    "visualUsed": false,
+    "visualTemplate": "simple_statistic",
+    "ctaType": "continuation"
+  },
+  {
     "id": "post-1789919546999-2h9n5",
     "topic": "Ironic Process Theory (The White Bear Problem)",
     "title": "Why Trying Not to Think About Something Guarantees You Will",
