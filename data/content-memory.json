@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "post-1789919546999-2h9n5",
+    "topic": "Ironic Process Theory (The White Bear Problem)",
+    "title": "Why Trying Not to Think About Something Guarantees You Will",
+    "pillar": "Everyday Psychology",
+    "coreConcept": "The brain cannot search for what to avoid without first activating the mental representation of what is forbidden.",
+    "publicationDate": "2026-09-20T15:52:31.419Z",
+    "sources": [
+      "Wegner et al. (1987), J Pers Soc Psychol"
+    ],
+    "visualUsed": true,
+    "visualTemplate": "process_flow",
+    "ctaType": "reflection"
+  }
+]
