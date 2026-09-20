@@ -161,8 +161,8 @@ export const CURATED_ENTRIES: CuratedEntry[] = [
       },
     },
     visual: {
-      needed: true,
-      reason: 'Contrasting the cognitive state of open vs closed tasks clarifies the tension mechanism.',
+      needed: false,
+      reason: 'The psychological tension of unfinished tasks is self-contained and clear through the narrative text without requiring a separate visual diagram.',
       template: 'comparison',
       spec: {
         title: 'Cognitive Tension: Open vs. Closed Loops',
@@ -339,8 +339,8 @@ export const CURATED_ENTRIES: CuratedEntry[] = [
       },
     },
     visual: {
-      needed: true,
-      reason: 'A process diagram highlights how action retroactively alters emotional appraisal.',
+      needed: false,
+      reason: 'The behavioral rationalization mechanism is self-contained in the editorial narrative and does not require a visual schematic.',
       template: 'process_flow',
       spec: {
         title: 'The Ben Franklin Mechanism',
@@ -422,8 +422,8 @@ export const CURATED_ENTRIES: CuratedEntry[] = [
       },
     },
     visual: {
-      needed: true,
-      reason: 'Comparing the predicted percentage of observers vs the actual percentage delivers immediate quantitative clarity.',
+      needed: false,
+      reason: 'The statistical disparity is simple and self-contained within the narrative text without needing an infographic.',
       template: 'simple_statistic',
       spec: {
         title: 'The Spotlight Perception Gap',
@@ -505,8 +505,8 @@ export const CURATED_ENTRIES: CuratedEntry[] = [
       },
     },
     visual: {
-      needed: true,
-      reason: 'A comparison between internal sensation and external perception clarifies the perceptual gap.',
+      needed: false,
+      reason: 'Introspective emotional overestimation is effectively explained through narrative text without requiring a visual diagram.',
       template: 'comparison',
       spec: {
         title: 'The Transparency Illusion',
@@ -594,8 +594,8 @@ export const CURATED_ENTRIES: CuratedEntry[] = [
       },
     },
     visual: {
-      needed: true,
-      reason: 'The steep drop in intervention percentage as group size increases provides high educational value.',
+      needed: false,
+      reason: 'The diffusion of responsibility concept is clearly and fully conveyed through the narrative explanation.',
       template: 'simple_statistic',
       spec: {
         title: 'Bystander Intervention Rates by Group Size',
@@ -679,8 +679,8 @@ export const CURATED_ENTRIES: CuratedEntry[] = [
       },
     },
     visual: {
-      needed: true,
-      reason: 'Illustrating the event boundary transition demonstrates the hippocampal reset mechanism visually.',
+      needed: false,
+      reason: 'The event horizon memory reset is self-contained and easily understood from the narrative text.',
       template: 'process_flow',
       spec: {
         title: 'The Event Horizon Model',
@@ -760,8 +760,8 @@ export const CURATED_ENTRIES: CuratedEntry[] = [
       },
     },
     visual: {
-      needed: true,
-      reason: 'A research timeline and comparison shows the progression of speed estimates based on wording.',
+      needed: false,
+      reason: 'The retroactive memory alteration is clearly conveyed by the text narrative without requiring a visual timeline.',
       template: 'comparison',
       spec: {
         title: 'The Power of Wording on Memory',
@@ -849,8 +849,8 @@ export const CURATED_ENTRIES: CuratedEntry[] = [
       },
     },
     visual: {
-      needed: true,
-      reason: 'Visualizing the conflict between semantic meaning and visual color makes the cognitive interference visceral.',
+      needed: false,
+      reason: 'The cognitive interference of reading versus color naming is intuitively clear in text.',
       template: 'comparison',
       spec: {
         title: 'Cognitive Interference: The Stroop Paradox',
@@ -1027,8 +1027,8 @@ export const CURATED_ENTRIES: CuratedEntry[] = [
       },
     },
     visual: {
-      needed: true,
-      reason: 'Contrasting synthetic hedonic bliss against authentic reality reveals the core psychological preference.',
+      needed: false,
+      reason: 'The philosophical thought experiment dilemma is self-contained in the narrative text.',
       template: 'comparison',
       spec: {
         title: 'The Experience Machine Dilemma',
@@ -1116,8 +1116,8 @@ export const CURATED_ENTRIES: CuratedEntry[] = [
       },
     },
     visual: {
-      needed: true,
-      reason: 'The 50% detection rate in the famous gorilla experiment is surprising and benefits from a statistical graphic.',
+      needed: false,
+      reason: 'The observational study of inattentional blindness is self-contained in the text without requiring a graphic.',
       template: 'simple_statistic',
       spec: {
         title: 'Inattentional Blindness Baseline',

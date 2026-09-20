@@ -420,7 +420,92 @@ Respond ONLY with valid JSON:
   }
 
   /**
-   * STEP 4: Visual decision - Decide if a graphic genuinely clarifies the concept, and provide structured specs.
+   * Adapts an editorial post draft into a concise single visual post caption (<= 1024 chars),
+   * preserving the hook, empirical study and mechanism explanation, key insight, caveat, evidence citations, and reflection CTA.
+   */
+  public async adaptDraftForVisualPost(
+    draft: PostDraft,
+    research: ResearchNotes
+  ): Promise<PostDraft> {
+    // Check if the current draft body is already concise
+    const totalWords = (draft.hook + ' ' + draft.bodyParagraphs.join(' ')).split(/\s+/).length;
+    if (totalWords <= 120) {
+      return draft;
+    }
+
+    if (!this.hasValidApiKey()) {
+      return this.synthesizeConciseVisualDraft(draft);
+    }
+
+    const prompt = `
+You are an editorial director for an evidence-based psychology publication.
+This post will be published to Telegram accompanied by an informational structural graphic.
+Because the graphic illustrates the process/contrast, adapt the draft into a concise visual-post version that strictly fits Telegram's 1024-character caption limit.
+
+ORIGINAL TITLE: "${draft.title}"
+ORIGINAL HOOK: "${draft.hook}"
+ORIGINAL BODY: "${draft.bodyParagraphs.join(' ')}"
+ORIGINAL TAKEAWAY: "${draft.coreTakeaway}"
+ORIGINAL CAVEAT: "${draft.caveatNote}"
+ORIGINAL SOURCES: "${draft.sourcesCited.join('; ')}"
+ORIGINAL CTA: "${draft.cta.text}"
+
+RULES:
+1. Preserve Title, Hook, Core Takeaway, Caveat Note, Sources Cited, and CTA intact.
+2. Tighten the body paragraphs into 1 concise, cohesive paragraph (approx 160-240 characters) explaining the core empirical experiment and cognitive mechanism.
+3. All sentences must be complete and grammatically sound. NO mid-sentence truncation.
+4. Total character count of formatted text must be comfortably under 980 characters.
+
+Respond ONLY with valid JSON:
+{
+  "title": "${draft.title}",
+  "pillar": "${draft.pillar}",
+  "hook": "${draft.hook}",
+  "bodyParagraphs": ["Tightened complete-sentence explanation of the experiment and cognitive mechanism."],
+  "coreTakeaway": "${draft.coreTakeaway}",
+  "sourcesCited": ${JSON.stringify(draft.sourcesCited)},
+  "caveatNote": "${draft.caveatNote}",
+  "cta": ${JSON.stringify(draft.cta)}
+}
+`;
+
+    try {
+      const client = this.getClient();
+      const response = await client.models.generateContent({
+        model: this.modelName,
+        contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          temperature: 0.3,
+        },
+      });
+
+      const text = response.text?.trim() || '';
+      const adapted = JSON.parse(text) as PostDraft;
+      adapted.cta = sanitizeCTA(adapted.cta);
+      if (draft.sourceUrls) adapted.sourceUrls = draft.sourceUrls;
+      return adapted;
+    } catch (err) {
+      console.warn('Gemini visual adaptation failed or unavailable. Using synthesis fallback:', err);
+      return this.synthesizeConciseVisualDraft(draft);
+    }
+  }
+
+  private synthesizeConciseVisualDraft(draft: PostDraft): PostDraft {
+    const combined = draft.bodyParagraphs.join(' ');
+    const sentences = combined.match(/[^.!?]+[.!?]+/g) || [combined];
+    // Keep first 2 complete sentences to concisely explain the phenomenon & study
+    const tightenedBody = sentences.slice(0, 2).map((s) => s.trim()).join(' ');
+
+    return {
+      ...draft,
+      bodyParagraphs: [tightenedBody || draft.bodyParagraphs[0]],
+    };
+  }
+
+  /**
+   * STEP 4: Visual decision - Passes a real necessity gate. Defaults strictly to needed: false.
+   * Visuals are only generated if they materially improve understanding by visualizing structure.
    */
   public async evaluateVisualDecision(
     draft: PostDraft,
@@ -431,8 +516,8 @@ Respond ONLY with valid JSON:
     }
 
     const prompt = `
-You are an editorial information designer.
-Evaluate whether this psychology post benefits from a structured deterministic graphic.
+You are a strict editorial information designer for an evidence-based psychology publication.
+Evaluate whether this post truly requires a visual graphic.
 
 POST TITLE: "${draft.title}"
 PILLAR: "${draft.pillar}"
@@ -440,34 +525,45 @@ CORE TAKEAWAY: "${draft.coreTakeaway}"
 MECHANISMS: "${research.cognitiveMechanisms.join(', ')}"
 KEY STUDIES: "${JSON.stringify(research.keyStudies)}"
 
-RULES:
-- A visual is OPTIONAL. Only create one if it genuinely communicates useful information (e.g. contrast, process steps, a thought experiment dilemma, or key statistic) that is difficult to parse in pure text.
-- If text is already self-contained and simple, set "needed": false.
-- If needed, select ONE template from:
-  1. "concept_diagram" (central concept + 2-3 mechanism columns)
-  2. "process_flow" (step 1 -> step 2 -> step 3 causal chain)
-  3. "comparison" (common assumption vs empirical reality)
+EDITORIAL NECESSITY RULE:
+- DEFAULT: "needed": false.
+- A visual may be selected ONLY when it materially improves understanding or presentation by showing something genuinely easier to understand visually, such as:
+  * a multi-step process or feedback mechanism (e.g., competing cognitive loops, state transitions)
+  * a causal/feedback relationship
+  * a meaningful, counter-intuitive comparison matrix (e.g., baseline assumption vs empirical reality)
+  * a sequence or timeline of empirical discovery
+  * a branching thought experiment with divergent decision paths
+  * a useful statistic or quantitative relationship
+- Do NOT generate a visual merely because the topic can technically fit one of the templates.
+- Purely conceptual, narrative, explanatory, introspective, or already self-contained posts MUST remain text-only ("needed": false).
+- When in doubt, set "needed": false.
+
+IF A VISUAL IS STRICTLY NEEDED:
+- The graphic MUST be informational and structural (arrows, labeled nodes, concise flows, comparative deltas), NOT a duplication of post paragraphs.
+- Keep labels and descriptions extremely concise (titles 2-5 words, step descriptions 5-12 words).
+- Select ONE template from:
+  1. "process_flow" (step 1 -> step 2 -> step 3 causal chain or feedback loop)
+  2. "comparison" (common assumption vs empirical reality)
+  3. "thought_experiment" (dilemma premise + branch A vs B + psychological bias)
   4. "timeline" (chronological scientific discovery)
   5. "simple_statistic" (focal percentage/multiplier + context)
-  6. "thought_experiment" (dilemma premise + branch A vs B + psychological bias exposed)
+  6. "concept_diagram" (central concept + 2-3 mechanism columns)
   7. "concept_quote_card" (seminal quotation from researcher + core lesson)
-
-Provide a structured data payload, NOT an image prompt.
 
 Respond ONLY with valid JSON:
 {
-  "needed": true | false,
-  "reason": "Why this graphic is or is not necessary",
-  "template": "concept_diagram" | "process_flow" | "comparison" | "timeline" | "simple_statistic" | "thought_experiment" | "concept_quote_card",
+  "needed": false | true,
+  "reason": "Clear explanation of why this post is self-contained in text or why it strictly necessitates a structural visual",
+  "template": "process_flow" | "comparison" | "thought_experiment" | "timeline" | "simple_statistic" | "concept_diagram" | "concept_quote_card",
   "spec": {
-    "title": "Short graphic title",
-    "subtitle": "Brief subtitle",
-    "tag": "E.g. COGNITIVE CHAIN / EMPIRICAL CONTRAST / EXPERIMENTAL DATA",
+    "title": "Short graphic title (max 5 words)",
+    "subtitle": "Brief structural subtitle",
+    "tag": "E.g. COGNITIVE FEEDBACK / EMPIRICAL CONTRAST / DECISION FORK",
     "sourceCitation": "Author (Year)",
     "template": "selected template name",
     "payload": {
       "template": "selected template name",
-      "data": { ... matching template data schema ... }
+      "data": { ... matching template data schema with concise, structural labels ... }
     }
   }
 }

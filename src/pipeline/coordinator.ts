@@ -182,8 +182,16 @@ export class PipelineCoordinator {
         console.log('No visual needed for this concept. Post will publish as text only.');
       }
 
-      // 7. Format Telegram Text
-      const formattedText = this.telegramPublisher.formatMessage(draft);
+      // 7. Format Telegram Text (Single message per post)
+      let formattedText: string;
+      if (visualDecision.needed && graphicPath) {
+        // Adapt draft for concise visual-post caption (<= 1024 chars) and format as visual caption
+        draft = await this.geminiEngine.adaptDraftForVisualPost(draft, research);
+        formattedText = this.telegramPublisher.formatVisualPost(draft);
+      } else {
+        // Text-only post format
+        formattedText = this.telegramPublisher.formatMessage(draft);
+      }
 
       const contentItem: ContentItem = {
         id: `post-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,

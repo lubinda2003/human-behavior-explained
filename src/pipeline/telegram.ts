@@ -84,29 +84,94 @@ export class TelegramPublisher {
   }
 
   /**
-   * Format a concise caption for photo posts if full text exceeds Telegram's 1024 char caption limit.
+   * Format a complete caption for photo posts that strictly fits Telegram's 1024-character caption limit,
+   * while preserving the hook, complete explanation sentences, core takeaway, limitation/context, evidence, and CTA.
    */
-  public formatPhotoSummaryCaption(draft: PostDraft): string {
-    const lines: string[] = [];
-    lines.push(`<b>${escapeTelegramHtml(draft.title)}</b>`);
-    const pillarTag = draft.pillar.replace(/[^a-zA-Z0-9]/g, '');
-    lines.push(`<i>#${pillarTag}</i>`);
-    lines.push('');
-    lines.push(escapeTelegramHtml(draft.hook));
-    lines.push('');
-    lines.push(`<b>Core Mechanism:</b>`);
-    lines.push(`<i>${escapeTelegramHtml(draft.coreTakeaway)}</i>`);
+  public formatVisualPost(draft: PostDraft): string {
+    // 1. If full standard format already fits comfortably under Telegram's 1024 limit, use it directly
+    const standard = this.formatMessage(draft);
+    if (standard.length <= 1020) {
+      return standard.replace('<b>Key Insight:</b>', '<b>Core Mechanism:</b>');
+    }
+
+    // 2. Otherwise, construct a visual-post caption that preserves all key editorial sections
+    const headerLines: string[] = [];
+    headerLines.push(`<b>${escapeTelegramHtml(draft.title)}</b>`);
+
+    const pillarTag = draft.pillar
+      .replace(/[^a-zA-Z0-9]/g, '')
+      .replace(/\s+/g, '');
+    headerLines.push(`<i>#${pillarTag}</i>`);
+    headerLines.push('');
+    headerLines.push(escapeTelegramHtml(draft.hook));
+
+    // Structured conclusion sections (Must be preserved intact)
+    const footerLines: string[] = [];
+    footerLines.push('');
+    footerLines.push(`<b>Core Mechanism:</b>`);
+    footerLines.push(`<i>${escapeTelegramHtml(draft.coreTakeaway)}</i>`);
+
+    if (draft.caveatNote) {
+      footerLines.push('');
+      footerLines.push(`<b>Limitation &amp; Context:</b>`);
+      footerLines.push(escapeTelegramHtml(draft.caveatNote));
+    }
+
     if (draft.sourcesCited && draft.sourcesCited.length > 0) {
-      lines.push('');
-      lines.push(
-        `<code>${escapeTelegramHtml(draft.sourcesCited[0])}</code>`
+      footerLines.push('');
+      footerLines.push(
+        `<code>Evidence: ${escapeTelegramHtml(draft.sourcesCited.join(' • '))}</code>`
       );
     }
-    return lines.join('\n').trim();
+
+    if (draft.cta && draft.cta.type !== 'none' && draft.cta.text) {
+      footerLines.push('');
+      footerLines.push(`<b>Reflection:</b> ${escapeTelegramHtml(draft.cta.text)}`);
+    }
+
+    const headerText = headerLines.join('\n');
+    const footerText = footerLines.join('\n');
+    const reservedChars = headerText.length + footerText.length + 2; // account for newlines
+    const maxBodyChars = Math.max(80, 1020 - reservedChars);
+
+    // Extract complete grammatical sentences from body paragraphs
+    const combinedBody = draft.bodyParagraphs.join(' ');
+    // Match complete sentences ending in terminal punctuation
+    const sentenceMatches = combinedBody.match(/[^.!?]+[.!?]+/g) || [combinedBody];
+    const chosenSentences: string[] = [];
+    let currentLength = 0;
+
+    for (const rawSentence of sentenceMatches) {
+      const sentence = rawSentence.trim();
+      const escaped = escapeTelegramHtml(sentence);
+      if (currentLength + escaped.length + 1 <= maxBodyChars) {
+        chosenSentences.push(escaped);
+        currentLength += escaped.length + 1;
+      } else {
+        break;
+      }
+    }
+
+    // If at least one complete sentence fit within the budget, use it; otherwise use the first sentence
+    const bodyExplanation = chosenSentences.length > 0
+      ? chosenSentences.join(' ')
+      : escapeTelegramHtml((sentenceMatches[0] || '').trim());
+
+    const result = `${headerText}\n\n${bodyExplanation}${footerText}`.trim();
+    return result;
+  }
+
+  /**
+   * Legacy alias: formats a complete visual post caption.
+   * Kept for backward compatibility; does NOT produce a separately published summary.
+   */
+  public formatPhotoSummaryCaption(draft: PostDraft): string {
+    return this.formatVisualPost(draft);
   }
 
   /**
    * Publish a ContentItem to the Telegram channel.
+   * Produces exactly ONE message: sendPhoto with caption if visual, or sendMessage if text-only.
    */
   public async publish(
     item: ContentItem,
@@ -119,34 +184,46 @@ export class TelegramPublisher {
       this.botToken.includes('MY_') ||
       this.channelId.includes('@your_');
 
-    const formattedText = this.formatMessage(item.draft);
+    const isVisualPost = Boolean(
+      item.visualDecision?.needed &&
+      item.graphicPath &&
+      (isDryRun || fs.existsSync(item.graphicPath))
+    );
+
+    // Single message content
+    const messageContent = isVisualPost
+      ? (item.formattedText || this.formatVisualPost(item.draft))
+      : (item.formattedText || this.formatMessage(item.draft));
 
     if (isDryRun) {
       console.log('\n================ [TELEGRAM DRY-RUN] ================');
       console.log(`Channel Target: ${this.channelId || '(Not set - using simulation)'}`);
       console.log(`Pillar: ${item.pillar}`);
-      console.log(`Visual Used: ${item.visualDecision.needed ? 'YES (' + item.visualDecision.template + ')' : 'NO'}`);
+      console.log(`Visual Used: ${item.visualDecision?.needed ? 'YES (' + item.visualDecision.template + ')' : 'NO'}`);
       if (item.graphicPath) {
         console.log(`Graphic Path: ${item.graphicPath}`);
       }
-      console.log('---------------- Content Preview ----------------');
-      console.log(formattedText);
+      console.log('---------------- Single Message Preview ----------------');
+      console.log(messageContent);
+      console.log(`Caption/Message Length: ${messageContent.length} chars (Limit: ${isVisualPost ? '1024' : '4096'})`);
       console.log('====================================================\n');
 
+      const simulatedId = Math.floor(Math.random() * 900000) + 100000;
       return {
         success: true,
         dryRun: true,
-        messageId: Math.floor(Math.random() * 900000) + 100000,
+        messageId: simulatedId,
+        photoMessageId: isVisualPost ? simulatedId : undefined,
       };
     }
 
     try {
-      if (item.visualDecision.needed && item.graphicPath && fs.existsSync(item.graphicPath)) {
-        // Send Photo
-        return await this.sendPhotoWithText(item.graphicPath, formattedText, item.draft);
+      if (isVisualPost && item.graphicPath && fs.existsSync(item.graphicPath)) {
+        // Send Photo + Caption as ONE single message
+        return await this.sendPhotoWithText(item.graphicPath, messageContent);
       } else {
-        // Send Text Only
-        return await this.sendTextMessage(formattedText);
+        // Send Text Only as ONE single message
+        return await this.sendTextMessage(messageContent);
       }
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : String(err);
@@ -184,27 +261,17 @@ export class TelegramPublisher {
 
   private async sendPhotoWithText(
     photoPath: string,
-    fullText: string,
-    draft: PostDraft
+    captionText: string
   ): Promise<TelegramPublishResult> {
     const url = `https://api.telegram.org/bot${this.botToken}/sendPhoto`;
     const fileBuffer = fs.readFileSync(photoPath);
     const blob = new Blob([fileBuffer], { type: 'image/png' });
 
-    // Telegram photo caption limit is 1024 characters
-    const useDirectCaption = fullText.length <= 1020;
-
     const formData = new FormData();
     formData.append('chat_id', this.channelId);
     formData.append('photo', blob, 'graphic.png');
     formData.append('parse_mode', 'HTML');
-
-    if (useDirectCaption) {
-      formData.append('caption', fullText);
-    } else {
-      const summaryCaption = this.formatPhotoSummaryCaption(draft);
-      formData.append('caption', summaryCaption);
-    }
+    formData.append('caption', captionText);
 
     const response = await fetch(url, {
       method: 'POST',
@@ -218,17 +285,11 @@ export class TelegramPublisher {
 
     const photoMsgId = data.result?.message_id;
 
-    // If text was longer than 1020 chars, send full companion post right below photo
-    let textMsgId: number | undefined;
-    if (!useDirectCaption) {
-      const textRes = await this.sendTextMessage(fullText);
-      textMsgId = textRes.messageId;
-    }
-
+    // Exactly one message is published: sendPhoto. Never send a second companion text message.
     return {
       success: true,
       photoMessageId: photoMsgId,
-      messageId: textMsgId || photoMsgId,
+      messageId: photoMsgId,
     };
   }
 }

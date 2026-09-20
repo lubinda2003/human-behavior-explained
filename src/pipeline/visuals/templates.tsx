@@ -202,6 +202,22 @@ export function renderConceptDiagram(
       <div
         style={{
           display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          marginBottom: '10px',
+          color: THEME.accentCyan,
+          fontSize: '11px',
+          fontWeight: 700,
+          letterSpacing: '1.5px',
+          textTransform: 'uppercase',
+        }}
+      >
+        ↓ CAUSAL ARCHITECTURE &amp; MECHANISMS ↓
+      </div>
+      <div
+        style={{
+          display: 'flex',
           gap: '16px',
           width: '100%',
           flex: 1,
@@ -348,12 +364,15 @@ export function renderProcessFlow(data: ProcessFlowData): React.ReactElement {
             <div
               style={{
                 display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 color: THEME.accentCyan,
-                fontSize: '22px',
-                fontWeight: 700,
+                fontSize: '24px',
+                fontWeight: 800,
+                padding: '0 4px',
               }}
             >
-              →
+              ➔
             </div>
           )}
         </React.Fragment>
@@ -368,7 +387,8 @@ export function renderComparison(data: ComparisonData): React.ReactElement {
     <div
       style={{
         display: 'flex',
-        gap: '24px',
+        alignItems: 'center',
+        gap: '16px',
         width: '100%',
         flex: 1,
       }}
@@ -423,6 +443,36 @@ export function renderComparison(data: ComparisonData): React.ReactElement {
               {pt}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Center Contrast Divider / Bridge */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '38px',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '36px',
+            height: '36px',
+            borderRadius: '18px',
+            backgroundColor: '#1E293B',
+            border: `1px solid ${THEME.accentAmber}`,
+            color: THEME.accentAmber,
+            fontSize: '11px',
+            fontWeight: 800,
+            letterSpacing: '1px',
+          }}
+        >
+          VS
         </div>
       </div>
 
@@ -496,52 +546,69 @@ export function renderTimeline(data: TimelineData): React.ReactElement {
         justifyContent: 'space-around',
       }}
     >
-      <div style={{ display: 'flex', gap: '16px', width: '100%' }}>
-        {data.events.slice(0, 4).map((item, idx) => (
-          <div
-            key={idx}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              flex: 1,
-              backgroundColor: THEME.cardBg,
-              border: `1px solid ${THEME.cardBorder}`,
-              borderRadius: '12px',
-              padding: '20px 16px',
-            }}
-          >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
+        {data.events.slice(0, 4).map((item, idx, arr) => (
+          <React.Fragment key={idx}>
             <div
               style={{
                 display: 'flex',
-                alignItems: 'center',
-                fontSize: '14px',
-                fontWeight: 700,
-                color: THEME.accentAmber,
-                marginBottom: '8px',
+                flexDirection: 'column',
+                flex: 1,
+                backgroundColor: THEME.cardBg,
+                border: `1px solid ${THEME.cardBorder}`,
+                borderRadius: '12px',
+                padding: '20px 16px',
               }}
             >
-              {item.yearOrPhase}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  color: THEME.accentAmber,
+                  marginBottom: '8px',
+                }}
+              >
+                {item.yearOrPhase}
+              </div>
+              <div
+                style={{
+                  fontSize: '16px',
+                  fontWeight: 700,
+                  color: THEME.textPrimary,
+                  marginBottom: '8px',
+                }}
+              >
+                {item.title}
+              </div>
+              <div
+                style={{
+                  fontSize: '13px',
+                  color: THEME.textMuted,
+                  lineHeight: 1.4,
+                }}
+              >
+                {item.description}
+              </div>
             </div>
-            <div
-              style={{
-                fontSize: '16px',
-                fontWeight: 700,
-                color: THEME.textPrimary,
-                marginBottom: '8px',
-              }}
-            >
-              {item.title}
-            </div>
-            <div
-              style={{
-                fontSize: '13px',
-                color: THEME.textMuted,
-                lineHeight: 1.4,
-              }}
-            >
-              {item.description}
-            </div>
-          </div>
+
+            {idx < arr.length - 1 && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: THEME.accentAmber,
+                  fontSize: '20px',
+                  fontWeight: 800,
+                  padding: '0 2px',
+                }}
+              >
+                ➔
+              </div>
+            )}
+          </React.Fragment>
         ))}
       </div>
     </div>
@@ -666,7 +733,7 @@ export function renderThoughtExperiment(
         flexDirection: 'column',
         width: '100%',
         flex: 1,
-        gap: '16px',
+        gap: '12px',
       }}
     >
       {/* Scenario Dilemma */}
@@ -700,6 +767,41 @@ export function renderThoughtExperiment(
           }}
         >
           {data.dilemma}
+        </div>
+      </div>
+
+      {/* Decision Fork Indicator */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          paddingLeft: '16px',
+          paddingRight: '16px',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            fontSize: '11px',
+            fontWeight: 700,
+            color: THEME.accentCyan,
+            letterSpacing: '1px',
+          }}
+        >
+          ▼ BRANCH A (COGNITIVE / IMPERSONAL)
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            fontSize: '11px',
+            fontWeight: 700,
+            color: THEME.accentAmber,
+            letterSpacing: '1px',
+          }}
+        >
+          BRANCH B (EMOTIONAL / DIRECT) ▼
         </div>
       </div>
 
