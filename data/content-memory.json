@@ -1,5 +1,20 @@
 [
   {
+    "id": "post-1789926833382-8uhc9",
+    "topic": "The Ben Franklin Effect",
+    "title": "The Ben Franklin Effect",
+    "pillar": "Everyday Psychology",
+    "format": "experiment_story",
+    "coreConcept": "Performing a favor for someone increases interpersonal affinity because the brain retroactively rationalizes the favor as evidence of liking.",
+    "publicationDate": "2026-09-20T17:53:53.814Z",
+    "sources": [
+      "Jecker & Landy (1969)"
+    ],
+    "visualUsed": false,
+    "visualTemplate": "process_flow",
+    "ctaType": "reflection"
+  },
+  {
     "id": "post-1789925071389-jkqai",
     "topic": "The Invisible Gorilla (Inattentional Blindness)",
     "title": "The Invisible Gorilla (Inattentional Blindness)",
