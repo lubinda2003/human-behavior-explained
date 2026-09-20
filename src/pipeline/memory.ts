@@ -56,6 +56,7 @@ export class ContentMemoryStore {
       topic: item.topic,
       title: item.draft.title,
       pillar: item.pillar,
+      format: item.format || item.draft.format,
       coreConcept: item.draft.coreTakeaway,
       publicationDate: item.publishedAt || new Date().toISOString(),
       sources: item.draft.sourcesCited,

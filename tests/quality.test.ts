@@ -129,4 +129,87 @@ describe('Editorial Quality & Content Linter', () => {
       'Should flag clickbait title'
     );
   });
+
+  it('should support short_curiosity format with concise word count', () => {
+    const shortDraft: PostDraft = {
+      title: 'The Doorway Effect',
+      pillar: 'Brain, Memory & Perception',
+      format: 'short_curiosity',
+      hook: 'Walking through a doorway into another room empties your immediate working memory.',
+      bodyParagraphs: [
+        'Gabriel Radvansky (2011) showed that passing through an open threshold triples forgetting. Doorways act as cognitive event boundaries, flushing working memory to prepare for the new space.'
+      ],
+      coreTakeaway: 'Physical thresholds signal the brain to compartmentalize and archive current working memory.',
+      sourcesCited: ['Radvansky et al. (2011)'],
+      caveatNote: 'The effect weakens when you consciously rehearse the task in transit.',
+      cta: {
+        type: 'reflection',
+        text: 'Notice this the next time you walk into a room and draw a blank.',
+      },
+    };
+    const res = QualityChecker.validate(shortDraft);
+    assert.equal(res.isValid, true);
+    assert.equal(res.errors.length, 0);
+  });
+
+  it('should validate poll format requirements', () => {
+    const pollDraft: PostDraft = {
+      title: 'The Trolley Footbridge Dilemma',
+      pillar: 'Psychology Thought Experiments',
+      format: 'poll',
+      hook: 'A runaway trolley heads for five workers. Would you push a stranger off a footbridge to stop it?',
+      bodyParagraphs: [
+        'Joshua Greene (2001) demonstrated using fMRI that up-close physical harm activates emotional brain regions that override abstract utilitarian calculus.'
+      ],
+      poll: {
+        question: 'Would you physically push the stranger to save five lives?',
+        options: ['Yes, purely mathematical outcome', 'No, personal harm feels wrong', 'Uncertain'],
+        explanation: 'Most people flip a switch from a distance, but refuse direct physical contact.',
+      },
+      coreTakeaway: 'Personal emotional engagement overrides abstract consequentialist logic in moral decisions.',
+      sourcesCited: ['Greene et al. (2001)'],
+      caveatNote: 'Hypothetical dilemmas do not always reflect real high-stakes behavior under acute adrenaline.',
+      cta: {
+        type: 'reflection',
+        text: 'Vote above, then observe how your visceral reaction differed from mathematical logic.',
+      },
+    };
+    const res = QualityChecker.validate(pollDraft);
+    assert.equal(res.isValid, true);
+
+    const invalidPoll: PostDraft = {
+      ...pollDraft,
+      poll: undefined,
+    };
+    const resInvalid = QualityChecker.validate(invalidPoll);
+    assert.equal(resInvalid.isValid, false);
+    assert.ok(resInvalid.errors.some((e) => e.includes('Poll format requires a valid question')));
+  });
+
+  it('should flag rigid visible headers as warnings to encourage natural tone', () => {
+    const rigidDraft: PostDraft = {
+      ...validDraft,
+      bodyParagraphs: [
+        '<b>Key Insight:</b> Doorways act as event boundaries in the mind.',
+        '<b>Reflection:</b> Next time you enter a room, think about this.'
+      ],
+    };
+    const res = QualityChecker.validate(rigidDraft);
+    assert.ok(
+      res.warnings.some((w) => w.includes('rigid section label')),
+      'Should flag rigid section labels'
+    );
+  });
+
+  it('should flag excessive emojis as warnings', () => {
+    const emojiHeavyDraft: PostDraft = {
+      ...validDraft,
+      hook: '🧠 👀 👥 🔬 💡 👉 🎯 Walk through a doorway and forget everything!',
+    };
+    const res = QualityChecker.validate(emojiHeavyDraft);
+    assert.ok(
+      res.warnings.some((w) => w.includes('Excessive emoji usage')),
+      'Should warn about excessive emojis'
+    );
+  });
 });

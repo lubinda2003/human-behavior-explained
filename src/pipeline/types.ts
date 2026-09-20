@@ -16,6 +16,14 @@ export const PILLAR_DISTRIBUTION: Record<ContentPillar, number> = {
   'Psychology Thought Experiments': 0.15,
 };
 
+export type EditorialFormat =
+  | 'long_explanation'
+  | 'short_curiosity'
+  | 'experiment_story'
+  | 'thought_experiment'
+  | 'poll'
+  | 'quick_observation';
+
 export type CTAType =
   | 'reflection'
   | 'continuation'
@@ -37,6 +45,7 @@ export interface TopicCandidate {
   pillar: ContentPillar;
   coreQuestion: string;
   rationale: string;
+  suggestedFormat?: EditorialFormat;
 }
 
 export interface ResearchStudy {
@@ -63,9 +72,16 @@ export interface PostCTA {
   text?: string;
 }
 
+export interface PollData {
+  question: string;
+  options: string[];
+  explanation?: string;
+}
+
 export interface PostDraft {
   title: string;
   pillar: ContentPillar;
+  format?: EditorialFormat;
   hook: string;
   bodyParagraphs: string[];
   coreTakeaway: string;
@@ -73,6 +89,7 @@ export interface PostDraft {
   caveatNote: string;
   cta: PostCTA;
   sourceUrls?: string[];
+  poll?: PollData;
 }
 
 export interface ConceptDiagramData {
@@ -166,6 +183,7 @@ export interface ContentItem {
   publishedAt?: string;
   pillar: ContentPillar;
   topic: string;
+  format?: EditorialFormat;
   draft: PostDraft;
   visualDecision: VisualDecision;
   graphicPath?: string;
@@ -179,6 +197,7 @@ export interface ContentMemoryItem {
   topic: string;
   title: string;
   pillar: ContentPillar;
+  format?: EditorialFormat;
   coreConcept: string;
   publicationDate: string;
   sources: string[];

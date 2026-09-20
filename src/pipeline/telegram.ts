@@ -32,6 +32,8 @@ export class TelegramPublisher {
 
   /**
    * Format a PostDraft into clean, readable Telegram HTML.
+   * Reads conversationally with natural whitespace, strategic emoji anchors, and lightweight citations,
+   * without rigid visible template labels (like "Key Insight:", "Core Mechanism:", "Reflection:").
    */
   public formatMessage(draft: PostDraft): string {
     const lines: string[] = [];
@@ -45,39 +47,80 @@ export class TelegramPublisher {
     lines.push(`<i>#${pillarTag}</i>`);
     lines.push('');
 
-    // Hook
+    // Format-specific: Poll
+    if (draft.format === 'poll' && draft.poll) {
+      if (draft.hook) {
+        lines.push(escapeTelegramHtml(draft.hook));
+        lines.push('');
+      }
+
+      lines.push(`📊 <b>${escapeTelegramHtml(draft.poll.question)}</b>`);
+      lines.push('');
+
+      const optionMarkers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣'];
+      draft.poll.options.forEach((opt, idx) => {
+        const marker = optionMarkers[idx] || '👉';
+        lines.push(`${marker} ${escapeTelegramHtml(opt)}`);
+      });
+      lines.push('');
+
+      if (draft.poll.explanation || draft.coreTakeaway) {
+        lines.push(`💡 <i>${escapeTelegramHtml(draft.poll.explanation || draft.coreTakeaway)}</i>`);
+        lines.push('');
+      }
+
+      if (draft.caveatNote) {
+        lines.push(`⚠️ <i>${escapeTelegramHtml(draft.caveatNote)}</i>`);
+        lines.push('');
+      }
+
+      if (draft.sourcesCited && draft.sourcesCited.length > 0) {
+        lines.push(
+          `🔬 <code>${escapeTelegramHtml(draft.sourcesCited.join(' • '))}</code>`
+        );
+      }
+
+      if (draft.cta && draft.cta.type !== 'none' && draft.cta.text) {
+        lines.push('');
+        lines.push(escapeTelegramHtml(draft.cta.text));
+      }
+
+      return lines.join('\n').trim();
+    }
+
+    // Hook: Grounded in the relatable human experience
     lines.push(escapeTelegramHtml(draft.hook));
     lines.push('');
 
-    // Body Paragraphs
+    // Body Paragraphs: Conversational prose with intentional whitespace
     for (const p of draft.bodyParagraphs) {
       lines.push(escapeTelegramHtml(p));
       lines.push('');
     }
 
-    // Core Takeaway block
-    lines.push(`<b>Key Insight:</b>`);
-    lines.push(`<i>${escapeTelegramHtml(draft.coreTakeaway)}</i>`);
-    lines.push('');
-
-    // Scientific Caveat Note
-    if (draft.caveatNote) {
-      lines.push(`<b>Limitation &amp; Context:</b>`);
-      lines.push(escapeTelegramHtml(draft.caveatNote));
+    // Core Takeaway / Realization: Natural semantic anchor (🎯) without rigid visible labels
+    if (draft.coreTakeaway) {
+      lines.push(`🎯 <i>${escapeTelegramHtml(draft.coreTakeaway)}</i>`);
       lines.push('');
     }
 
-    // Sources Cited
+    // Scientific Caveat Note: Restrained qualification anchor (⚠️)
+    if (draft.caveatNote) {
+      lines.push(`⚠️ <i>${escapeTelegramHtml(draft.caveatNote)}</i>`);
+      lines.push('');
+    }
+
+    // Sources Cited: Lightweight evidence line with research anchor (🔬)
     if (draft.sourcesCited && draft.sourcesCited.length > 0) {
       lines.push(
-        `<code>Evidence: ${escapeTelegramHtml(draft.sourcesCited.join(' • '))}</code>`
+        `🔬 <code>${escapeTelegramHtml(draft.sourcesCited.join(' • '))}</code>`
       );
     }
 
-    // Natural CTA
+    // Natural Ending / CTA: Conversational thought without artificial "Reflection:" header
     if (draft.cta && draft.cta.type !== 'none' && draft.cta.text) {
       lines.push('');
-      lines.push(`<b>Reflection:</b> ${escapeTelegramHtml(draft.cta.text)}`);
+      lines.push(escapeTelegramHtml(draft.cta.text));
     }
 
     return lines.join('\n').trim();
@@ -86,12 +129,13 @@ export class TelegramPublisher {
   /**
    * Format a complete caption for photo posts that strictly fits Telegram's 1024-character caption limit,
    * while preserving the hook, complete explanation sentences, core takeaway, limitation/context, evidence, and CTA.
+   * Uses conversational styling with semantic visual anchors rather than rigid section headers.
    */
   public formatVisualPost(draft: PostDraft): string {
     // 1. If full standard format already fits comfortably under Telegram's 1024 limit, use it directly
     const standard = this.formatMessage(draft);
     if (standard.length <= 1020) {
-      return standard.replace('<b>Key Insight:</b>', '<b>Core Mechanism:</b>');
+      return standard;
     }
 
     // 2. Otherwise, construct a visual-post caption that preserves all key editorial sections
@@ -105,34 +149,34 @@ export class TelegramPublisher {
     headerLines.push('');
     headerLines.push(escapeTelegramHtml(draft.hook));
 
-    // Structured conclusion sections (Must be preserved intact)
+    // Structured conclusion sections (Preserved intact with semantic anchors, no rigid labels)
     const footerLines: string[] = [];
     footerLines.push('');
-    footerLines.push(`<b>Core Mechanism:</b>`);
-    footerLines.push(`<i>${escapeTelegramHtml(draft.coreTakeaway)}</i>`);
+    if (draft.coreTakeaway) {
+      footerLines.push(`🎯 <i>${escapeTelegramHtml(draft.coreTakeaway)}</i>`);
+    }
 
     if (draft.caveatNote) {
       footerLines.push('');
-      footerLines.push(`<b>Limitation &amp; Context:</b>`);
-      footerLines.push(escapeTelegramHtml(draft.caveatNote));
+      footerLines.push(`⚠️ <i>${escapeTelegramHtml(draft.caveatNote)}</i>`);
     }
 
     if (draft.sourcesCited && draft.sourcesCited.length > 0) {
       footerLines.push('');
       footerLines.push(
-        `<code>Evidence: ${escapeTelegramHtml(draft.sourcesCited.join(' • '))}</code>`
+        `🔬 <code>${escapeTelegramHtml(draft.sourcesCited.join(' • '))}</code>`
       );
     }
 
     if (draft.cta && draft.cta.type !== 'none' && draft.cta.text) {
       footerLines.push('');
-      footerLines.push(`<b>Reflection:</b> ${escapeTelegramHtml(draft.cta.text)}`);
+      footerLines.push(escapeTelegramHtml(draft.cta.text));
     }
 
     const headerText = headerLines.join('\n');
     const footerText = footerLines.join('\n');
     const reservedChars = headerText.length + footerText.length + 2; // account for newlines
-    const maxBodyChars = Math.max(80, 1020 - reservedChars);
+    const maxBodyChars = Math.max(60, 1020 - reservedChars);
 
     // Extract complete grammatical sentences from body paragraphs
     const combinedBody = draft.bodyParagraphs.join(' ');
@@ -155,9 +199,12 @@ export class TelegramPublisher {
     // If at least one complete sentence fit within the budget, use it; otherwise use the first sentence
     const bodyExplanation = chosenSentences.length > 0
       ? chosenSentences.join(' ')
-      : escapeTelegramHtml((sentenceMatches[0] || '').trim());
+      : escapeTelegramHtml((sentenceMatches[0] || '').trim().slice(0, maxBodyChars));
 
     const result = `${headerText}\n\n${bodyExplanation}${footerText}`.trim();
+    if (result.length > 1024) {
+      return result.slice(0, 1020) + '…';
+    }
     return result;
   }
 

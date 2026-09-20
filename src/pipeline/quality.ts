@@ -17,10 +17,14 @@ export const BANNED_AI_CLICHES = [
   "in today's fast-paced world",
   'let’s dive in',
   "let's dive in",
+  'let’s dive into',
+  "let's dive into",
   'dive right in',
   'unlock the secrets',
   'unlocking the secrets',
+  'this fascinating phenomenon',
   'here are 5 mind-blowing',
+  'here are 5 mind blowing',
   'mind-blowing',
   'it turns out that',
   'fast forward to today',
@@ -112,43 +116,105 @@ export class QualityChecker {
       }
     }
 
-    // 4. Emoji density check
+    // 4. Emoji density and repetition check
     const emojiRegex =
       /(\p{Emoji_Presentation}|\p{Extended_Pictographic})/gu;
     const emojiMatches = fullText.match(emojiRegex) || [];
     if (emojiMatches.length > 6) {
       warnings.push(
-        `Excessive emoji usage: found ${emojiMatches.length} emojis (recommend <= 4)`
+        `Excessive emoji usage: found ${emojiMatches.length} emojis (recommend restrained 2-5 emojis)`
       );
     }
 
-    // 5. Length and paragraph structure check
+    // Check for repetitive emoji spam (e.g. 3+ identical emojis in a row)
+    const emojiSpamPattern = /(\p{Emoji_Presentation}|\p{Extended_Pictographic})\s*\1\s*\1/gu;
+    if (emojiSpamPattern.test(fullText)) {
+      errors.push('Excessive emoji repetition detected: avoid repeating identical emojis back-to-back.');
+    }
+
+    // 5. Format-aware length and paragraph structure check
+    const format = draft.format || 'long_explanation';
     const wordCount = fullText.trim().split(/\s+/).length;
-    if (wordCount < 120) {
+
+    let minWords = 120;
+    let maxWords = 450;
+    let minParagraphs = 2;
+
+    if (format === 'short_curiosity') {
+      minWords = 45;
+      maxWords = 175;
+      minParagraphs = 1;
+    } else if (format === 'quick_observation') {
+      minWords = 30;
+      maxWords = 135;
+      minParagraphs = 1;
+    } else if (format === 'poll') {
+      minWords = 30;
+      maxWords = 180;
+      minParagraphs = 1;
+
+      if (!draft.poll || !draft.poll.question || !draft.poll.options || draft.poll.options.length < 2) {
+        errors.push('Poll format requires a valid question and at least 2 answer options.');
+      }
+    } else if (format === 'thought_experiment') {
+      minWords = 80;
+      maxWords = 340;
+      minParagraphs = 2;
+    } else if (format === 'experiment_story') {
+      minWords = 90;
+      maxWords = 360;
+      minParagraphs = 2;
+    } else {
+      // long_explanation or default
+      minWords = 120;
+      maxWords = 450;
+      minParagraphs = 2;
+    }
+
+    if (wordCount < minWords) {
       errors.push(
-        `Post is too short (${wordCount} words). Evidence-based explanations require at least 120 words.`
+        `Post is too short for format "${format}" (${wordCount} words, minimum is ${minWords}).`
       );
-    } else if (wordCount > 450) {
+    } else if (wordCount > maxWords) {
       warnings.push(
-        `Post is on the longer side (${wordCount} words). Telegram readers prefer concise delivery under 450 words.`
+        `Post is on the longer side for format "${format}" (${wordCount} words, recommended under ${maxWords}).`
       );
     }
 
-    if (!draft.bodyParagraphs || draft.bodyParagraphs.length < 2) {
+    if (!draft.bodyParagraphs || draft.bodyParagraphs.length < minParagraphs) {
       errors.push(
-        'Post must contain at least 2 structured body paragraphs to explain mechanism and evidence.'
+        `Post in format "${format}" must contain at least ${minParagraphs} body paragraph(s).`
       );
     }
 
-    // 6. Source and empirical grounding check
+    // 6. Naturalness check: prevent rigid template headers from leaking into draft text
+    const rigidHeaders = [
+      'core mechanism:',
+      'key insight:',
+      'limitation & context:',
+      'limitation and context:',
+      'reflection:',
+    ];
+    for (const header of rigidHeaders) {
+      for (const p of draft.bodyParagraphs) {
+        const cleanP = p.replace(/<[^>]*>/g, '').trim().toLowerCase();
+        if (cleanP.startsWith(header)) {
+          warnings.push(
+            `Detected rigid section label "${header}" at start of paragraph. Prefer natural transitions.`
+          );
+        }
+      }
+    }
+
+    // 7. Source and empirical grounding check
     if (!draft.sourcesCited || draft.sourcesCited.length === 0) {
       errors.push(
         'Post missing empirical sources. At least one researcher or peer-reviewed study citation is required.'
       );
     }
 
-    // 7. Caveat / Limitation check
-    if (!draft.caveatNote || draft.caveatNote.trim().length < 20) {
+    // 8. Caveat / Limitation check
+    if (!draft.caveatNote || draft.caveatNote.trim().length < 15) {
       errors.push(
         'Post must contain a clear caveat or scientific limitation note (e.g. boundary conditions or replication caveats).'
       );

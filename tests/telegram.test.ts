@@ -56,10 +56,13 @@ describe('Telegram Publisher', () => {
 
     assert.ok(formatted.includes('<b>The Spotlight Effect: Nobody Is Watching You</b>'));
     assert.ok(formatted.includes('<i>#StrangeHumanBehavior</i>'));
-    assert.ok(formatted.includes('<b>Key Insight:</b>'));
-    assert.ok(formatted.includes('<b>Limitation &amp; Context:</b>'));
-    assert.ok(formatted.includes('<code>Evidence: Gilovich et al. (2000), J Pers Soc Psychol</code>'));
-    assert.ok(formatted.includes('<b>Reflection:</b>'));
+    assert.ok(formatted.includes('🎯 <i>Egocentric anchoring'));
+    assert.ok(formatted.includes('⚠️ <i>Extreme physical'));
+    assert.ok(formatted.includes('🔬 <code>Gilovich et al. (2000), J Pers Soc Psychol</code>'));
+    // Ensures rigid template labels are absent
+    assert.ok(!formatted.includes('<b>Key Insight:</b>'));
+    assert.ok(!formatted.includes('<b>Limitation &amp; Context:</b>'));
+    assert.ok(!formatted.includes('<b>Reflection:</b>'));
   });
 
   it('should format photo summary caption under 1024 character Telegram limit', () => {
@@ -68,7 +71,8 @@ describe('Telegram Publisher', () => {
 
     assert.ok(caption.length <= 1024, `Caption length ${caption.length} exceeds 1024`);
     assert.ok(caption.includes('<b>The Spotlight Effect: Nobody Is Watching You</b>'));
-    assert.ok(caption.includes('<b>Core Mechanism:</b>'));
+    assert.ok(caption.includes('🎯 <i>'));
+    assert.ok(!caption.includes('<b>Core Mechanism:</b>'));
   });
 
   it('should execute dry-run publishing cleanly without real credentials', async () => {

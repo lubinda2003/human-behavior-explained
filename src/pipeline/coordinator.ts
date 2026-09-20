@@ -12,16 +12,19 @@ import { TelegramPublisher, TelegramPublishResult } from './telegram.js';
 import {
   ContentItem,
   ContentPillar,
+  EditorialFormat,
   PostDraft,
   TopicCandidate,
   VisualDecision,
 } from './types.js';
+import { selectEditorialFormat } from './editorialConfig.js';
 import { VisualGenerator } from './visuals/index.js';
 
 export interface GenerateOptions {
   count?: number;
   pillar?: ContentPillar;
   topic?: string;
+  format?: EditorialFormat;
   dryRun?: boolean;
 }
 
@@ -120,12 +123,21 @@ export class PipelineCoordinator {
         `Research complete. Studies found: ${research.keyStudies.length}. Uncertainty level: ${research.uncertaintyLevel}`
       );
 
+      // 3.5 Determine Editorial Format
+      const editorialFormat: EditorialFormat = selectEditorialFormat({
+        suggestedFormat: options?.format || selectedTopic.suggestedFormat,
+        recentFormats: memory.map((m) => m.format).filter(Boolean) as EditorialFormat[],
+      });
+      console.log(`Editorial Format selected: [${editorialFormat}]`);
+
       // 4. Editorial Writing
-      console.log('Drafting editorial post...');
+      console.log(`Drafting editorial post (${editorialFormat})...`);
       let draft: PostDraft = await this.geminiEngine.writeEditorialPost(
         selectedTopic,
-        research
+        research,
+        { format: editorialFormat }
       );
+      draft.format = draft.format || editorialFormat;
 
       // 5. Quality & Editorial Linting Gate
       let quality = QualityChecker.validate(draft);
@@ -141,6 +153,7 @@ export class PipelineCoordinator {
           draft,
           quality.errors
         );
+        draft.format = draft.format || editorialFormat;
         quality = QualityChecker.validate(draft);
       }
 
@@ -199,6 +212,7 @@ export class PipelineCoordinator {
         createdAt: new Date().toISOString(),
         pillar: targetPillar,
         topic: selectedTopic.topic,
+        format: draft.format || editorialFormat,
         draft,
         visualDecision,
         graphicPath,

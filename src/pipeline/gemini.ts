@@ -9,6 +9,7 @@ import { GoogleGenAI } from '@google/genai';
 import {
   ContentPillar,
   CTAType,
+  EditorialFormat,
   PostCTA,
   PostDraft,
   ResearchNotes,
@@ -251,66 +252,116 @@ Respond ONLY with valid JSON matching this exact structure:
 
   /**
    * STEP 3: Editorial writing based purely on the researched dossier.
+   * Crafts a conversational, engaging, evidence-based post for the chosen editorial format.
    */
   public async writeEditorialPost(
     topic: TopicCandidate,
-    research: ResearchNotes
+    research: ResearchNotes,
+    options?: { format?: EditorialFormat }
   ): Promise<PostDraft> {
+    const format = options?.format || topic.suggestedFormat || 'long_explanation';
+
     if (!this.hasValidApiKey()) {
-      return this.getCuratedFallbackPostDraft(topic, research);
+      return this.getCuratedFallbackPostDraft(topic, research, format);
     }
 
     const prompt = `
-You are an editorial writer for an evidence-based psychology Telegram channel.
-Write a post using the following research dossier:
+You are a thoughtful psychology science communicator writing for the Human Behavior Explained channel.
+Your goal is to make the channel feel like a thoughtful person explaining something fascinating to another person — NOT an automated psychology article generator.
 
 TOPIC: ${topic.topic}
 PILLAR: ${topic.pillar}
+EDITORIAL FORMAT: ${format}
 CORE CONCEPT: ${research.coreConcept}
 KEY STUDIES: ${JSON.stringify(research.keyStudies)}
 MECHANISMS: ${research.cognitiveMechanisms.join('; ')}
 CAVEATS & LIMITS: ${research.caveatsAndLimitations.join('; ')}
 EVERYDAY SCENARIO: ${research.everydayManifestation}
 
-TONE & STYLE:
-- Write like a knowledgeable human explaining something genuinely interesting to a friend.
-- Conversational, sharp, educational, grounded in empirical evidence.
-- Concise: 180 - 320 words total.
-- Break into 2-3 clean, readable paragraphs.
+1. START WITH THE HUMAN EXPERIENCE:
+Whenever appropriate, begin with something the reader can recognize personally.
+The reader should think: "Wait... I do that." Then explain the psychology behind it.
+(e.g., instead of "Diffusion of responsibility is a psychological phenomenon...", start with "Someone collapses in a crowded place. Fifty people are watching. And somehow, nobody moves.")
 
-STRICT BANS (NEVER USE THESE PHRASES):
+2. INTRODUCE RESEARCH NATURALLY:
+Research should feel like part of the story rather than a bibliography interrupting the post.
+(e.g., "Researchers actually tested this in 1968...")
+Explain what happened and what was discovered naturally.
+Never fabricate studies, statistics, authors, dates, samples, or findings.
+
+3. STRATEGIC EMOJI SYSTEM:
+Use restrained, purposeful emoji usage (2-4 emojis maximum across the post).
+Emojis act as visual anchors that improve scanning and readability, NOT decoration or hype.
+Useful semantic roles:
+🧠 psychology / brain
+👀 observation / perception
+👥 social behavior
+🔬 experiment / research
+💡 important realization
+👉 mechanism / direction
+🎯 final takeaway
+⚠️ important qualification
+🔄 process / repetition
+Do NOT put an emoji before every paragraph or sentence. Never repeat identical emojis.
+
+4. NO RIGID VISIBLE TEMPLATES:
+Do NOT output rigid section labels like "Key Insight:", "Core Mechanism:", "Limitation & Context:", or "Reflection:" in the text.
+Use natural transitions, short paragraphs, and intentional whitespace.
+
+5. FORMAT GUIDELINES FOR "${format}":
+${
+  format === 'short_curiosity'
+    ? '- Target roughly 60–150 words total. 1-2 punchy paragraphs. Quick, surprising human quirk.'
+    : format === 'experiment_story'
+    ? '- Target roughly 120–300 words. Tell the study as a short, gripping story before explaining what researchers learned.'
+    : format === 'thought_experiment'
+    ? '- Target roughly 110–260 words. Ask the audience to imagine a dilemma or choice to reveal a psychological bias.'
+    : format === 'poll'
+    ? '- Concise question, 2-4 meaningful answer options, and a short explanation/context.'
+    : format === 'quick_observation'
+    ? '- Target roughly 40–100 words. Very short "wait, your brain does that?" micro-moment.'
+    : '- Target roughly 180–350 words. Deep dive into mechanisms and nuanced behavior.'
+}
+
+6. STRICT BANS (NEVER USE):
 - "Have you ever wondered..."
 - "In today’s fast-paced world..."
-- "Let's dive in..." / "Let's delve into..."
+- "Let's dive in..." / "Let's dive into..." / "Dive right in..."
 - "Unlock the secrets..."
+- "This fascinating phenomenon..."
 - "Here are 5 mind-blowing..."
 - "It turns out that..."
-- Excessive exclamation marks or emojis (max 1-2 subtle emojis).
-- No generic engagement begging ("like", "comment below", "react").
+- Generic engagement begging ("like this post", "comment below", "react", "share this").
 
-CTA DECISION:
-Choose one natural CTA style:
-- "reflection" (prompt a quiet mental review)
-- "continuation" (point toward a related mystery or next thought)
-- "conversation" (an open non-begging question)
-- "connection" (tie to an unexpected discipline)
-- "none" (let the conclusion stand on its own)
+7. CTA / ENDING:
+End naturally: a thought-provoking observation, short practical implication, question, natural reflection, or none.
+No formal "Reflection:" section.
 
-Respond ONLY with valid JSON matching this exact structure:
+Respond ONLY with valid JSON matching this structure:
 {
   "title": "Engaging, non-clickbait headline (max 8 words)",
   "pillar": "${topic.pillar}",
-  "hook": "Compelling opening sentence describing the strange human behavior or mental trap directly",
+  "format": "${format}",
+  "hook": "Relatable human experience opening sentence ('Wait... I do that' moment)",
   "bodyParagraphs": [
-    "First paragraph explaining what happens in real life and the experiment that proved it.",
-    "Second paragraph explaining the cognitive or neurological mechanism."
+    "First paragraph explaining what happens in real life and the experiment/story.",
+    "Second paragraph explaining the underlying mechanism."
   ],
-  "coreTakeaway": "Single sentence summarizing the key psychological insight",
+  "coreTakeaway": "Single sentence summarizing the key psychological insight or realization",
   "sourcesCited": ["Author (Year) style citations"],
   "caveatNote": "Honest limitation or boundary condition noted in the research",
   "cta": {
     "type": "reflection" | "continuation" | "conversation" | "connection" | "none",
-    "text": "The natural concluding question or reflection, or empty string if none"
+    "text": "Natural concluding observation, question, or thought, or empty string"
+  }${
+    format === 'poll'
+      ? `,
+  "poll": {
+    "question": "Concise poll question",
+    "options": ["Option 1", "Option 2", "Option 3"],
+    "explanation": "Brief context on what psychology reveals about the options"
+  }`
+      : ''
   }
 }
 `;
@@ -328,6 +379,7 @@ Respond ONLY with valid JSON matching this exact structure:
 
       const text = response.text?.trim() || '';
       const draft = JSON.parse(text) as PostDraft;
+      draft.format = format;
       draft.cta = sanitizeCTA(draft.cta);
       if (research.groundingUrls && research.groundingUrls.length > 0) {
         draft.sourceUrls = research.groundingUrls;
@@ -335,7 +387,7 @@ Respond ONLY with valid JSON matching this exact structure:
       return draft;
     } catch (err) {
       console.warn('Gemini writing failed or unavailable. Using curated fallback:', err);
-      return this.getCuratedFallbackPostDraft(topic, research);
+      return this.getCuratedFallbackPostDraft(topic, research, format);
     }
   }
 
@@ -348,8 +400,10 @@ Respond ONLY with valid JSON matching this exact structure:
     previousDraft: PostDraft,
     validationErrors: string[]
   ): Promise<PostDraft> {
+    const format = previousDraft.format || topic.suggestedFormat || 'long_explanation';
+
     if (!this.hasValidApiKey()) {
-      return this.getCuratedFallbackPostDraft(topic, research);
+      return this.getCuratedFallbackPostDraft(topic, research, format);
     }
 
     const prompt = `
@@ -357,10 +411,11 @@ You are an editorial director for an evidence-based psychology publication.
 A previous post draft failed quality linting checks with the following errors:
 ${validationErrors.map((err) => `- ${err}`).join('\n')}
 
-Revise and rewrite the post so that it strictly adheres to all editorial guidelines:
+Revise and rewrite the post in format "${format}" so that it strictly adheres to all editorial guidelines:
 
 TOPIC: ${topic.topic}
 PILLAR: ${topic.pillar}
+EDITORIAL FORMAT: ${format}
 CORE CONCEPT: ${research.coreConcept}
 KEY STUDIES: ${JSON.stringify(research.keyStudies)}
 PREVIOUS DRAFT TITLE: "${previousDraft.title}"
@@ -368,19 +423,21 @@ PREVIOUS DRAFT HOOK: "${previousDraft.hook}"
 PREVIOUS DRAFT TAKEAWAY: "${previousDraft.coreTakeaway}"
 
 RULES:
-- Word count MUST be between 140 and 380 words.
-- Title MUST be between 2 and 10 words, completely non-clickbait.
-- MUST contain at least 2 structured body paragraphs.
-- Must cite at least one empirical study with author and year.
-- Must state an explicit boundary condition or limitation in caveatNote.
-- STRICT BANS: No "Have you ever wondered", "In today's fast-paced world", "Let's dive in", "Unlock", "Mind-blowing", "It turns out that", or clickbait.
-- CTA MUST be one of: "reflection", "continuation", "conversation", "connection", "none".
+- Tone: Thoughtful person explaining something fascinating to a friend.
+- Start with relatable human experience ("Wait... I do that").
+- No rigid visible template section labels like "Key Insight:", "Core Mechanism:", "Reflection:".
+- Strategic emojis only (2-4 emojis total, semantic visual anchors).
+- Cite at least one empirical study with author and year.
+- State an explicit boundary condition or limitation in caveatNote.
+- STRICT BANS: No "Have you ever wondered", "In today's fast-paced world", "Let's dive in", "Unlock", "This fascinating phenomenon", "Mind-blowing", "It turns out that", or clickbait.
+- CTA type MUST be one of: "reflection", "continuation", "conversation", "connection", "none".
 
-Respond ONLY with valid JSON:
+Respond ONLY with valid JSON matching the PostDraft schema:
 {
   "title": "Clean, punchy non-clickbait title",
   "pillar": "${topic.pillar}",
-  "hook": "Compelling opening hook",
+  "format": "${format}",
+  "hook": "Relatable human experience opening",
   "bodyParagraphs": [
     "First paragraph explaining the phenomenon and the study.",
     "Second paragraph explaining the mechanism."
@@ -391,6 +448,15 @@ Respond ONLY with valid JSON:
   "cta": {
     "type": "reflection" | "continuation" | "conversation" | "connection" | "none",
     "text": "Natural concluding CTA text"
+  }${
+    format === 'poll'
+      ? `,
+  "poll": {
+    "question": "Concise poll question",
+    "options": ["Option 1", "Option 2", "Option 3"],
+    "explanation": "Brief context on what psychology reveals about the options"
+  }`
+      : ''
   }
 }
 `;
@@ -408,6 +474,7 @@ Respond ONLY with valid JSON:
 
       const text = response.text?.trim() || '';
       const revised = JSON.parse(text) as PostDraft;
+      revised.format = format;
       revised.cta = sanitizeCTA(revised.cta);
       if (research.groundingUrls && research.groundingUrls.length > 0) {
         revised.sourceUrls = research.groundingUrls;
@@ -415,7 +482,7 @@ Respond ONLY with valid JSON:
       return revised;
     } catch (err) {
       console.warn('Gemini revision failed or unavailable:', err);
-      return this.getCuratedFallbackPostDraft(topic, research);
+      return this.getCuratedFallbackPostDraft(topic, research, format);
     }
   }
 
@@ -656,30 +723,147 @@ Respond ONLY with valid JSON:
 
   public getCuratedFallbackPostDraft(
     topic: TopicCandidate,
-    research: ResearchNotes
+    research: ResearchNotes,
+    format: EditorialFormat = 'long_explanation'
   ): PostDraft {
     const entry = findCuratedEntryByTopic(topic.topic);
-    if (entry) {
-      return entry.draft;
+    if (entry && (!format || format === 'long_explanation' || entry.draft.format === format)) {
+      return {
+        ...entry.draft,
+        format: entry.draft.format || format,
+      };
     }
 
-    // Consistent fallback draft directly explaining the specified topic
     const firstStudy = research.keyStudies[0] || {
       authors: 'Cognitive Science Research',
       year: 2018,
+      findings: 'predictable shifts under controlled conditions',
     };
+    const title = topic.topic.length > 50 ? topic.topic.slice(0, 48) + '...' : topic.topic;
+    const sourcesCited = research.keyStudies.length > 0
+      ? research.keyStudies.map((s) => `${s.authors} (${s.year})`)
+      : [`${firstStudy.authors} (${firstStudy.year})`];
+    const caveatNote = research.caveatsAndLimitations[0] || 'Effects vary depending on cognitive load and environmental stress.';
 
+    if (format === 'poll') {
+      return {
+        title,
+        pillar: topic.pillar,
+        format: 'poll',
+        hook: `When confronted with ${topic.topic.toLowerCase()}, how does your instinct naturally react?`,
+        bodyParagraphs: [
+          `In psychological trials, intuitive reflexes often conflict directly with analytical reasoning when humans navigate ${topic.topic.toLowerCase()}.`
+        ],
+        poll: {
+          question: `In this situation, what is your first immediate impulse?`,
+          options: [
+            'Rely on intuitive gut reaction',
+            'Pause and calculate the deliberate outcome',
+            'Look around to see how others react',
+          ],
+          explanation: research.coreConcept,
+        },
+        coreTakeaway: research.coreConcept,
+        sourcesCited,
+        caveatNote,
+        cta: {
+          type: 'reflection',
+          text: 'Vote above, then observe how your daily decisions align with your choice.',
+        },
+      };
+    }
+
+    if (format === 'quick_observation') {
+      return {
+        title,
+        pillar: topic.pillar,
+        format: 'quick_observation',
+        hook: `You experience this constantly: ${research.everydayManifestation || topic.coreQuestion}`,
+        bodyParagraphs: [
+          `Your brain defaults to this cognitive shortcut because working memory is strictly bandwidth-constrained. Under mental pressure, this exact heuristic takes over automatically.`
+        ],
+        coreTakeaway: research.coreConcept,
+        sourcesCited,
+        caveatNote,
+        cta: {
+          type: 'reflection',
+          text: 'Notice the next time your brain runs this exact script on autopilot.',
+        },
+      };
+    }
+
+    if (format === 'short_curiosity') {
+      return {
+        title,
+        pillar: topic.pillar,
+        format: 'short_curiosity',
+        hook: `Notice something peculiar about how we navigate ${topic.topic.toLowerCase()}: what feels like deliberate choice is often an unconscious cognitive script.`,
+        bodyParagraphs: [
+          `In controlled trials, researchers found that humans consistently fall into this pattern without conscious awareness. Under the surface, ${research.cognitiveMechanisms[0] || 'cognitive conservation'} quietly dictates the choice.`
+        ],
+        coreTakeaway: research.coreConcept,
+        sourcesCited,
+        caveatNote,
+        cta: {
+          type: 'reflection',
+          text: `Pay attention the next time this scenario arises in your day.`,
+        },
+      };
+    }
+
+    if (format === 'thought_experiment') {
+      return {
+        title,
+        pillar: topic.pillar,
+        format: 'thought_experiment',
+        hook: `Imagine you are placed in this exact dilemma: ${topic.coreQuestion}`,
+        bodyParagraphs: [
+          `Almost everyone assumes they would choose the purely rational answer. But when psychologists simulate the decision, unconscious cognitive biases steer us somewhere completely unexpected.`,
+          `This mental experiment reveals a fundamental quirk in human decision architecture: ${research.cognitiveMechanisms[0] || research.coreConcept}.`
+        ],
+        coreTakeaway: research.coreConcept,
+        sourcesCited,
+        caveatNote,
+        cta: {
+          type: 'reflection',
+          text: 'What choice did your intuition urge you to make before logic intervened?',
+        },
+      };
+    }
+
+    if (format === 'experiment_story') {
+      return {
+        title,
+        pillar: topic.pillar,
+        format: 'experiment_story',
+        hook: `In ${firstStudy.year}, researchers led by ${firstStudy.authors} set up an unusual experiment to test a simple question: ${topic.coreQuestion}`,
+        bodyParagraphs: [
+          `They brought participants into the laboratory under an unsuspecting pretext. What happened next surprised the observers: when confronted with the scenario, the vast majority of subjects demonstrated the exact same behavioral trap.`,
+          `The findings revealed that our brains are hardwired with this specific heuristic: ${research.cognitiveMechanisms[0] || research.coreConcept}.`
+        ],
+        coreTakeaway: research.coreConcept,
+        sourcesCited,
+        caveatNote,
+        cta: {
+          type: 'reflection',
+          text: 'How would you have reacted if you were one of the participants in that room?',
+        },
+      };
+    }
+
+    // Default: long_explanation
     return {
-      title: topic.topic.length > 50 ? topic.topic.slice(0, 48) + '...' : topic.topic,
+      title,
       pillar: topic.pillar,
+      format: 'long_explanation',
       hook: `Consider how the human mind navigates ${topic.topic.toLowerCase()}: what feels like deliberate choice is often guided by subconscious cognitive architecture.`,
       bodyParagraphs: [
         `Psychological investigations led by ${firstStudy.authors} (${firstStudy.year}) explored how ${topic.topic.toLowerCase()} shapes human behavior. When tested under controlled conditions, participants demonstrated consistent, predictable responses when confronted with this exact scenario.`,
         `The underlying mechanism centers on cognitive resource allocation: ${research.cognitiveMechanisms.join(' and ')}. Because the brain conserves glucose and working memory capacity, it relies on streamlined heuristics that produce this distinct behavioral pattern.`,
       ],
       coreTakeaway: research.coreConcept,
-      sourcesCited: [`${firstStudy.authors} (${firstStudy.year})`],
-      caveatNote: research.caveatsAndLimitations[0] || 'Effects vary depending on cognitive load and individual baseline anxiety.',
+      sourcesCited,
+      caveatNote,
       cta: {
         type: 'reflection',
         text: `Notice how ${topic.topic.toLowerCase()} surfaces in your own daily routines and decisions.`,
