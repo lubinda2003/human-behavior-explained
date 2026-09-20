@@ -1,5 +1,20 @@
 [
   {
+    "id": "post-1789924867892-d79ot",
+    "topic": "The Doorway Effect (Event Horizon Model)",
+    "title": "The Doorway Effect (Event Horizon Model)",
+    "pillar": "Brain, Memory & Perception",
+    "format": "short_curiosity",
+    "coreConcept": "Navigating physical doorways triggers episodic memory event boundaries in the hippocampus, flushing recent working memory to accommodate new environmental contexts.",
+    "publicationDate": "2026-09-20T17:21:08.448Z",
+    "sources": [
+      "Radvansky, Krawietz & Tamplin (2011)"
+    ],
+    "visualUsed": false,
+    "visualTemplate": "process_flow",
+    "ctaType": "reflection"
+  },
+  {
     "id": "post-1789921317168-tmyu5",
     "topic": "The Bystander Effect (Diffusion of Responsibility)",
     "title": "Why Crowds Freeze When Someone Needs Help",
