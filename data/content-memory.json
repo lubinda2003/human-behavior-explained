@@ -1,5 +1,20 @@
 [
   {
+    "id": "post-1789925071389-jkqai",
+    "topic": "The Invisible Gorilla (Inattentional Blindness)",
+    "title": "The Invisible Gorilla (Inattentional Blindness)",
+    "pillar": "Psychology Thought Experiments",
+    "format": "short_curiosity",
+    "coreConcept": "Intensive focal visual attention selectively filters unattended visual inputs, preventing unexpected stimuli from entering conscious awareness regardless of physical size or salience.",
+    "publicationDate": "2026-09-20T17:24:31.791Z",
+    "sources": [
+      "Chabris & Simons (1999)"
+    ],
+    "visualUsed": false,
+    "visualTemplate": "simple_statistic",
+    "ctaType": "reflection"
+  },
+  {
     "id": "post-1789924867892-d79ot",
     "topic": "The Doorway Effect (Event Horizon Model)",
     "title": "The Doorway Effect (Event Horizon Model)",
