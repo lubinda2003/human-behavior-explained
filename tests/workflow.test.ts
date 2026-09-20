@@ -57,4 +57,16 @@ describe('GitHub Actions Workflow Configuration', () => {
       'Must commit data/ changes back to repo'
     );
   });
+
+  it('should use deterministic npm ci for dependency installation', () => {
+    const content = fs.readFileSync(workflowPath, 'utf-8');
+    assert.ok(
+      content.includes('run: npm ci'),
+      'Must run npm ci for deterministic installation'
+    );
+    assert.ok(
+      !content.includes('npm ci || npm install'),
+      'Must not rely on non-deterministic npm ci || npm install'
+    );
+  });
 });

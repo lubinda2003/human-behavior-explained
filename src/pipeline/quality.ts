@@ -168,6 +168,14 @@ export class QualityChecker {
       }
     }
 
+    // 9. CTA Type validation
+    const validCtaTypes = ['reflection', 'continuation', 'conversation', 'connection', 'none'];
+    if (!draft.cta || !validCtaTypes.includes(draft.cta.type)) {
+      errors.push(
+        `Invalid or missing CTA type: "${draft.cta?.type}". Must be one of: ${validCtaTypes.join(', ')}.`
+      );
+    }
+
     return {
       isValid: errors.length === 0,
       errors,

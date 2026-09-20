@@ -1,7 +1,7 @@
 /**
  * Pipeline Coordinator
- * Orchestrates topic selection, research, editorial writing, quality gating, visual generation,
- * queue storage, and Telegram publishing.
+ * Orchestrates topic selection, empirical research, editorial writing, strict quality gating,
+ * visual generation, queue storage, and Telegram publishing.
  */
 
 import { GeminiContentEngine } from './gemini.js';
@@ -13,6 +13,7 @@ import {
   ContentItem,
   ContentPillar,
   PostDraft,
+  TopicCandidate,
   VisualDecision,
 } from './types.js';
 import { VisualGenerator } from './visuals/index.js';
@@ -54,6 +55,7 @@ export class PipelineCoordinator {
 
   /**
    * Generates N evidence-based posts and stores them in the queue.
+   * Strictly enforces duplicate prevention and editorial quality gates.
    */
   public async generatePosts(options?: GenerateOptions): Promise<ContentItem[]> {
     const count = options?.count && options.count > 0 ? options.count : 1;
@@ -71,32 +73,41 @@ export class PipelineCoordinator {
       console.log(`Target Pillar: [${targetPillar}]`);
 
       // 2. Select Topic with Duplication Prevention
-      const recentSummary = this.memoryStore.getRecentTopicsSummary(memory, 20);
+      const recentSummary = this.memoryStore.getRecentTopicsSummary(memory, 25);
       let attempts = 0;
-      let selectedTopic = await this.geminiEngine.selectTopic({
-        recentMemorySummary: recentSummary,
-        targetPillar,
-        forcedTopic: options?.topic,
-      });
+      const maxAttempts = 5;
+      let selectedTopic: TopicCandidate | null = null;
+      const excludedTopics: string[] = [];
 
-      // Check against memory for duplicate topics
-      while (attempts < 3) {
-        const dupCheck = this.memoryStore.isDuplicate(
-          selectedTopic.topic,
-          memory
-        );
-        if (!dupCheck.isDuplicate) {
-          break;
-        }
-        console.warn(
-          `Topic "${selectedTopic.topic}" flagged as duplicate: ${dupCheck.reason}. Retrying topic selection...`
-        );
+      while (attempts < maxAttempts) {
         attempts++;
-        selectedTopic = await this.geminiEngine.selectTopic({
-          recentMemorySummary:
-            recentSummary + `\nAvoid specifically: "${selectedTopic.topic}"`,
-          targetPillar,
-        });
+        try {
+          const candidate = await this.geminiEngine.selectTopic({
+            recentMemorySummary: recentSummary,
+            targetPillar,
+            forcedTopic: attempts === 1 ? options?.topic : undefined,
+            excludedTopics,
+          });
+
+          const dupCheck = this.memoryStore.isDuplicate(candidate.topic, memory);
+          if (!dupCheck.isDuplicate && !excludedTopics.includes(candidate.topic)) {
+            selectedTopic = candidate;
+            break;
+          }
+
+          console.warn(
+            `Topic "${candidate.topic}" flagged as duplicate: ${dupCheck.reason || 'excluded'}. Retrying with exclusion (attempt ${attempts}/${maxAttempts})...`
+          );
+          excludedTopics.push(candidate.topic);
+        } catch (err) {
+          console.warn(`Topic selection attempt ${attempts} encountered error:`, err);
+        }
+      }
+
+      if (!selectedTopic) {
+        const errorMsg = `Unable to select a unique, non-duplicate topic for pillar "${targetPillar}" after ${maxAttempts} attempts. Halting generation to prevent duplicate publication.`;
+        console.error(errorMsg);
+        throw new Error(errorMsg);
       }
 
       console.log(`Topic selected: "${selectedTopic.topic}"`);
@@ -116,25 +127,34 @@ export class PipelineCoordinator {
         research
       );
 
-      // 5. Quality & Editorial Linting
-      const quality = QualityChecker.validate(draft);
+      // 5. Quality & Editorial Linting Gate
+      let quality = QualityChecker.validate(draft);
       if (!quality.isValid) {
-        console.warn('Quality check identified issues:', quality.errors);
-        // Attempt clean fix on caveat or sources if missing
-        if (!draft.caveatNote && research.caveatsAndLimitations.length > 0) {
-          draft.caveatNote = research.caveatsAndLimitations[0];
-        }
-        if (
-          (!draft.sourcesCited || draft.sourcesCited.length === 0) &&
-          research.keyStudies.length > 0
-        ) {
-          draft.sourcesCited = [
-            `${research.keyStudies[0].authors} (${research.keyStudies[0].year})`,
-          ];
-        }
+        console.warn(
+          `Quality gate flagged initial draft for "${selectedTopic.topic}":`,
+          quality.errors
+        );
+        console.log('Retrying editorial generation with correction instructions...');
+        draft = await this.geminiEngine.reviseEditorialPost(
+          selectedTopic,
+          research,
+          draft,
+          quality.errors
+        );
+        quality = QualityChecker.validate(draft);
       }
+
+      if (!quality.isValid) {
+        console.error(
+          `Quality gate FAILED after revision attempt for "${selectedTopic.topic}". Item rejected. Errors:`,
+          quality.errors
+        );
+        // Strict Gate: Do NOT enqueue or publish invalid draft
+        continue;
+      }
+
       if (quality.warnings.length > 0) {
-        console.log('Quality warnings:', quality.warnings);
+        console.log('Quality warnings (non-blocking):', quality.warnings);
       }
 
       // 6. Visual Evaluation & Decision
@@ -189,6 +209,7 @@ export class PipelineCoordinator {
   /**
    * Publishes the next scheduled post from the queue.
    * If queue is empty, generates 1 post automatically.
+   * NEVER records dry-run or failed attempts to publication memory.
    */
   public async publishNext(
     options?: PublishOptions
@@ -200,7 +221,7 @@ export class PipelineCoordinator {
       console.log('Queue is currently empty. Auto-generating fresh post for immediate publication...');
       const generated = await this.generatePosts({ count: 1 });
       if (generated.length === 0) {
-        throw new Error('Failed to auto-generate post for publishing.');
+        throw new Error('Failed to auto-generate post for publishing: quality gate rejected invalid content.');
       }
       item = await this.queueStore.dequeueNext();
       if (!item) {
@@ -213,16 +234,21 @@ export class PipelineCoordinator {
       dryRun: options?.dryRun,
     });
 
-    if (result.success) {
+    if (result.success && !options?.dryRun && !result.dryRun) {
       item.status = 'published';
       item.publishedAt = new Date().toISOString();
       item.telegramMessageId = result.messageId;
 
-      // Record to content memory
+      // Record to content memory ONLY upon confirmed publication
       await this.memoryStore.recordPublication(item);
       console.log(
-        `Successfully published and recorded to memory! (Message ID: ${result.messageId || 'simulated'})`
+        `Successfully published and recorded to memory! (Message ID: ${result.messageId})`
       );
+    } else if (options?.dryRun || result.dryRun) {
+      console.log('[DRY-RUN] Simulation complete. Item not recorded to publication memory.');
+      // Restore item back to queue so real publication run can send it
+      item.status = 'queued';
+      await this.queueStore.enqueue(item);
     } else {
       item.status = 'failed';
       item.failureReason = result.error;

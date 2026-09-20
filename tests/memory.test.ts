@@ -23,7 +23,7 @@ describe('Content Memory Store', () => {
   it('should initialize and load default memory', async () => {
     const memory = await memoryStore.loadMemory();
     assert.ok(Array.isArray(memory));
-    assert.ok(memory.length > 0);
+    assert.equal(memory.length, 0, 'New memory store should initialize clean without contamination');
   });
 
   it('should record new published posts into memory', async () => {

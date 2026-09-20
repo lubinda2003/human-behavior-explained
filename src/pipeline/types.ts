@@ -55,6 +55,7 @@ export interface ResearchNotes {
   caveatsAndLimitations: string[];
   uncertaintyLevel: 'low' | 'moderate' | 'high';
   everydayManifestation: string;
+  groundingUrls?: string[];
 }
 
 export interface PostCTA {
@@ -71,6 +72,7 @@ export interface PostDraft {
   sourcesCited: string[];
   caveatNote: string;
   cta: PostCTA;
+  sourceUrls?: string[];
 }
 
 export interface ConceptDiagramData {
@@ -180,6 +182,7 @@ export interface ContentMemoryItem {
   coreConcept: string;
   publicationDate: string;
   sources: string[];
+  sourceUrls?: string[];
   visualUsed: boolean;
   visualTemplate?: string;
   ctaType: CTAType;
