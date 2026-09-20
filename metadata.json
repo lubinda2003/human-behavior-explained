@@ -1,0 +1,6 @@
+{
+  "name": "Telegram Psychology Channel Content Automation",
+  "description": "Automated content generation, editorial review, visual generation, and Telegram publishing system for an evidence-based psychology and human behavior channel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
