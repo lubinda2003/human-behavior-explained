@@ -1,47 +1,48 @@
-name: Telegram Psychology Content Automation
+name: Telegram Interactive Dilemmas Content Pipeline
 
 on:
-  schedule:
-    # 2 posts per day: 09:00 UTC and 17:00 UTC
-    # Adjust cron schedule as needed (e.g. '0 8,16 * * *' for 8 AM / 4 PM UTC)
-    - cron: '0 9,17 * * *'
-
   workflow_dispatch:
     inputs:
       action:
         description: 'Pipeline Action'
         required: true
-        default: 'publish_next'
-        type: choice
+        default: 'dry_run'
         options:
-          - publish_next
-          - generate_posts
-          - generate_and_publish
           - dry_run
+          - generate_posts
+          - publish_next
+          - generate_and_publish
           - test_only
+        type: choice
       count:
         description: 'Number of posts to generate (for generate_posts)'
         required: false
         default: '2'
         type: string
-      force_pillar:
-        description: 'Optional Pillar override'
+      category:
+        description: 'Optional Dilemma Category'
         required: false
         default: ''
         type: choice
         options:
           - ''
-          - 'Everyday Psychology'
-          - 'Strange Human Behavior'
-          - 'Brain, Memory & Perception'
-          - 'Psychology Thought Experiments'
+          - 'money/lifestyle'
+          - 'moral'
+          - 'social/relationship'
+          - 'strategy'
+          - 'survival'
+          - 'funny/chaotic'
+          - 'technology/future'
+          - 'adventure/travel'
+          - 'fantasy'
+          - 'bizarre hypothetical situations'
 
 permissions:
   contents: write
 
 jobs:
   run-pipeline:
-    name: Content Pipeline Runner
+    name: Interactive Dilemmas Pipeline Runner
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -71,36 +72,35 @@ jobs:
         run: |
           ACTION="${{ github.event.inputs.action }}"
           
-          # Default to publish_next when triggered via cron schedule
-          if [ "${{ github.event_name }}" = "schedule" ] || [ -z "$ACTION" ]; then
-            ACTION="publish_next"
+          if [ -z "$ACTION" ]; then
+            ACTION="dry_run"
           fi
           
           echo "Executing pipeline action: $ACTION"
           
           case "$ACTION" in
-            "publish_next")
-              npx tsx src/pipeline/cli.ts publish
+            "dry_run")
+              npx tsx src/pipeline/cli.ts generate-and-publish --dry-run
               ;;
             "generate_posts")
               COUNT="${{ github.event.inputs.count }}"
-              PILLAR="${{ github.event.inputs.force_pillar }}"
+              CATEGORY="${{ github.event.inputs.category }}"
               ARGS="--count ${COUNT:-2}"
-              if [ -n "$PILLAR" ]; then
-                ARGS="$ARGS --pillar \"$PILLAR\""
+              if [ -n "$CATEGORY" ]; then
+                ARGS="$ARGS --category \"$CATEGORY\""
               fi
               eval "npx tsx src/pipeline/cli.ts generate $ARGS"
               ;;
+            "publish_next")
+              npx tsx src/pipeline/cli.ts publish
+              ;;
             "generate_and_publish")
-              PILLAR="${{ github.event.inputs.force_pillar }}"
+              CATEGORY="${{ github.event.inputs.category }}"
               ARGS=""
-              if [ -n "$PILLAR" ]; then
-                ARGS="--pillar \"$PILLAR\""
+              if [ -n "$CATEGORY" ]; then
+                ARGS="--category \"$CATEGORY\""
               fi
               eval "npx tsx src/pipeline/cli.ts generate-and-publish $ARGS"
-              ;;
-            "dry_run")
-              npx tsx src/pipeline/cli.ts generate-and-publish --dry-run
               ;;
             "test_only")
               echo "Tests completed successfully."
@@ -125,3 +125,4 @@ jobs:
           else
             echo "No changes in content queue or memory to commit."
           fi
+

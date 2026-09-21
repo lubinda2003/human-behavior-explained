@@ -19,7 +19,8 @@
     "content:visuals": "tsx src/pipeline/cli.ts test-visuals",
     "content:mystery-preview": "tsx src/pipeline/mystery/preview.ts",
     "mystery:simulate": "tsx src/pipeline/mystery/simulation.ts",
-    "mystery:live-test": "tsx src/pipeline/mystery/liveTest.ts"
+    "mystery:live-test": "tsx src/pipeline/mystery/liveTest.ts",
+    "dilemma:stress-test": "tsx src/pipeline/dilemmas/stressTest.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

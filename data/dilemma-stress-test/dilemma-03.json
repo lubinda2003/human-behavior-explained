@@ -1,0 +1,88 @@
+{
+  "id": "dilemma-03",
+  "index": 3,
+  "category": "social/relationship",
+  "title": "The Ruinous Secret at the Altar",
+  "hook": "Your best friend is walking down the aisle in one hour—and you just found proof their partner is a serial con artist.",
+  "scenario": "Sixty minutes before your lifelong best friend marries their partner, you obtain verified bank records proving the partner has been draining offshore accounts and orchestrating a financial fraud. Revealing this now will cause massive public humiliation and cancel the wedding, and your friend will blame you for ruining their biggest day.",
+  "choices": [
+    {
+      "id": "choice_a",
+      "label": "Halt the Ceremony Privately",
+      "description": "Pull your friend into a side room with the bank evidence before vows are exchanged.",
+      "tradeOff": "Triggers immense shock, public scene, and your friend may direct their rage at you."
+    },
+    {
+      "id": "choice_b",
+      "label": "Wait Until After the Honeymoon",
+      "description": "Let the wedding proceed and present the evidence carefully in private next week.",
+      "tradeOff": "Your friend enters a legally binding marriage and joint liability with an active fraudster."
+    }
+  ],
+  "pollQuestion": "Do you stop the wedding in 60 minutes or wait until after?",
+  "payoff": {
+    "reveal": "Halting the wedding creates acute agony for 48 hours, but prevents years of divorce litigation and bankruptcy.",
+    "surprisingOutcome": "Relationship counselors note that friends who intervene immediately are initially hated, but thanked years later.",
+    "communityTension": "Short-term catastrophic conflict vs. long-term compounding disaster.",
+    "strategicAnalysis": "Intervention costs are front-loaded, while inaction costs compound indefinitely."
+  },
+  "visualSpec": {
+    "template": "thought_experiment",
+    "title": "The Ruinous Secret at the Altar",
+    "subtitle": "Your best friend is walking down the aisle in one hour—and you just found proof their partner is a serial con artist.",
+    "tag": "SOCIAL/RELATIONSHIP",
+    "sourceCitation": "Interactive Dilemmas · Impossible Choices",
+    "payload": {
+      "template": "thought_experiment",
+      "data": {
+        "scenarioName": "The Ruinous Secret at the Altar",
+        "dilemma": "Sixty minutes before your lifelong best friend marries their partner, you obtain verified bank records proving the partner has been draining offshore accounts and orchestrating a financial fraud. Revealing this now will cause massive public humiliation and cancel the wedding, and your friend will blame you for ruining their biggest day.",
+        "branchA": {
+          "label": "Halt the Ceremony Privately",
+          "explanation": "Pull your friend into a side room with the bank evidence before vows are exchanged. (Trade-off: Triggers immense shock, public scene, and your friend may direct their rage at you.)"
+        },
+        "branchB": {
+          "label": "Wait Until After the Honeymoon",
+          "explanation": "Let the wedding proceed and present the evidence carefully in private next week. (Trade-off: Your friend enters a legally binding marriage and joint liability with an active fraudster.)"
+        },
+        "psychologicalInsight": "Relationship counselors note that friends who intervene immediately are initially hated, but thanked years later."
+      }
+    }
+  },
+  "formattedTelegramText": "<b>🔥 The Ruinous Secret at the Altar</b>\n<i>#InteractiveDilemmas #socialrelationship</i>\n\n<b>Your best friend is walking down the aisle in one hour—and you just found proof their partner is a serial con artist.</b>\n\nSixty minutes before your lifelong best friend marries their partner, you obtain verified bank records proving the partner has been draining offshore accounts and orchestrating a financial fraud. Revealing this now will cause massive public humiliation and cancel the wedding, and your friend will blame you for ruining their biggest day.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Halt the Ceremony Privately</b>: Pull your friend into a side room with the bank evidence before vows are exchanged.\n   ⚠️ <i>Cost: Triggers immense shock, public scene, and your friend may direct their rage at you.</i>\n\n🅱️ <b>Wait Until After the Honeymoon</b>: Let the wedding proceed and present the evidence carefully in private next week.\n   ⚠️ <i>Cost: Your friend enters a legally binding marriage and joint liability with an active fraudster.</i>\n\n📊 <b>POLL:</b> Do you stop the wedding in 60 minutes or wait until after?\n\n<tg-spoiler>\n💡 <b>THE HIDDEN TWIST & OUTCOME:</b>\nHalting the wedding creates acute agony for 48 hours, but prevents years of divorce litigation and bankruptcy.\n\n🎯 <b>Why it splits players:</b> Relationship counselors note that friends who intervene immediately are initially hated, but thanked years later.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and explain your decision!</i>",
+  "draft": {
+    "title": "The Ruinous Secret at the Altar",
+    "pillar": "Psychology Thought Experiments",
+    "hook": "Your best friend is walking down the aisle in one hour—and you just found proof their partner is a serial con artist.",
+    "bodyParagraphs": [
+      "Sixty minutes before your lifelong best friend marries their partner, you obtain verified bank records proving the partner has been draining offshore accounts and orchestrating a financial fraud. Revealing this now will cause massive public humiliation and cancel the wedding, and your friend will blame you for ruining their biggest day.",
+      "Halt the Ceremony Privately: Pull your friend into a side room with the bank evidence before vows are exchanged.. Cost: Triggers immense shock, public scene, and your friend may direct their rage at you.",
+      "Wait Until After the Honeymoon: Let the wedding proceed and present the evidence carefully in private next week.. Cost: Your friend enters a legally binding marriage and joint liability with an active fraudster."
+    ],
+    "coreTakeaway": "Halting the wedding creates acute agony for 48 hours, but prevents years of divorce litigation and bankruptcy.",
+    "caveatNote": "Relationship counselors note that friends who intervene immediately are initially hated, but thanked years later.",
+    "sourcesCited": [
+      "Interactive Dilemmas & Impossible Choices"
+    ],
+    "cta": {
+      "type": "reflection",
+      "text": "Which path would you take when the consequences are irreversible?"
+    }
+  },
+  "visualFile": "dilemma-03.png",
+  "qc": {
+    "contentPassed": true,
+    "visualPassed": true,
+    "errors": [],
+    "warnings": [],
+    "checks": {
+      "choiceCountValid": true,
+      "tradeOffsExplicit": true,
+      "noAcademicJargon": true,
+      "noSerializedStory": true,
+      "noGenericWYR": true,
+      "telegramHtmlValid": true,
+      "visualAssetValid": true
+    }
+  }
+}

@@ -52,7 +52,7 @@ async function main() {
     switch (command) {
       case 'generate': {
         const count = flags.count ? parseInt(flags.count as string, 10) : 1;
-        const pillar = flags.pillar as ContentPillar | undefined;
+        const pillar = (flags.pillar || flags.category) as ContentPillar | undefined;
         const topic = flags.topic as string | undefined;
 
         console.log(`[CLI] Generating ${count} post(s)...`);

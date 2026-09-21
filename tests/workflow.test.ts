@@ -22,11 +22,15 @@ describe('GitHub Actions Workflow Configuration', () => {
     );
   });
 
-  it('should specify 2 posts per day cron schedule', () => {
+  it('should use workflow_dispatch only (no automatic cron scheduling)', () => {
     const content = fs.readFileSync(workflowPath, 'utf-8');
     assert.ok(
-      content.includes("cron: '0 9,17 * * *'"),
-      'Must contain schedule for 2 posts per day (e.g. 0 9,17 * * *)'
+      content.includes('workflow_dispatch:'),
+      'Must contain manual workflow_dispatch trigger'
+    );
+    assert.ok(
+      !content.includes('schedule:') && !content.includes('cron:'),
+      'Must NOT contain automatic cron schedules to prevent unintended publishing'
     );
   });
 

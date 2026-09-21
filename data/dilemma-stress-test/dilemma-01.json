@@ -1,0 +1,88 @@
+{
+  "id": "dilemma-01",
+  "index": 1,
+  "category": "money/lifestyle",
+  "title": "The Golden Vault vs. Daily Sovereignty",
+  "hook": "Would you surrender 100% of your calendar for 5 years in exchange for generational wealth?",
+  "scenario": "A private syndicate offers you an irrevocable contract: receive an immediate $10,000,000 cash deposit, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside contact. The alternative is a guaranteed $75,000 tax-free annual stipend for life with 100% calendar freedom.",
+  "choices": [
+    {
+      "id": "choice_a",
+      "label": "The $10M Vault Lockdown",
+      "description": "Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.",
+      "tradeOff": "Lose 5 prime years of life, relationships, and fresh air with no early exit."
+    },
+    {
+      "id": "choice_b",
+      "label": "The $75K Freedom Stipend",
+      "description": "Accept modest lifelong income with infinite free time and zero boss.",
+      "tradeOff": "Permanently cap financial upside; cannot afford luxury or high-cost city living."
+    }
+  ],
+  "pollQuestion": "Which contract do you sign?",
+  "payoff": {
+    "reveal": "Most people who take the $10M severely underestimate the mental toll of 1,825 days of unbroken isolation, while stipend recipients report higher long-term satisfaction despite tighter budgets.",
+    "surprisingOutcome": "Over 60% of high-earning executives who attempt isolation grinds quit before year 3, forfeiting the payout.",
+    "communityTension": "The eternal clash between guaranteed freedom now vs. unlimited wealth later.",
+    "strategicAnalysis": "Time is the only non-renewable asset, yet compound interest makes upfront capital exponentially powerful."
+  },
+  "visualSpec": {
+    "template": "thought_experiment",
+    "title": "The Golden Vault vs. Daily Sovereignty",
+    "subtitle": "Would you surrender 100% of your calendar for 5 years in exchange for generational wealth?",
+    "tag": "MONEY/LIFESTYLE",
+    "sourceCitation": "Interactive Dilemmas · Impossible Choices",
+    "payload": {
+      "template": "thought_experiment",
+      "data": {
+        "scenarioName": "The Golden Vault vs. Daily Sovereignty",
+        "dilemma": "A private syndicate offers you an irrevocable contract: receive an immediate $10,000,000 cash deposit, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside contact. The alternative is a guaranteed $75,000 tax-free annual stipend for life with 100% calendar freedom.",
+        "branchA": {
+          "label": "The $10M Vault Lockdown",
+          "explanation": "Endure 5 years of total isolation and grueling work to emerge with $10M in the bank. (Trade-off: Lose 5 prime years of life, relationships, and fresh air with no early exit.)"
+        },
+        "branchB": {
+          "label": "The $75K Freedom Stipend",
+          "explanation": "Accept modest lifelong income with infinite free time and zero boss. (Trade-off: Permanently cap financial upside; cannot afford luxury or high-cost city living.)"
+        },
+        "psychologicalInsight": "Over 60% of high-earning executives who attempt isolation grinds quit before year 3, forfeiting the payout."
+      }
+    }
+  },
+  "formattedTelegramText": "<b>🔥 The Golden Vault vs. Daily Sovereignty</b>\n<i>#InteractiveDilemmas #moneylifestyle</i>\n\n<b>Would you surrender 100% of your calendar for 5 years in exchange for generational wealth?</b>\n\nA private syndicate offers you an irrevocable contract: receive an immediate $10,000,000 cash deposit, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside contact. The alternative is a guaranteed $75,000 tax-free annual stipend for life with 100% calendar freedom.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>The $10M Vault Lockdown</b>: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.\n   ⚠️ <i>Cost: Lose 5 prime years of life, relationships, and fresh air with no early exit.</i>\n\n🅱️ <b>The $75K Freedom Stipend</b>: Accept modest lifelong income with infinite free time and zero boss.\n   ⚠️ <i>Cost: Permanently cap financial upside; cannot afford luxury or high-cost city living.</i>\n\n📊 <b>POLL:</b> Which contract do you sign?\n\n<tg-spoiler>\n💡 <b>THE HIDDEN TWIST & OUTCOME:</b>\nMost people who take the $10M severely underestimate the mental toll of 1,825 days of unbroken isolation, while stipend recipients report higher long-term satisfaction despite tighter budgets.\n\n🎯 <b>Why it splits players:</b> Over 60% of high-earning executives who attempt isolation grinds quit before year 3, forfeiting the payout.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and explain your decision!</i>",
+  "draft": {
+    "title": "The Golden Vault vs. Daily Sovereignty",
+    "pillar": "Psychology Thought Experiments",
+    "hook": "Would you surrender 100% of your calendar for 5 years in exchange for generational wealth?",
+    "bodyParagraphs": [
+      "A private syndicate offers you an irrevocable contract: receive an immediate $10,000,000 cash deposit, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside contact. The alternative is a guaranteed $75,000 tax-free annual stipend for life with 100% calendar freedom.",
+      "The $10M Vault Lockdown: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.. Cost: Lose 5 prime years of life, relationships, and fresh air with no early exit.",
+      "The $75K Freedom Stipend: Accept modest lifelong income with infinite free time and zero boss.. Cost: Permanently cap financial upside; cannot afford luxury or high-cost city living."
+    ],
+    "coreTakeaway": "Most people who take the $10M severely underestimate the mental toll of 1,825 days of unbroken isolation, while stipend recipients report higher long-term satisfaction despite tighter budgets.",
+    "caveatNote": "Over 60% of high-earning executives who attempt isolation grinds quit before year 3, forfeiting the payout.",
+    "sourcesCited": [
+      "Interactive Dilemmas & Impossible Choices"
+    ],
+    "cta": {
+      "type": "reflection",
+      "text": "Which path would you take when the consequences are irreversible?"
+    }
+  },
+  "visualFile": "dilemma-01.png",
+  "qc": {
+    "contentPassed": true,
+    "visualPassed": true,
+    "errors": [],
+    "warnings": [],
+    "checks": {
+      "choiceCountValid": true,
+      "tradeOffsExplicit": true,
+      "noAcademicJargon": true,
+      "noSerializedStory": true,
+      "noGenericWYR": true,
+      "telegramHtmlValid": true,
+      "visualAssetValid": true
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "id": "dilemma-06",
+  "index": 6,
+  "category": "funny/chaotic",
+  "title": "The 24-Hour Telepathic Megaphone",
+  "hook": "For the next 24 hours, you either hear every thought about you, or every lie you speak is loudly announced.",
+  "scenario": "A mischievous cosmic entity forces you to pick one chaotic curse for tomorrow. Curse A: you hear an audio broadcast of every unfiltered thought anyone within 20 feet has about you. Curse B: you can only tell 100% brutal truths, and every attempt at polite evasion or white lie is broadcast over a booming loudspeaker.",
+  "choices": [
+    {
+      "id": "choice_a",
+      "label": "Hear Everyone's Secret Thoughts",
+      "description": "Listen to the raw, unedited internal monologue of your friends, boss, and partner.",
+      "tradeOff": "Will likely destroy your self-esteem and permanently alter how you see everyone you know."
+    },
+    {
+      "id": "choice_b",
+      "label": "The Brutal Truth Loudspeaker",
+      "description": "You cannot lie or soften statements for 24 hours without an instant megaphone blast.",
+      "tradeOff": "You will insult colleagues, offend family, and create hilarious social chaos all day."
+    }
+  ],
+  "pollQuestion": "Which chaotic curse would you endure?",
+  "payoff": {
+    "reveal": "Most people choose to hear others' thoughts thinking they will gain an edge, only to discover that 90% of people's passing thoughts are petty, distracted, or bizarre.",
+    "surprisingOutcome": "Social harmony relies on harmless white lies; total transparency creates instantaneous comedy and warfare.",
+    "communityTension": "Internal emotional damage vs. external social catastrophe.",
+    "strategicAnalysis": "Curse B is survivable by staying in bed alone; Curse A follows you anywhere people exist."
+  },
+  "visualSpec": {
+    "template": "thought_experiment",
+    "title": "The 24-Hour Telepathic Megaphone",
+    "subtitle": "For the next 24 hours, you either hear every thought about you, or every lie you speak is loudly announced.",
+    "tag": "FUNNY/CHAOTIC",
+    "sourceCitation": "Interactive Dilemmas · Impossible Choices",
+    "payload": {
+      "template": "thought_experiment",
+      "data": {
+        "scenarioName": "The 24-Hour Telepathic Megaphone",
+        "dilemma": "A mischievous cosmic entity forces you to pick one chaotic curse for tomorrow. Curse A: you hear an audio broadcast of every unfiltered thought anyone within 20 feet has about you. Curse B: you can only tell 100% brutal truths, and every attempt at polite evasion or white lie is broadcast over a booming loudspeaker.",
+        "branchA": {
+          "label": "Hear Everyone's Secret Thoughts",
+          "explanation": "Listen to the raw, unedited internal monologue of your friends, boss, and partner. (Trade-off: Will likely destroy your self-esteem and permanently alter how you see everyone you know.)"
+        },
+        "branchB": {
+          "label": "The Brutal Truth Loudspeaker",
+          "explanation": "You cannot lie or soften statements for 24 hours without an instant megaphone blast. (Trade-off: You will insult colleagues, offend family, and create hilarious social chaos all day.)"
+        },
+        "psychologicalInsight": "Social harmony relies on harmless white lies; total transparency creates instantaneous comedy and warfare."
+      }
+    }
+  },
+  "formattedTelegramText": "<b>🔥 The 24-Hour Telepathic Megaphone</b>\n<i>#InteractiveDilemmas #funnychaotic</i>\n\n<b>For the next 24 hours, you either hear every thought about you, or every lie you speak is loudly announced.</b>\n\nA mischievous cosmic entity forces you to pick one chaotic curse for tomorrow. Curse A: you hear an audio broadcast of every unfiltered thought anyone within 20 feet has about you. Curse B: you can only tell 100% brutal truths, and every attempt at polite evasion or white lie is broadcast over a booming loudspeaker.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Hear Everyone's Secret Thoughts</b>: Listen to the raw, unedited internal monologue of your friends, boss, and partner.\n   ⚠️ <i>Cost: Will likely destroy your self-esteem and permanently alter how you see everyone you know.</i>\n\n🅱️ <b>The Brutal Truth Loudspeaker</b>: You cannot lie or soften statements for 24 hours without an instant megaphone blast.\n   ⚠️ <i>Cost: You will insult colleagues, offend family, and create hilarious social chaos all day.</i>\n\n📊 <b>POLL:</b> Which chaotic curse would you endure?\n\n<tg-spoiler>\n💡 <b>THE HIDDEN TWIST & OUTCOME:</b>\nMost people choose to hear others' thoughts thinking they will gain an edge, only to discover that 90% of people's passing thoughts are petty, distracted, or bizarre.\n\n🎯 <b>Why it splits players:</b> Social harmony relies on harmless white lies; total transparency creates instantaneous comedy and warfare.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and explain your decision!</i>",
+  "draft": {
+    "title": "The 24-Hour Telepathic Megaphone",
+    "pillar": "Psychology Thought Experiments",
+    "hook": "For the next 24 hours, you either hear every thought about you, or every lie you speak is loudly announced.",
+    "bodyParagraphs": [
+      "A mischievous cosmic entity forces you to pick one chaotic curse for tomorrow. Curse A: you hear an audio broadcast of every unfiltered thought anyone within 20 feet has about you. Curse B: you can only tell 100% brutal truths, and every attempt at polite evasion or white lie is broadcast over a booming loudspeaker.",
+      "Hear Everyone's Secret Thoughts: Listen to the raw, unedited internal monologue of your friends, boss, and partner.. Cost: Will likely destroy your self-esteem and permanently alter how you see everyone you know.",
+      "The Brutal Truth Loudspeaker: You cannot lie or soften statements for 24 hours without an instant megaphone blast.. Cost: You will insult colleagues, offend family, and create hilarious social chaos all day."
+    ],
+    "coreTakeaway": "Most people choose to hear others' thoughts thinking they will gain an edge, only to discover that 90% of people's passing thoughts are petty, distracted, or bizarre.",
+    "caveatNote": "Social harmony relies on harmless white lies; total transparency creates instantaneous comedy and warfare.",
+    "sourcesCited": [
+      "Interactive Dilemmas & Impossible Choices"
+    ],
+    "cta": {
+      "type": "reflection",
+      "text": "Which path would you take when the consequences are irreversible?"
+    }
+  },
+  "visualFile": "dilemma-06.png",
+  "qc": {
+    "contentPassed": true,
+    "visualPassed": true,
+    "errors": [],
+    "warnings": [],
+    "checks": {
+      "choiceCountValid": true,
+      "tradeOffsExplicit": true,
+      "noAcademicJargon": true,
+      "noSerializedStory": true,
+      "noGenericWYR": true,
+      "telegramHtmlValid": true,
+      "visualAssetValid": true
+    }
+  }
+}

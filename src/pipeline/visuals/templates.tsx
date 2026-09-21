@@ -33,6 +33,14 @@ const THEME = {
 export function renderHeader(
   spec: VisualSpec
 ): React.ReactElement {
+  const isDilemma =
+    spec.sourceCitation?.includes('Interactive Dilemmas') ||
+    spec.template === 'thought_experiment';
+  const channelTitle = isDilemma
+    ? 'INTERACTIVE DILEMMAS'
+    : 'PSYCHOLOGY & BEHAVIOR';
+  const tagLabel = spec.tag || (isDilemma ? 'YOUR CHOICE' : 'EMPIRICAL INSIGHT');
+
   return (
     <div
       style={{
@@ -62,7 +70,7 @@ export function renderHeader(
             textTransform: 'uppercase',
           }}
         >
-          PSYCHOLOGY & BEHAVIOR
+          {channelTitle}
         </div>
         <div
           style={{
@@ -79,7 +87,7 @@ export function renderHeader(
             textTransform: 'uppercase',
           }}
         >
-          {spec.tag || 'EMPIRICAL INSIGHT'}
+          {tagLabel}
         </div>
       </div>
 
@@ -116,6 +124,16 @@ export function renderHeader(
 export function renderFooter(
   sourceCitation?: string
 ): React.ReactElement {
+  const isDilemma = sourceCitation?.includes('Interactive Dilemmas');
+  const footerRight = isDilemma
+    ? 'INTERACTIVE DILEMMAS & IMPOSSIBLE CHOICES'
+    : 'EVIDENCE-BASED HUMAN BEHAVIOR';
+  const footerLeft = sourceCitation
+    ? sourceCitation.includes('Interactive Dilemmas')
+      ? 'Audience Poll & Impossible Choices'
+      : `Source: ${sourceCitation}`
+    : 'Peer-reviewed evidence';
+
   return (
     <div
       style={{
@@ -135,7 +153,7 @@ export function renderFooter(
           color: THEME.textMuted,
         }}
       >
-        {sourceCitation ? `Source: ${sourceCitation}` : 'Peer-reviewed evidence'}
+        {footerLeft}
       </div>
       <div
         style={{
@@ -145,7 +163,7 @@ export function renderFooter(
           color: THEME.accentCyan,
         }}
       >
-        EVIDENCE-BASED HUMAN BEHAVIOR
+        {footerRight}
       </div>
     </div>
   );
@@ -790,7 +808,7 @@ export function renderThoughtExperiment(
             letterSpacing: '1px',
           }}
         >
-          ▼ BRANCH A (COGNITIVE / IMPERSONAL)
+          ▼ CHOICE A
         </div>
         <div
           style={{
@@ -801,7 +819,7 @@ export function renderThoughtExperiment(
             letterSpacing: '1px',
           }}
         >
-          BRANCH B (EMOTIONAL / DIRECT) ▼
+          CHOICE B ▼
         </div>
       </div>
 
@@ -894,7 +912,7 @@ export function renderThoughtExperiment(
             whiteSpace: 'nowrap',
           }}
         >
-          PSYCHOLOGICAL INSIGHT
+          THE HIDDEN TWIST
         </div>
         <div
           style={{
