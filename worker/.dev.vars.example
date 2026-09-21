@@ -1,0 +1,4 @@
+# Copy to .dev.vars for local `wrangler dev`. Never commit real values.
+GEMINI_API_KEY="your-gemini-key"
+TELEGRAM_BOT_TOKEN="123456789:ABC..."
+TELEGRAM_CHANNEL_ID="@your_channel_or_-100123456789"

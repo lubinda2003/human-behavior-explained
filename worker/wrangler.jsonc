@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "dilemmas-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-21",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+
+  // Tick every 30 minutes. In Stage 2 the tick only initialises storage and logs;
+  // it never publishes. Real scheduling (with time jitter) arrives in a later stage.
+  "triggers": { "crons": ["*/30 * * * *"] },
+
+  // Non-secret settings. Secrets (GEMINI_API_KEY, TELEGRAM_BOT_TOKEN,
+  // TELEGRAM_CHANNEL_ID) are set in the Cloudflare dashboard, never in this file.
+  "vars": {
+    "GEMINI_MODEL": "gemini-2.5-flash",
+    "PUBLISHING_ENABLED": "false",
+    "DISCUSSION_GROUP_LINKED": "false"
+  },
+
+  // Bindings without IDs: Wrangler auto-provisions them on first deploy.
+  "d1_databases": [{ "binding": "DB" }],
+  "kv_namespaces": [{ "binding": "KV" }],
+  "r2_buckets": [{ "binding": "ARCHIVE" }]
+}
