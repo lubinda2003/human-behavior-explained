@@ -1,9 +1,9 @@
 {
   "title": "Interactive Dilemmas & Impossible Choices - Preview Package",
   "version": "2.0.0",
-  "generatedAt": "2026-09-21T04:26:21.939Z",
+  "generatedAt": "2026-09-21T05:08:08.024Z",
   "channelName": "Interactive Dilemmas & Impossible Choices",
-  "outputDirectory": "/app/applet/data/dilemma-stress-test",
+  "outputDirectory": "/home/runner/work/human-behavior-explained/human-behavior-explained/data/dilemma-stress-test",
   "totalDilemmas": 10,
   "categoriesCovered": [
     "money/lifestyle",
@@ -154,6 +154,6 @@
     "totalVisualsRendered": 10,
     "totalWordCount": 1711,
     "avgWordCount": 171,
-    "executionTimeMs": 3688
+    "executionTimeMs": 3821
   }
 }

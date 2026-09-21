@@ -1,5 +1,20 @@
 [
   {
+    "id": "post-1789967293037-se605",
+    "topic": "The Misinformation Effect",
+    "title": "The Misinformation Effect",
+    "pillar": "Brain, Memory & Perception",
+    "format": "experiment_story",
+    "coreConcept": "Human memory is malleable and reconstructive; post-event misinformation seamlessly incorporates into original memory traces during reconsolidation.",
+    "publicationDate": "2026-09-21T05:08:13.512Z",
+    "sources": [
+      "Loftus & Palmer (1974)"
+    ],
+    "visualUsed": false,
+    "visualTemplate": "comparison",
+    "ctaType": "reflection"
+  },
+  {
     "id": "post-1789931543052-bl252",
     "topic": "The Illusion of Transparency",
     "title": "Why People Cannot Read Your Mind as Easily as You Think",
