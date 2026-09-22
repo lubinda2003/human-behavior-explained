@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "dilemmas-worker",
+  "main": "worker/src/index.ts",
+  "compatibility_date": "2026-09-21",
+  "workers_dev": true,
+  "observability": { "enabled": true },
+
+  // Scheduled cron triggers: runs every 30 minutes.
+  "triggers": { "crons": ["*/30 * * * *"] },
+
+  // Non-secret environment variables.
+  // Secrets (GEMINI_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET,
+  // TELEGRAM_CHANNEL_ID) are managed securely via Cloudflare dashboard or wrangler secret.
+  "vars": {
+    "GEMINI_MODEL": "gemini-2.5-flash",
+    "PUBLISHING_ENABLED": "false",
+    "DISCUSSION_GROUP_LINKED": "false"
+  },
+
+  // Cloudflare resource bindings
+  "d1_databases": [{ "binding": "DB" }],
+  "kv_namespaces": [{ "binding": "KV" }],
+  "r2_buckets": [{ "binding": "ARCHIVE" }]
+}
