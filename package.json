@@ -2,6 +2,7 @@
   "name": "interactive-dilemmas",
   "private": true,
   "version": "1.0.0",
+  "packageManager": "npm@10.9.8",
   "type": "module",
   "description": "Interactive Dilemmas & Impossible Choices content generation and evaluation system",
   "scripts": {
