@@ -1,13 +1,29 @@
 /**
- * Telegram Post Formatter for Interactive Dilemmas & Impossible Choices (Phase 6)
- * Generates entertainment-first, mobile-optimized HTML posts with clean choice breakdowns,
- * poll prompts, and spoiler-tagged payoff reveals.
+ * Telegram Post Formatter for Pick Your Fate & Interactive Dilemmas
+ * Enforces the upgraded narrative structure:
+ * HOOK → SETUP → PRESSURE/TWIST → CHOICE → CONSEQUENCE/REVEAL
+ * Adapts formatting across QUICK, STANDARD, and DEEP depth levels and 12 distinct content formats.
  */
 
-import { InteractiveDilemma, DilemmaChoice } from './types.js';
+import { InteractiveDilemma, ContentFormat } from './types.js';
 
 export class DilemmaTelegramFormatter {
   private static readonly CHOICE_EMOJIS = ['🅰️', '🅱️', '🅲', '🅳'];
+
+  private static readonly FORMAT_ICONS: Record<ContentFormat, string> = {
+    impossible_dilemma: '⚡',
+    survival_scenario: '🚨',
+    mini_mystery: '🕵️',
+    strategy_challenge: '⏳',
+    prediction: '🔮',
+    versus_battle: '⚔️',
+    chaotic_funny: '🎭',
+    future_tech: '🤖',
+    brain_logic: '🧩',
+    hot_take: '🔥',
+    interactive_minigame: '🎮',
+    result_reveal: '🏆',
+  };
 
   /**
    * Escapes HTML special characters for Telegram HTML mode.
@@ -31,55 +47,120 @@ export class DilemmaTelegramFormatter {
    */
   public static formatPost(dilemma: Omit<InteractiveDilemma, 'formattedTelegramText'>): string {
     const lines: string[] = [];
+    const depth = dilemma.depth || 'standard';
+    const format = dilemma.format || 'impossible_dilemma';
+    const icon = this.FORMAT_ICONS[format] || '⚡';
 
     // 1. Header & Channel Hashtags
     const safeTitle = this.escapeHtml(dilemma.title);
     const catHashtag = this.categoryToHashtag(dilemma.category);
-    lines.push(`<b>🔥 ${safeTitle}</b>`);
-    lines.push(`<i>#InteractiveDilemmas ${catHashtag}</i>`);
+    const formatHashtag = '#' + format.split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join('');
+
+    lines.push(`<b>${icon} ${safeTitle}</b>`);
+    lines.push(`<i>#PickYourFate #InteractiveDilemmas ${catHashtag} ${formatHashtag}</i>`);
     lines.push('');
 
-    // 2. Hook
+    // 2. Hook (Stops scrolling and puts user in situation)
     const safeHook = this.escapeHtml(dilemma.hook);
     lines.push(`<b>${safeHook}</b>`);
     lines.push('');
 
-    // 3. Scenario Description
-    const safeScenario = this.escapeHtml(dilemma.scenario);
+    // 3. Scenario / Setup (Concrete experience)
+    const scenarioText = dilemma.setup || dilemma.scenario;
+    const safeScenario = this.escapeHtml(scenarioText);
     lines.push(safeScenario);
     lines.push('');
 
-    // 4. Choices Section
-    lines.push('<b>⚖️ YOUR CHOICES:</b>');
-    dilemma.choices.forEach((choice, idx) => {
-      const emoji = this.CHOICE_EMOJIS[idx] || `[${idx + 1}]`;
-      const safeLabel = this.escapeHtml(choice.label);
-      const safeDesc = this.escapeHtml(choice.description);
-      const safeTradeOff = this.escapeHtml(choice.tradeOff);
-
-      lines.push(`${emoji} <b>${safeLabel}</b>: ${safeDesc}`);
-      lines.push(`   ⚠️ <i>Cost: ${safeTradeOff}</i>`);
+    // 4. Pressure / Complication / Twist (if present)
+    if (dilemma.pressure && dilemma.pressure.trim().length > 0) {
+      const safePressure = this.escapeHtml(dilemma.pressure);
+      lines.push(`⚡ <b>THE PRESSURE:</b> ${safePressure}`);
       lines.push('');
-    });
+    }
 
-    // 5. Poll Question Prompt
-    const safePoll = this.escapeHtml(dilemma.pollQuestion || 'What is your choice?');
-    lines.push(`📊 <b>POLL:</b> ${safePoll}`);
-    lines.push('');
+    if (dilemma.twist && dilemma.twist.trim().length > 0) {
+      const safeTwist = this.escapeHtml(dilemma.twist);
+      lines.push(`⚠️ <b>THE COMPLICATION:</b> ${safeTwist}`);
+      lines.push('');
+    }
 
-    // 6. Payoff / Twist (Wrapped in spoiler tag for audience reveal)
-    const safeReveal = this.escapeHtml(dilemma.payoff.reveal || '');
-    const safeOutcome = this.escapeHtml(dilemma.payoff.surprisingOutcome || '');
-    lines.push('<tg-spoiler>');
-    lines.push('💡 <b>THE HIDDEN TWIST & OUTCOME:</b>');
-    lines.push(safeReveal);
-    lines.push('');
-    lines.push(`🎯 <b>Why it splits players:</b> ${safeOutcome}`);
-    lines.push('</tg-spoiler>');
-    lines.push('');
+    // 5. Choices Section (Varied by depth level)
+    if (dilemma.choices && dilemma.choices.length > 0) {
+      if (depth === 'quick') {
+        lines.push('<b>⚖️ YOUR CHOICE:</b>');
+        dilemma.choices.forEach((choice, idx) => {
+          const emoji = this.CHOICE_EMOJIS[idx] || `[${idx + 1}]`;
+          const safeLabel = this.escapeHtml(choice.label);
+          const safeTradeOff = this.escapeHtml(choice.tradeOff);
+          lines.push(`${emoji} <b>${safeLabel}</b> <i>(${safeTradeOff})</i>`);
+        });
+        lines.push('');
+      } else {
+        lines.push('<b>⚖️ YOUR CHOICES:</b>');
+        dilemma.choices.forEach((choice, idx) => {
+          const emoji = this.CHOICE_EMOJIS[idx] || `[${idx + 1}]`;
+          const safeLabel = this.escapeHtml(choice.label);
+          const safeDesc = this.escapeHtml(choice.description);
+          const safeTradeOff = this.escapeHtml(choice.tradeOff);
 
-    // 7. Interactive Call to Action
-    lines.push('👇 <i>Vote in the poll and explain your decision!</i>');
+          lines.push(`${emoji} <b>${safeLabel}</b>: ${safeDesc}`);
+          lines.push(`   ⚠️ <i>Cost: ${safeTradeOff}</i>`);
+          if (choice.consequence) {
+            const safeCons = this.escapeHtml(choice.consequence);
+            lines.push(`   💥 <i>Direct Consequence: ${safeCons}</i>`);
+          }
+          lines.push('');
+        });
+      }
+    }
+
+    // 6. Interaction Mechanism (Poll, Prediction, or Open Discussion)
+    if (dilemma.pollQuestion && dilemma.pollQuestion.trim().length > 0) {
+      const safePoll = this.escapeHtml(dilemma.pollQuestion);
+      lines.push(`📊 <b>POLL:</b> ${safePoll}`);
+      lines.push('');
+    } else if (dilemma.discussionPrompt && dilemma.discussionPrompt.trim().length > 0) {
+      const safePrompt = this.escapeHtml(dilemma.discussionPrompt);
+      lines.push(`💬 <b>INTERACTION:</b> ${safePrompt}`);
+      lines.push('');
+    }
+
+    // 7. Payoff / Consequence / Reveal (Spoiler-tagged for interactive reveal)
+    const revealText = dilemma.consequence || dilemma.payoff?.reveal;
+    if (revealText && revealText.trim().length > 0) {
+      const safeReveal = this.escapeHtml(revealText);
+      const safeOutcome = dilemma.payoff?.surprisingOutcome
+        ? this.escapeHtml(dilemma.payoff.surprisingOutcome)
+        : '';
+      const safeStrategic = dilemma.payoff?.strategicAnalysis
+        ? this.escapeHtml(dilemma.payoff.strategicAnalysis)
+        : '';
+
+      lines.push('<tg-spoiler>');
+      lines.push('💡 <b>THE REVEAL & HIDDEN ANGLE:</b>');
+      lines.push(safeReveal);
+      if (safeOutcome) {
+        lines.push('');
+        lines.push(`🎯 <b>Why it splits players:</b> ${safeOutcome}`);
+      }
+      if (safeStrategic) {
+        lines.push('');
+        lines.push(`🧠 <b>Tactical Reality:</b> ${safeStrategic}`);
+      }
+      lines.push('</tg-spoiler>');
+      lines.push('');
+    }
+
+    // 8. Interactive Call to Action
+    if (format === 'prediction') {
+      lines.push('👇 <i>Lock in your prediction below and see if your instincts hold up!</i>');
+    } else if (format === 'versus_battle') {
+      lines.push('👇 <i>Vote for the victor and explain who survives the fallout!</i>');
+    } else if (format === 'mini_mystery' || format === 'brain_logic') {
+      lines.push('👇 <i>What did everyone else overlook? Drop your solution below!</i>');
+    } else {
+      lines.push('👇 <i>Vote in the poll and defend your choice in the comments!</i>');
+    }
 
     return lines.join('\n');
   }

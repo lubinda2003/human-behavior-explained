@@ -1,20 +1,30 @@
 /**
- * Dynamic Interactive Dilemma Generator (Phase 6)
- * Generates entertainment-first dilemmas using Gemini 2.5 Flash, with memory duplicate prevention,
- * strict schema validation, and deterministic offline seed variations for CI/CD and testing.
+ * Dynamic Interactive Dilemma & Pick Your Fate Scenario Generator
+ * Generates substantial, immersive, entertainment-first scenarios where the user is put inside
+ * an active situation with meaningful complications, varied pressures, multi-level depth,
+ * and diverse content formats beyond simple polls.
  */
 
 import { GoogleGenAI } from '@google/genai';
 import { VisualSpec } from '../types.js';
 import { DilemmaTelegramFormatter } from './formatter.js';
+import { DilemmaQualityChecker } from './quality.js';
 import {
+  ALL_CONTENT_FORMATS,
   ALL_DILEMMA_CATEGORIES,
+  ALL_PRESSURE_TYPES,
+  ContentDepth,
+  ContentFormat,
   DilemmaCategory,
   InteractiveDilemma,
+  PressureType,
 } from './types.js';
 
 export interface GenerateDilemmaOptions {
   category?: DilemmaCategory;
+  format?: ContentFormat;
+  depth?: ContentDepth;
+  pressureTypes?: PressureType[];
   topicHint?: string;
   excludedTopics?: string[];
   index?: number;
@@ -48,7 +58,7 @@ export class DilemmaGenerator {
   }
 
   /**
-   * Generates a new standalone Interactive Dilemma.
+   * Generates a new standalone Interactive Scenario / Dilemma.
    */
   public async generateDilemma(options: GenerateDilemmaOptions = {}): Promise<InteractiveDilemma> {
     const category: DilemmaCategory =
@@ -71,7 +81,7 @@ export class DilemmaGenerator {
   }
 
   /**
-   * Dynamically calls Gemini API to create an entertainment dilemma.
+   * Dynamically calls Gemini API to create an immersive entertainment scenario.
    */
   private async generateWithGemini(
     category: DilemmaCategory,
@@ -80,43 +90,88 @@ export class DilemmaGenerator {
     options: GenerateDilemmaOptions
   ): Promise<InteractiveDilemma> {
     const client = this.getClient();
+    const depth = options.depth || 'standard';
+    const format = options.format || 'impossible_dilemma';
 
     const excludedClause = options.excludedTopics?.length
       ? `Do NOT reuse or repeat any of these recent dilemma topics:\n${options.excludedTopics.map((t) => `- ${t}`).join('\n')}`
       : '';
 
-    const systemPrompt = `You are the lead content creator and game master for a high-engagement Telegram channel: "Interactive Dilemmas & Impossible Choices".
+    const systemPrompt = `You are the lead game master and scenario designer for "Pick Your Fate", a high-engagement interactive Telegram channel.
 
-This is an ENTERTAINMENT channel where subscribers make high-stakes choices.
-Every post must be 100% STANDALONE. A new subscriber must not need any previous posts.
+CORE PHILOSOPHY:
+Do NOT simply ask users an interesting question. PUT THE USER INSIDE AN INTERESTING SITUATION and make them decide what happens.
+First design an interesting EXPERIENCE, then determine the best interaction format.
+Start with: "What situation would make someone stop scrolling and genuinely want to decide what happens?"
 
-CRITICAL RULES:
-1. NO academic psychology theories, research citations, or cognitive mechanism jargon.
-2. NO serialized stories or references to previous/future posts.
-3. NO generic trivial "Would You Rather" questions (e.g. pizza vs burger).
-4. Exactly 2 to 4 choices with genuine high-stakes trade-offs. No choice should be an obvious no-brainer.
-5. Provide a surprising, entertaining payoff/twist or strategic resolution.
+NARRATIVE STRUCTURE:
+HOOK → SETUP → PRESSURE/TWIST → CHOICE → CONSEQUENCE/REVEAL
+Substantial dilemmas should feel like a miniature interactive experience.
+
+CONTENT DEPTH:
+- "quick": 2–4 lines, fast punchy choice, suitable for rapid interaction.
+- "standard": short hook, concrete setup, meaningful complication or trade-off, clear choice, optional consequence/reveal.
+- "deep": strong opening hook, immersive scenario, important details, escalating pressure or twist, difficult trade-offs, clear choices, consequence/reveal.
+
+TYPES OF PRESSURE:
+Incorporate concrete pressure such as: time pressure, limited resources, hidden information, betrayal, risk vs reward, survival, money, relationships, reputation, power, technology, unexpected consequences, conflicting goals, strategic decisions, social pressure, information asymmetry, impossible trade-offs.
+
+CONTENT FORMATS:
+Support diverse formats beyond simple polls:
+- impossible_dilemma
+- survival_scenario
+- mini_mystery
+- strategy_challenge
+- prediction
+- versus_battle
+- chaotic_funny
+- future_tech
+- brain_logic
+- hot_take
+- interactive_minigame
+- result_reveal
+
+QUALITY MANDATES:
+1. Give the user a reason to care immediately.
+2. Create genuine tension, curiosity, or uncertainty.
+3. Present meaningful trade-offs (NO choices where one option is an obvious no-brainer).
+4. AVOID generic abstract philosophical questions ("Is free will real?").
+5. AVOID repetitive "you get X but lose Y" formulas without concrete narrative setup.
+6. AVOID academic psychology jargon, research citations, or cognitive mechanism terms.
+7. AVOID making every scenario about morality.
+8. Use concrete situations rather than abstract questions.
+9. Make the user feel like they are actually in the room/situation.
+10. Must be 100% STANDALONE.
 
 Output STRICT JSON only matching this exact structure:
 {
   "title": "Punchy Catchy Title (Max 60 chars)",
-  "hook": "Compelling single-sentence question or dilemma hook",
-  "scenario": "Engaging 2-3 sentence high-stakes dilemma setup",
+  "hook": "Compelling single-sentence situation hook putting the user in the moment",
+  "setup": "Concrete, immersive scenario setup placing user in the situation",
+  "pressure": "Specific complication, ticking clock, resource limit, or conflict",
+  "pressureTypes": ["time_pressure", "limited_resources"],
+  "twist": "Hidden information, complication, or unexpected factor",
+  "depth": "${depth}",
+  "format": "${format}",
   "choices": [
     {
       "id": "choice_a",
       "label": "Short Action Name",
       "description": "What happens if chosen",
-      "tradeOff": "Explicit cost, risk, or sacrifice"
+      "tradeOff": "Explicit cost, risk, or sacrifice",
+      "consequence": "Immediate outcome"
     },
     {
       "id": "choice_b",
       "label": "Short Action Name",
       "description": "What happens if chosen",
-      "tradeOff": "Explicit cost, risk, or sacrifice"
+      "tradeOff": "Explicit cost, risk, or sacrifice",
+      "consequence": "Immediate outcome"
     }
   ],
   "pollQuestion": "Direct question for the Telegram poll",
+  "discussionPrompt": "Question for comments/discussion",
+  "consequence": "Direct consequence or outcome teaser",
   "payoff": {
     "reveal": "Entertaining reveal, hidden twist, or tactical resolution",
     "surprisingOutcome": "The unexpected trap or surprising outcome",
@@ -125,7 +180,9 @@ Output STRICT JSON only matching this exact structure:
   }
 }`;
 
-    const userPrompt = `Generate a brand-new, ultra-engaging Interactive Dilemma for the category: "${category}".
+    const userPrompt = `Generate a brand-new, ultra-engaging Pick Your Fate scenario for the category: "${category}".
+Format: "${format}"
+Depth level: "${depth}"
 ${options.topicHint ? `Specific angle/theme: ${options.topicHint}` : ''}
 ${excludedClause}`;
 
@@ -143,79 +200,106 @@ ${excludedClause}`;
     const rawText = response.text || '{}';
     const parsed = JSON.parse(rawText);
 
-    return this.buildDilemmaObject(parsed, category, id, index);
+    return this.buildDilemmaObject(parsed, category, id, index, options);
   }
 
   /**
-   * Generates dynamic, high-quality entertainment dilemmas across all 10 categories
-   * without requiring live network/API calls.
+   * Generates dynamic, high-quality entertainment dilemmas across all categories,
+   * formats, and depth levels without requiring live network/API calls.
    */
   public generateProceduralDilemma(
     category: DilemmaCategory,
     id: string,
     index: number,
-    _options: GenerateDilemmaOptions = {}
+    options: GenerateDilemmaOptions = {}
   ): InteractiveDilemma {
-    const rawData = this.getProceduralDilemmaData(category, index);
-    return this.buildDilemmaObject(rawData, category, id, index);
+    const rawData = this.getProceduralDilemmaData(category, index, options);
+    return this.buildDilemmaObject(rawData, category, id, index, options);
   }
 
   private buildDilemmaObject(
     data: any,
     category: DilemmaCategory,
     id: string,
-    index: number
+    index: number,
+    options: GenerateDilemmaOptions = {}
   ): InteractiveDilemma {
     const choices = data.choices || [];
     const branchA = choices[0] || { label: 'Option A', description: '', tradeOff: '' };
     const branchB = choices[1] || { label: 'Option B', description: '', tradeOff: '' };
 
+    const depth: ContentDepth = data.depth || options.depth || 'standard';
+    const format: ContentFormat = data.format || options.format || 'impossible_dilemma';
+    const setupText = data.setup || data.scenario || '';
+    const pressure = data.pressure || '';
+    const pressureTypes: PressureType[] = data.pressureTypes || options.pressureTypes || [];
+    const twist = data.twist || '';
+    const consequence = data.consequence || data.payoff?.reveal || '';
+
     const visualSpec: VisualSpec = {
       template: 'thought_experiment',
       title: data.title,
       subtitle: data.hook,
-      tag: category.toUpperCase(),
-      sourceCitation: 'Interactive Dilemmas · Impossible Choices',
+      tag: (data.format || category).toUpperCase().replace(/_/g, ' '),
+      sourceCitation: 'Pick Your Fate · Interactive Dilemmas',
       payload: {
         template: 'thought_experiment',
         data: {
           scenarioName: data.title,
-          dilemma: data.scenario,
+          dilemma: setupText,
           branchA: {
             label: branchA.label,
-            explanation: `${branchA.description} (Trade-off: ${branchA.tradeOff})`,
+            explanation: `${branchA.description} (Cost: ${branchA.tradeOff})`,
           },
           branchB: {
             label: branchB.label,
-            explanation: `${branchB.description} (Trade-off: ${branchB.tradeOff})`,
+            explanation: `${branchB.description} (Cost: ${branchB.tradeOff})`,
           },
-          psychologicalInsight: `${data.payoff?.surprisingOutcome || data.payoff?.reveal}`,
+          psychologicalInsight: `${data.payoff?.surprisingOutcome || data.payoff?.reveal || ''}`,
         },
       },
     };
 
-    const formattedTelegramText = DilemmaTelegramFormatter.formatPost({
+    const dilemmaForFormatting = {
       id,
       index,
       category,
       title: data.title,
       hook: data.hook,
-      scenario: data.scenario,
+      setup: setupText,
+      scenario: setupText,
+      pressure,
+      pressureTypes,
+      twist,
+      depth,
+      format,
       choices: data.choices,
       pollQuestion: data.pollQuestion,
+      discussionPrompt: data.discussionPrompt,
+      consequence,
       payoff: data.payoff,
       visualSpec,
-    });
+    };
 
-    return {
+    const formattedTelegramText = DilemmaTelegramFormatter.formatPost(dilemmaForFormatting);
+
+    const dilemma: InteractiveDilemma = {
       id,
       index,
       category,
       title: data.title,
       hook: data.hook,
-      scenario: data.scenario,
+      setup: setupText,
+      scenario: setupText,
+      pressure,
+      pressureTypes,
+      twist,
+      depth,
+      format,
       choices: data.choices,
       pollQuestion: data.pollQuestion,
+      discussionPrompt: data.discussionPrompt,
+      consequence,
       payoff: data.payoff,
       visualSpec,
       formattedTelegramText,
@@ -224,312 +308,401 @@ ${excludedClause}`;
         pillar: 'Psychology Thought Experiments',
         hook: data.hook,
         bodyParagraphs: [
-          data.scenario,
+          setupText,
+          ...(pressure ? [`Complication: ${pressure}`] : []),
           ...choices.map((c: any) => `${c.label}: ${c.description}. Cost: ${c.tradeOff}`),
         ],
         coreTakeaway: data.payoff.reveal,
         caveatNote: data.payoff.surprisingOutcome,
-        sourcesCited: ['Interactive Dilemmas & Impossible Choices'],
+        sourcesCited: ['Pick Your Fate · Interactive Scenarios'],
         cta: {
           type: 'reflection',
           text: 'Which path would you take when the consequences are irreversible?',
         },
       },
     };
+
+    dilemma.qc = DilemmaQualityChecker.validateDilemmaContent(dilemma);
+    return dilemma;
   }
 
   /**
-   * Procedural seeds for 10 diverse categories.
+   * Procedural catalog for 10 diverse categories, spanning multiple depths,
+   * pressures, and formats.
    */
-  private getProceduralDilemmaData(category: DilemmaCategory, index: number): any {
+  private getProceduralDilemmaData(
+    category: DilemmaCategory,
+    index: number,
+    options: GenerateDilemmaOptions = {}
+  ): any {
     const catalog: Record<DilemmaCategory, any[]> = {
       'money/lifestyle': [
         {
           title: 'The Golden Vault vs. Daily Sovereignty',
-          hook: 'Would you surrender 100% of your calendar for 5 years in exchange for generational wealth?',
-          scenario:
-            'A private syndicate offers you an irrevocable contract: receive an immediate $10,000,000 cash deposit, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside contact. The alternative is a guaranteed $75,000 tax-free annual stipend for life with 100% calendar freedom.',
+          hook: 'An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.',
+          setup:
+            'A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.',
+          pressure: 'The syndicate gives you exactly 3 minutes to decide before the offer expires forever.',
+          pressureTypes: ['time_pressure', 'limited_resources', 'money'],
+          twist: 'The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.',
+          depth: 'standard',
+          format: 'impossible_dilemma',
           choices: [
             {
               id: 'choice_a',
               label: 'The $10M Vault Lockdown',
               description: 'Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.',
-              tradeOff: 'Lose 5 prime years of life, relationships, and fresh air with no early exit.',
+              tradeOff: 'Lose 5 prime years of life, relationships, and sunlight with zero early exit.',
+              consequence: 'The vault door seals shut behind you today.',
             },
             {
               id: 'choice_b',
               label: 'The $75K Freedom Stipend',
               description: 'Accept modest lifelong income with infinite free time and zero boss.',
-              tradeOff: 'Permanently cap financial upside; cannot afford luxury or high-cost city living.',
+              tradeOff: 'Permanently caps your wealth; you will never own luxury properties or high-end assets.',
+              consequence: 'You walk into the street completely free with your first check in hand.',
             },
           ],
-          pollQuestion: 'Which contract do you sign?',
+          pollQuestion: 'Which contract do you sign before the 3-minute timer hits zero?',
+          consequence: 'Over 60% of high-earning executives who attempt underground grinds suffer acute burnout within 24 months.',
           payoff: {
-            reveal: 'Most people who take the $10M severely underestimate the mental toll of 1,825 days of unbroken isolation, while stipend recipients report higher long-term satisfaction despite tighter budgets.',
-            surprisingOutcome: 'Over 60% of high-earning executives who attempt isolation grinds quit before year 3, forfeiting the payout.',
-            communityTension: 'The eternal clash between guaranteed freedom now vs. unlimited wealth later.',
-            strategicAnalysis: 'Time is the only non-renewable asset, yet compound interest makes upfront capital exponentially powerful.',
+            reveal: 'Most people severely underestimate the mental toll of 1,825 days without sunlight, while stipend recipients report consistently higher baseline peace of mind.',
+            surprisingOutcome: 'Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.',
+            communityTension: 'Guaranteed freedom today vs. unlimited purchasing power tomorrow.',
+            strategicAnalysis: 'Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation.',
           },
         },
       ],
       moral: [
         {
           title: 'The Whistleblower\'s Ultimatum',
-          hook: 'If exposing corporate fraud saves 100 strangers but ruins your family\'s livelihood, do you leak the files?',
-          scenario:
-            'You find undeniable proof that your employer\'s new water filtration unit contains toxic micro-contaminants that will sicken 100 families over the next decade. If you leak the files, the company will immediately collapse, destroying your pension, your spouse\'s healthcare coverage, and your family\'s financial safety net.',
+          hook: 'You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?',
+          setup:
+            'You find undeniable proof that your company\'s new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner\'s ongoing cancer treatment insurance, and your household savings.',
+          pressure: 'The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.',
+          pressureTypes: ['time_pressure', 'betrayal', 'conflicting_goals'],
+          twist: 'Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.',
+          depth: 'deep',
+          format: 'strategy_challenge',
           choices: [
             {
               id: 'choice_a',
-              label: 'Leak the Documents Publicly',
-              description: 'Send encrypted proof to journalists and federal regulators immediately.',
-              tradeOff: 'Destroys your family\'s financial security and invites aggressive legal retaliation.',
+              label: 'Upload to Federal Regulators',
+              description: 'Send encrypted proof to journalists and federal authorities immediately.',
+              tradeOff: 'Destroys your family\'s healthcare coverage and invites brutal corporate litigation.',
+              consequence: 'The whistleblower hotlines ping and federal marshals are dispatched.',
             },
             {
               id: 'choice_b',
-              label: 'Remain Silent & Protect Your Family',
-              description: 'Destroy the local copies, keep your high salary, and protect your household.',
-              tradeOff: '100 innocent families will suffer preventable toxic contamination because of your silence.',
+              label: 'Scrub Local Copies & Protect Household',
+              description: 'Delete your downloads, keep your salary, and ensure your partner\'s medical care.',
+              tradeOff: '100 innocent hospital patients will suffer preventable organ toxicity.',
+              consequence: 'Your drive goes blank and you step into the executive hallway as if nothing happened.',
             },
           ],
-          pollQuestion: 'Do you leak the evidence or protect your household?',
+          pollQuestion: 'Do you hit "Upload" or delete the files and walk out?',
+          consequence: 'Whistleblowers face years of blacklisting, yet staying silent causes devastating lifelong remorse.',
           payoff: {
-            reveal: 'Whistleblowers face an average of 4.5 years of blacklisting and legal battles, but staying silent causes severe lifelong guilt.',
-            surprisingOutcome: 'In anonymous corporate simulations, 72% vote to leak until real financial penalties are introduced.',
-            communityTension: 'Utilitarian duty to the public vs. deontological loyalty to your own children.',
-            strategicAnalysis: 'Personal liability is concentrated, whereas public benefit is diffuse.',
+            reveal: 'Whistleblowers face an average of 4 years of career blacklisting, but silence causes irreversible moral injury.',
+            surprisingOutcome: 'In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced.',
+            communityTension: 'Public duty to strangers vs. biological loyalty to your own children.',
+            strategicAnalysis: 'Personal liability is concentrated; public benefit is diffuse.',
           },
         },
       ],
       'social/relationship': [
         {
           title: 'The Ruinous Secret at the Altar',
-          hook: 'Your best friend is walking down the aisle in one hour—and you just found proof their partner is a serial con artist.',
-          scenario:
-            'Sixty minutes before your lifelong best friend marries their partner, you obtain verified bank records proving the partner has been draining offshore accounts and orchestrating a financial fraud. Revealing this now will cause massive public humiliation and cancel the wedding, and your friend will blame you for ruining their biggest day.',
+          hook: 'Sixty minutes before your best friend walks down the aisle, you discover irrefutable proof their fiancé is an undercover con artist.',
+          setup:
+            'You are in the bridal suite holding certified offshore financial statements proving your best friend\'s fiancé has already mortgaged their future home under an alias and plans to vanish with the family trust within 60 days. Halting the ceremony now in front of 300 guests will cause public hysteria and break your friend\'s heart on their happiest day.',
+          pressure: 'The wedding march begins in exactly 55 minutes, and both families are gathering in the chapel.',
+          pressureTypes: ['social_pressure', 'relationships', 'hidden_information'],
+          twist: 'The fiancé notices you holding the folder and whispers that exposing them will also reveal a family scandal your friend hid for 5 years.',
+          depth: 'standard',
+          format: 'impossible_dilemma',
           choices: [
             {
               id: 'choice_a',
-              label: 'Halt the Ceremony Privately',
-              description: 'Pull your friend into a side room with the bank evidence before vows are exchanged.',
-              tradeOff: 'Triggers immense shock, public scene, and your friend may direct their rage at you.',
+              label: 'Halt the Wedding Privately',
+              description: 'Pull your friend into the dressing room with the documents before vows are exchanged.',
+              tradeOff: 'Triggers public devastation; your friend may lash out at you in disbelief and end the friendship.',
+              consequence: 'The ceremony is called off and the reception turns into chaos.',
             },
             {
               id: 'choice_b',
-              label: 'Wait Until After the Honeymoon',
-              description: 'Let the wedding proceed and present the evidence carefully in private next week.',
-              tradeOff: 'Your friend enters a legally binding marriage and joint liability with an active fraudster.',
+              label: 'Confront After the Honeymoon',
+              description: 'Let the wedding proceed and present the legal evidence alongside attorneys next week.',
+              tradeOff: 'Your friend becomes legally bound to a criminal and joint financial accounts become compromised.',
+              consequence: 'You smile for the photographer while holding the con artist\'s secret in your pocket.',
             },
           ],
-          pollQuestion: 'Do you stop the wedding in 60 minutes or wait until after?',
+          pollQuestion: 'Do you intervene right now or wait until after the wedding?',
+          consequence: 'Short-term acute agony vs. long-term compounding disaster.',
           payoff: {
-            reveal: 'Halting the wedding creates acute agony for 48 hours, but prevents years of divorce litigation and bankruptcy.',
-            surprisingOutcome: 'Relationship counselors note that friends who intervene immediately are initially hated, but thanked years later.',
-            communityTension: 'Short-term catastrophic conflict vs. long-term compounding disaster.',
-            strategicAnalysis: 'Intervention costs are front-loaded, while inaction costs compound indefinitely.',
+            reveal: 'Immediate intervention causes 48 hours of immense shock, but prevents devastating bankruptcy and messy annulment litigation.',
+            surprisingOutcome: 'Relationship counselors note that friends who intervene immediately are hated at first, but deeply thanked years later.',
+            communityTension: 'Acute immediate embarrassment vs. prolonged catastrophic ruin.',
+            strategicAnalysis: 'Intervention costs are front-loaded; inaction costs compound exponentially.',
           },
         },
       ],
       strategy: [
         {
           title: 'The Hostile Takeover Bounty',
-          hook: 'A rival offers $5,000,000 cash to the first founder who defects. Do you sell out your co-founders?',
-          scenario:
-            'You and three equal co-founders run a startup valued at $12M. A ruthless competitor sends each of you a secret, simultaneous 30-minute ultimatum: the FIRST partner to sign a buyout gets $5,000,000 cash immediately. If nobody signs, the competitor launches a copycat product that will likely bankrupt your company within 6 months.',
+          hook: 'A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.',
+          setup:
+            'You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.',
+          pressure: 'The timer shows 28 minutes, and your co-founders are avoiding eye contact.',
+          pressureTypes: ['betrayal', 'strategic_decisions', 'time_pressure'],
+          twist: 'One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.',
+          depth: 'deep',
+          format: 'strategy_challenge',
           choices: [
             {
               id: 'choice_a',
-              label: 'Sign First and Take the $5M',
-              description: 'Execute the buyout before the 30-minute timer expires and secure your fortune.',
-              tradeOff: 'Betrays your 3 co-founders, destroys the startup, and ruins lifelong partnerships.',
+              label: 'Sign First & Take the $5M',
+              description: 'Grab the pen, sign the buyout, and walk away with an immediate fortune.',
+              tradeOff: 'Permanently burns bridges with your team, destroys company equity, and brands you a sellout.',
+              consequence: 'The $5M wire confirms to your account within 120 seconds.',
             },
             {
               id: 'choice_b',
-              label: 'Hold the Line with the Team',
-              description: 'Refuse the bounty and rally the team to fight the competitor in the open market.',
-              tradeOff: 'If even ONE of your partners defects, you walk away with zero while they take $5M.',
+              label: 'Hold the Line & Trust the Team',
+              description: 'Refuse the bounty, rally your partners, and fight the rival in the open marketplace.',
+              tradeOff: 'If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.',
+              consequence: 'You push the pen away and wait to see if someone else breaks.',
             },
           ],
-          pollQuestion: 'Do you sign first or trust your co-founders?',
+          pollQuestion: 'Do you grab the pen first or trust your co-founders?',
+          consequence: 'The Prisoner\'s Dilemma in real-world business almost always collapses toward early defection.',
           payoff: {
-            reveal: 'This classic game-theory trap forces defection because the fear of being betrayed outweighs loyalty.',
-            surprisingOutcome: 'In test simulations, over 80% of teams have at least one founder defect within 15 minutes.',
-            communityTension: 'Rational self-preservation vs. collective team loyalty.',
-            strategicAnalysis: 'Cooperation requires unanimous trust; defection requires only a single crack.',
+            reveal: 'Game theory proves that asymmetric exit bounties create mutual paranoia where defection becomes the mathematically dominant individual move.',
+            surprisingOutcome: 'In corporate crisis simulations, over 80% of leadership teams suffer a defection within 12 minutes.',
+            communityTension: 'Individual self-preservation vs. collective group solidarity.',
+            strategicAnalysis: 'Cooperation requires 100% trust across all nodes; betrayal requires only a single weak link.',
           },
         },
       ],
       survival: [
         {
-          title: 'The Blizzard Ridge Crossing',
-          hook: 'Trapped at 18,000 feet in a sudden whiteout: do you freeze in a snow cave or risk the razor ridge?',
-          scenario:
-            'A violent blizzard strikes your two-person mountaineering expedition on a knife-edge ridge. Your tent has blown away. Option A is to dig an emergency snow trench on the windward side with a 40% risk of hypothermia before dawn. Option B is to attempt a 200-meter descent in zero visibility down a sheer icy slope with a 25% risk of a fatal fall.',
+          title: 'The Razor Ridge Whiteout',
+          hook: 'Night is falling at 18,000 feet, the blizzard is howling at 60 mph, and your tent was just ripped away.',
+          setup:
+            'You and your climbing partner are trapped on a knife-edge Andean ridge. Temperature is -30°C and dropping. You have one shared bivy bag and 2 thermal flares. Option A is to dig an emergency snow trench on the exposed slope to ride out the night. Option B is to attempt a 300-meter blind descent down a frozen crevasse field using headlamps.',
+          pressure: 'Core body temperatures will begin dropping precipitously within 45 minutes without shelter.',
+          pressureTypes: ['survival', 'time_pressure', 'limited_resources'],
+          twist: 'Your partner has early-stage frostbite on their fingers and cannot tie knot anchors independently.',
+          depth: 'standard',
+          format: 'survival_scenario',
           choices: [
             {
               id: 'choice_a',
-              label: 'Dig the Emergency Snow Trench',
-              description: 'Hunker down in the snowpack and conserve body heat until sunrise.',
-              tradeOff: 'If the storm drops below -35°C, you will freeze to death in your sleep.',
+              label: 'Dig In & Hunker in the Snow Trench',
+              description: 'Carve a snow cave on the leeward slope, share body heat, and pray the storm eases by dawn.',
+              tradeOff: 'If the temperature drops below -40°C or snow drifts seal the air vents, hypothermia is lethal.',
+              consequence: 'You start hacking into the hard-packed ice while wind tears at your gear.',
             },
             {
               id: 'choice_b',
-              label: 'Risk the Blind Night Descent',
-              description: 'Rope up and push through the whiteout toward the lower camp.',
-              tradeOff: 'One false step on the ice cornice means an immediate 2,000-foot drop.',
+              label: 'Attempt the Blind Night Descent',
+              description: 'Rope together and navigate the glacial descent through zero visibility toward High Camp.',
+              tradeOff: 'One misstep on an unseen crevasse bridge plunges both climbers into a bottomless chasm.',
+              consequence: 'You click into your crampons and step off the ledge into the pitch-black gale.',
             },
           ],
-          pollQuestion: 'Do you hunker down in the snow or climb down blind?',
+          pollQuestion: 'Do you hunker down in the ice or risk the blind night descent?',
+          consequence: 'Movement generates warmth, but darkness turns alpine terrain into a minefield.',
           payoff: {
-            reveal: 'Survival statistics favor the snow cave by a wide margin because moving in zero visibility causes fatal spatial disorientation.',
-            surprisingOutcome: 'Human adrenaline compels panicked climbers to move, which leads to 70% of high-altitude fall fatalities.',
-            communityTension: 'Passive endurance vs. active risk-taking.',
-            strategicAnalysis: 'Controlled freezing is manageable with micro-insulation; gravity is unforgiving.',
+            reveal: 'Mountain rescue records show climbers who dig snow caves survive at nearly triple the rate of those who move blind at night.',
+            surprisingOutcome: 'Panicked climbers almost always want to move, yet static snow caves provide vital thermal micro-climates.',
+            communityTension: 'Active desperate risk vs. passive endurance in the dark.',
+            strategicAnalysis: 'Controlled freezing is manageable with micro-insulation; gravity has zero tolerance for error.',
           },
         },
       ],
       'funny/chaotic': [
         {
           title: 'The 24-Hour Telepathic Megaphone',
-          hook: 'For the next 24 hours, you either hear every thought about you, or every lie you speak is loudly announced.',
-          scenario:
-            'A mischievous cosmic entity forces you to pick one chaotic curse for tomorrow. Curse A: you hear an audio broadcast of every unfiltered thought anyone within 20 feet has about you. Curse B: you can only tell 100% brutal truths, and every attempt at polite evasion or white lie is broadcast over a booming loudspeaker.',
+          hook: 'For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.',
+          setup:
+            'A mischievous cosmic trickster traps you in an inescapable 24-hour social experiment. You must choose Curse A: you hear an audible whisper of every thought anyone within 20 feet has regarding your clothes, intelligence, and personality. Or Curse B: you can only speak pure, unvarnished truths—and any white lie or polite deflection is blasted through a megaphone.',
+          pressure: 'You have a high-stakes performance review with your boss and dinner with your in-laws scheduled for tomorrow.',
+          pressureTypes: ['social_pressure', 'reputation', 'unexpected_consequences'],
+          twist: 'You cannot cancel your appointments or stay in bed without forfeiting your life savings.',
+          depth: 'quick',
+          format: 'chaotic_funny',
           choices: [
             {
               id: 'choice_a',
-              label: 'Hear Everyone\'s Secret Thoughts',
-              description: 'Listen to the raw, unedited internal monologue of your friends, boss, and partner.',
-              tradeOff: 'Will likely destroy your self-esteem and permanently alter how you see everyone you know.',
+              label: 'Hear All Secret Thoughts',
+              description: 'Listen to every private reaction from your colleagues, boss, and family members.',
+              tradeOff: 'Will likely demolish your self-esteem and permanently distort how you view your loved ones.',
+              consequence: 'The whispers begin buzzing in your ears the moment you step outside.',
             },
             {
               id: 'choice_b',
-              label: 'The Brutal Truth Loudspeaker',
-              description: 'You cannot lie or soften statements for 24 hours without an instant megaphone blast.',
-              tradeOff: 'You will insult colleagues, offend family, and create hilarious social chaos all day.',
+              label: 'The Megaphone Truth Curse',
+              description: 'You speak 100% blunt honesty all day with zero polite filter or softening.',
+              tradeOff: 'You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.',
+              consequence: 'Every polite excuse you attempt is instantly corrected at 110 decibels.',
             },
           ],
-          pollQuestion: 'Which chaotic curse would you endure?',
+          pollQuestion: 'Which chaotic curse would you rather endure tomorrow?',
+          consequence: 'Social cohesion relies entirely on white lies and merciful telepathic silence.',
           payoff: {
-            reveal: 'Most people choose to hear others\' thoughts thinking they will gain an edge, only to discover that 90% of people\'s passing thoughts are petty, distracted, or bizarre.',
-            surprisingOutcome: 'Social harmony relies on harmless white lies; total transparency creates instantaneous comedy and warfare.',
-            communityTension: 'Internal emotional damage vs. external social catastrophe.',
-            strategicAnalysis: 'Curse B is survivable by staying in bed alone; Curse A follows you anywhere people exist.',
+            reveal: 'Most people pick telepathy thinking it grants an advantage, only to find passing human thoughts are erratic, critical, and bizarre.',
+            surprisingOutcome: 'Curse B is hilarious to bystanders but terrifying to the speaker; Curse A creates silent internal trauma.',
+            communityTension: 'Internal emotional damage vs. external social fireworks.',
+            strategicAnalysis: 'Curse B burns your bridges; Curse A makes you despise everyone crossing them.',
           },
         },
       ],
       'technology/future': [
         {
           title: 'The Neural Memory Redactor',
-          hook: 'Would you permanently delete your most traumatic memory if it also erased your greatest life achievement?',
-          scenario:
-            'In 2045, an FDA-approved neuro-interface allows clean synaptic excision of a single traumatic memory (a severe heartbreak, grief, or failure) with zero PTSD remnants. However, the neural cluster is entangled with your greatest personal breakthrough, meaning deleting the pain will also erase your proudest accomplishment and the skills you built from it.',
+          hook: 'In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are.',
+          setup:
+            'The Synapse Redaction Institute has developed a precision quantum laser that eliminates the synaptic memory cluster of a single life-shattering event (a terrible heartbreak, death of a mentor, or public failure). However, brain scans show that your greatest professional skill and proudest life triumph are biologically entangled with that exact pain; deleting the suffering will permanently erase the skills you built to survive it.',
+          pressure: 'The clinic chair is prepped and the neuro-catalyst expires in 15 minutes.',
+          pressureTypes: ['technology', 'unexpected_consequences', 'impossible_tradeoffs'],
+          twist: 'The neurosurgeon admits that 40% of patients who undergo the procedure experience a strange phantom emptiness where their drive used to be.',
+          depth: 'deep',
+          format: 'future_tech',
           choices: [
             {
               id: 'choice_a',
-              label: 'Erase the Pain & Sacrifice the Triumph',
-              description: 'Wipe the trauma completely and live with a calm, untroubled mind.',
-              tradeOff: 'Lose the pride, wisdom, and core personal achievement that defined your identity.',
+              label: 'Erase the Pain & Forfeit the Triumph',
+              description: 'Wipe the agony forever, sleep with total peace, and live unburdened by past ghosts.',
+              tradeOff: 'Lose the master skills, wisdom, and core personal achievement that define your identity.',
+              consequence: 'The laser pulses and the memory cluster goes dark forever.',
             },
             {
               id: 'choice_b',
-              label: 'Keep the Scars & Keep the Victory',
-              description: 'Endure the lingering memories and keep all the strength and wisdom you earned.',
-              tradeOff: 'You continue carrying the emotional weight and painful triggers for the rest of your life.',
+              label: 'Keep the Scars & Keep the Mastery',
+              description: 'Stand up from the clinic chair, embrace your scars, and keep everything you fought to become.',
+              tradeOff: 'You continue carrying the emotional triggers, grief, and nocturnal flashbacks for life.',
+              consequence: 'You rip the sensors off your temples and walk out into the rain.',
             },
           ],
-          pollQuestion: 'Do you erase the trauma or keep your scars?',
+          pollQuestion: 'Do you erase your trauma or keep your hard-earned scars?',
+          consequence: 'Adversity forms the architecture of human resilience; removing it alters the foundation.',
           payoff: {
-            reveal: 'Human identity is forged in the crucible of overcoming adversity; erasing suffering frequently leaves patients feeling hollow and unanchored.',
-            surprisingOutcome: '78% of people initially want the eraser, but change their mind when told their skills will vanish too.',
-            communityTension: 'Peace of mind vs. authentic hard-won identity.',
-            strategicAnalysis: 'Pain and mastery share the same neural pathways of resilience.',
+            reveal: 'Identity is not built on comfort, but on the scar tissue of survival; deleting struggles leaves patients feeling unmoored.',
+            surprisingOutcome: 'Over 75% of people initially want the eraser, but reverse their vote when they realize mastery vanishes with it.',
+            communityTension: 'Emotional anesthesia vs. authentic hard-won strength.',
+            strategicAnalysis: 'Suffering and skill share the exact same neural pathways of adaptation.',
           },
         },
       ],
       'adventure/travel': [
         {
-          title: 'The Uncharted Deep Trench',
-          hook: 'Trapped in a deep-sea submersible with 3 hours of oxygen: do you surface blindly or wait for rescue?',
-          scenario:
-            'Your two-person deep-sea sub loses propulsion at 4,000 meters depth. You have 3 hours of emergency life support remaining. Option A is an emergency ballast jettison that shoots you toward the surface at dangerous velocity with risk of hull implosion. Option B is to deploy your acoustic beacon and wait for a naval salvage ship that is 2.5 hours away.',
+          title: 'The Submersible Hull Breach at 4,000M',
+          hook: 'You are four kilometers beneath the Atlantic, water is hissing through a valve gasket, and oxygen is down to 120 minutes.',
+          setup:
+            'Your two-person deep-sea research sub loses main battery power on the Abyssal Plain. A high-pressure seal is dripping icy saltwater onto the control console. You have two options. Option A is an emergency explosive ballast blow that rockets the craft toward the surface at violent speed, risking decompression sickness and mid-water hull implosion. Option B is deploying your acoustic beacon and waiting for a naval salvage vessel that is 105 minutes away.',
+          pressure: 'The cabin temperature is 3°C, condensation is freezing, and battery voltage is collapsing.',
+          pressureTypes: ['time_pressure', 'survival', 'limited_resources'],
+          twist: 'Your co-pilot is hyperventilating, burning through the remaining oxygen reserve at double the baseline rate.',
+          depth: 'standard',
+          format: 'survival_scenario',
           choices: [
             {
               id: 'choice_a',
-              label: 'Emergency Ballast Blow',
-              description: 'Trigger the explosive ascent bolts and shoot to the surface immediately.',
-              tradeOff: 'Rapid ascent risks decompression sickness and catastrophic hull stress.',
+              label: 'Trigger the Emergency Ascent Bolts',
+              description: 'Blow the explosive ballast clamps and ascend through the darkness at maximum velocity.',
+              tradeOff: 'Catastrophic shear forces could tear the compromised viewport; violent ascent causes severe bends.',
+              consequence: 'The charges detonate with a concussive roar and the sub tilts violently upward.',
             },
             {
               id: 'choice_b',
-              label: 'Wait for Naval Recovery',
-              description: 'Power down all lights, conserve oxygen, and wait for the recovery submarine.',
-              tradeOff: 'If the naval ship is delayed by even 30 minutes, you will suffocate in the dark.',
+              label: 'Power Down & Await the Salvage Ship',
+              description: 'Turn off all emergency lights, quiet your breathing, and trust the acoustic beacon.',
+              tradeOff: 'If the recovery vessel is delayed by even 15 minutes, both occupants will suffocate in the black.',
+              consequence: 'The instruments click off and pitch-black silence swallows the hull.',
             },
           ],
-          pollQuestion: 'Do you blow ballast or wait for the rescue vessel?',
+          pollQuestion: 'Do you blow ballast immediately or wait in the dark for rescue?',
+          consequence: 'In maritime distress, disciplined composure triumphs over frantic emergency ascents.',
           payoff: {
-            reveal: 'In deep sea emergencies, patience with precision timing succeeds twice as often as frantic emergency ascents.',
-            surprisingOutcome: 'Panic breathing reduces 3 hours of oxygen to under 75 minutes.',
-            communityTension: 'Active desperate gamble vs. nerve-wracking countdown.',
-            strategicAnalysis: 'Controlled systems beating probability vs. fatal mechanical stress.',
+            reveal: 'Naval analysis confirms that calm protocol adherence in deep subs succeeds 2.5x more frequently than uncontrolled emergency ascents.',
+            surprisingOutcome: 'Panic breathing cuts oxygen reserves by 65% in high-pressure enclosures.',
+            communityTension: 'Active desperate gamble vs. nerve-wracking disciplined patience.',
+            strategicAnalysis: 'Controlled systems beating probability vs. fatal structural mechanical failure.',
           },
         },
       ],
       fantasy: [
         {
           title: 'The Dragon\'s Blood Vial',
-          hook: 'Drink the elixir to gain immortality, but every person who ever loved you forgets your name.',
-          scenario:
-            'In a forgotten sanctuary, an ancient alchemist offers you a single crystalline vial of Dragon\'s Blood. Consuming it grants complete biological immortality, immunity to disease, and eternal youth. But the arcane cost is absolute: the moment you swallow it, every friend, family member, and lover completely forgets you ever existed.',
+          hook: 'Drink the elixir to gain immortality and eternal youth—but every person who ever loved you forgets your name forever.',
+          setup:
+            'In a moonlit vault beneath an ancient citadel, an alchemist places a glowing crystalline vial into your hands. Swallowing the draught grants total biological immortality, immunity to illness, and eternal peak vitality. But the cosmic toll is absolute: the instant it touches your lips, every friend, family member, and lover completely forgets you ever existed. To them, you are a total stranger.',
+          pressure: 'The elixir is evaporating; you have 60 seconds before the liquid turns to inert dust.',
+          pressureTypes: ['impossible_tradeoffs', 'relationships', 'time_pressure'],
+          twist: 'You will remember every single shared memory, laugh, and promise with perfect photographic clarity forever.',
+          depth: 'standard',
+          format: 'impossible_dilemma',
           choices: [
             {
               id: 'choice_a',
               label: 'Drink the Immortal Elixir',
-              description: 'Swallow the potion to live forever with eternal youth and boundless time.',
-              tradeOff: 'You become an erased ghost to everyone you love; you must build every relationship from zero.',
+              description: 'Swallow the potion to live forever with boundless time to master the universe.',
+              tradeOff: 'You become a ghost to everyone who ever loved you; you must start your social existence from scratch.',
+              consequence: 'Warm golden energy floods your veins as the world\'s memory of you vanishes.',
             },
             {
               id: 'choice_b',
               label: 'Shatter the Vial on the Stone',
-              description: 'Reject the immortality and return to your mortal life with your loved ones.',
-              tradeOff: 'You will age, decline, and die like all mortals, leaving behind the chance to see eternity.',
+              description: 'Smash the potion on the floor and return to your mortal life with your family.',
+              tradeOff: 'You surrender eternity, accepting disease, aging, and the certainty of mortal demise.',
+              consequence: 'Glass shards scatter across the stones and the magical steam drifts away.',
             },
           ],
-          pollQuestion: 'Do you drink the elixir of eternity or shatter the vial?',
+          pollQuestion: 'Do you drink the elixir of eternity or shatter the glass?',
+          consequence: 'Immortality without shared memory turns infinite life into an eternal graveyard of forgotten bonds.',
           payoff: {
-            reveal: 'Immortality without shared memory turns eternity into an endless loop of grief and forgotten bonds.',
-            surprisingOutcome: 'Folklore and narrative studies show audiences consistently choose mortal connection over solitary godhood.',
-            communityTension: 'Infinite personal time vs. the warmth of shared human love.',
-            strategicAnalysis: 'Life derives meaning from scarcity; removing the deadline removes the stakes.',
+            reveal: 'Immortality without continuity of love is biological isolation; humans derive meaning from shared memories rather than mere duration.',
+            surprisingOutcome: 'Storytellers across cultures find that audiences overwhelmingly prefer mortal love over immortal loneliness.',
+            communityTension: 'Infinite personal time vs. the irreplaceable warmth of human connection.',
+            strategicAnalysis: 'Life derives emotional value from scarcity; removing the deadline removes the stakes.',
           },
         },
       ],
       'bizarre hypothetical situations': [
         {
-          title: 'The Reverse Gravity Room',
-          hook: 'For 1 year, gravity is inverted for you whenever you step indoors. Do you take $20,000,000?',
-          scenario:
-            'A wealthy eccentric researcher offers you $20,000,000 cash on the spot. The catch: for exactly 365 days, gravity is reversed only for your body the instant you step under any ceiling or roof (you will fall upward to the ceiling at 9.8 m/s² unless strapped down). Outdoors, gravity remains normal.',
+          title: 'The Reverse Gravity Room Contract',
+          hook: 'You receive $20,000,000 cash right now—but for the next 365 days, gravity is inverted for you whenever you step indoors.',
+          setup:
+            'A trillionaire eccentric offers an irrevocable wire of $20,000,000 to your personal checking account today. The single condition: for exactly one calendar year, gravity reverses 180° for your body the instant you pass beneath any ceiling or roof (you will fall upward to the ceiling at 9.8 m/s² unless strapped down). Outdoors under the open sky, gravity remains completely normal.',
+          pressure: 'The notary and the wire authorization key are waiting on the table right now.',
+          pressureTypes: ['money', 'risk_vs_reward', 'unexpected_consequences'],
+          twist: 'Every open doorway between rooms requires grappling hooks, padded helmets, and ceiling mattresses.',
+          depth: 'standard',
+          format: 'chaotic_funny',
           choices: [
             {
               id: 'choice_a',
-              label: 'Accept the $20M Inversion Contract',
-              description: 'Take the fortune, wear padded helmets, and customize your home ceilings with velcro and nets.',
-              tradeOff: 'Every doorway is a concussion hazard; you cannot visit stores, restaurants, or friends\' houses normally.',
+              label: 'Sign the $20M Inversion Contract',
+              description: 'Accept the wire, wear padded gear, and turn your ceiling into a carpeted luxury living room.',
+              tradeOff: 'Every ceiling transition is a concussion risk; you cannot step into normal shops, restaurants, or friends\' houses.',
+              consequence: 'The phone chimes with a $20,000,000 bank notification and you float to the ceiling.',
             },
             {
               id: 'choice_b',
               label: 'Decline the Eccentric Offer',
-              description: 'Walk away with zero dollars and keep your normal, right-side-up life.',
-              tradeOff: 'You forfeit $20,000,000 of pure generational wealth over 12 months of temporary absurdity.',
+              description: 'Walk away with zero dollars and keep your feet firmly planted on the floor.',
+              tradeOff: 'You forfeit $20M in generational wealth over 12 months of temporary physical absurdity.',
+              consequence: 'You walk out the door normally, wondering what life on the ceiling would have been like.',
             },
           ],
-          pollQuestion: 'Do you take the $20M and live on the ceiling for a year?',
+          pollQuestion: 'Do you take the $20,000,000 and live on the ceiling for a year?',
+          consequence: 'Capital turns physical absurdities into solvable engineering challenges.',
           payoff: {
-            reveal: 'With $20M, you can hire contractors to turn an estate into a custom inverted luxury palace within 3 days, making the challenge easy.',
-            surprisingOutcome: 'Over 85% of people enthusiastically accept when they realize outdoor living and customized ceilings solve 95% of the danger.',
-            communityTension: 'Absurd daily inconvenience vs. life-changing wealth.',
-            strategicAnalysis: 'Capital transforms physical constraints into solvable engineering problems.',
+            reveal: 'With $20M, you can hire a contractor team to carpet your ceilings, install padded nets, and live in outdoor luxury resorts all year.',
+            surprisingOutcome: 'Over 85% of people enthusiastically accept when they realize outdoor living and customized ceilings solve 95% of the risk.',
+            communityTension: 'Absurd daily inconvenience vs. complete financial freedom for life.',
+            strategicAnalysis: 'Money converts physical constraints into manageable logistical puzzles.',
           },
         },
       ],

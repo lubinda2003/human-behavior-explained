@@ -46,11 +46,24 @@ export class DilemmaQualityChecker {
     /\bcontinuing\s+our\s+story\b/i,
   ];
 
-  // Low-effort / generic trivial questions
+  // Low-effort / generic trivial "Would You Rather" and thin cliché questions
   private static readonly LOW_EFFORT_PATTERNS: RegExp[] = [
     /\bwould\s+you\s+rather\s+(?:eat|have)\s+(?:pizza|ice\s+cream|tacos)\b/i,
     /\bwhich\s+is\s+better:\s+(?:summer|winter|cats|dogs)\b/i,
     /\bdo\s+you\s+like\s+(?:tea|coffee)\b/i,
+    /\bwould\s+you\s+rather\s+(?:have|take|get|receive)\s+\$?[0-9]+(?:\s*(?:million|billion|[kmb]))?\s+or\s+(?:live\s+forever|be\s+immortal)\b/i,
+    /\bwould\s+you\s+rather\s+have\s+\$1m\s+or\s+live\s+forever\b/i,
+    /\bwould\s+you\s+rather\s+(?:have\s+)?unlimited\s+money\s+or\b/i,
+    /\bwould\s+you\s+rather\s+be\s+rich\s+and\s+sad\s+or\s+poor\s+and\s+happy\b/i,
+    /\bwould\s+you\s+rather\s+(?:fly|be\s+invisible)\s+or\s+(?:teleport|read\s+minds)\b/i,
+    /\bwould\s+you\s+rather\s+know\s+(?:how|when)\s+you\s+die\b/i,
+    /\bwould\s+you\s+rather\s+be\s+the\s+smartest\s+person\s+or\s+the\s+richest\b/i,
+  ];
+
+  // Formulaic "You get X but lose Y" without substantive situational narrative
+  private static readonly FORMULAIC_TRADEOFF_PATTERNS: RegExp[] = [
+    /^you\s+(?:get|receive|have)\s+[^.]+but\s+(?:you\s+)?(?:lose|give\s+up)\s+[^.]+\.?$/i,
+    /^press\s+the\s+button\s+to\s+get\s+[^.]+but\s+[^.]+\.?$/i,
   ];
 
   /**
@@ -60,16 +73,22 @@ export class DilemmaQualityChecker {
     const errors: string[] = [];
     const warnings: string[] = [];
 
+    const scenarioText = [dilemma.setup, dilemma.scenario].filter(Boolean).join(' ');
+
     // Combine all textual content for full-text inspection
     const fullText = [
       dilemma.title,
       dilemma.hook,
-      dilemma.scenario,
-      ...dilemma.choices.map((c) => `${c.label} ${c.description} ${c.tradeOff}`),
-      dilemma.pollQuestion,
-      dilemma.payoff.reveal,
-      dilemma.payoff.surprisingOutcome,
-      dilemma.payoff.communityTension,
+      dilemma.setup || '',
+      dilemma.scenario || '',
+      dilemma.pressure || '',
+      dilemma.twist || '',
+      ...dilemma.choices.map((c) => `${c.label} ${c.description} ${c.tradeOff} ${c.consequence || ''}`),
+      dilemma.pollQuestion || '',
+      dilemma.discussionPrompt || '',
+      dilemma.payoff.reveal || '',
+      dilemma.payoff.surprisingOutcome || '',
+      dilemma.payoff.communityTension || '',
       dilemma.formattedTelegramText,
     ].join(' ');
 
@@ -80,14 +99,26 @@ export class DilemmaQualityChecker {
     if (!dilemma.title || dilemma.title.trim().length === 0) {
       errors.push('Dilemma missing title.');
     }
-    if (!dilemma.hook || dilemma.hook.trim().length < 15) {
-      errors.push('Dilemma hook is missing or too brief (minimum 15 characters).');
+
+    const depth = dilemma.depth || 'standard';
+    const minHookLen = depth === 'quick' ? 12 : 15;
+    const minScenarioLen = depth === 'quick' ? 20 : 35;
+
+    if (!dilemma.hook || dilemma.hook.trim().length < minHookLen) {
+      errors.push(`Dilemma hook is missing or too brief (minimum ${minHookLen} characters for ${depth} depth).`);
     }
-    if (!dilemma.scenario || dilemma.scenario.trim().length < 35) {
-      errors.push('Dilemma scenario is missing or too brief (minimum 35 characters).');
+    if (!scenarioText || scenarioText.trim().length < minScenarioLen) {
+      errors.push(`Dilemma scenario/setup is missing or too brief (minimum ${minScenarioLen} characters for ${depth} depth).`);
     }
-    if (!dilemma.pollQuestion || dilemma.pollQuestion.trim().length < 10) {
-      errors.push('Dilemma missing pollQuestion.');
+
+    // Interaction mechanism check: Must have pollQuestion, discussionPrompt, or clear choices
+    const hasInteraction =
+      (dilemma.pollQuestion && dilemma.pollQuestion.trim().length >= 5) ||
+      (dilemma.discussionPrompt && dilemma.discussionPrompt.trim().length >= 5) ||
+      (Array.isArray(dilemma.choices) && dilemma.choices.length >= 2);
+
+    if (!hasInteraction) {
+      errors.push('Dilemma must have an interaction mechanism (pollQuestion, discussionPrompt, or interactive choices).');
     }
 
     // 2. Choice Verification (2-4 meaningful choices with explicit trade-offs)
@@ -125,6 +156,12 @@ export class DilemmaQualityChecker {
         if (!choice.tradeOff || choice.tradeOff.trim().length < 8) {
           errors.push(`Choice at index ${i} (${choice.label || 'unnamed'}) is missing an explicit trade-off.`);
           tradeOffsExplicit = false;
+        } else {
+          const lowerTradeOff = choice.tradeOff.toLowerCase().trim();
+          if (['none', 'nothing', 'no downside', 'no cost', 'free'].includes(lowerTradeOff)) {
+            errors.push(`Choice at index ${i} has a trivial trade-off ("${choice.tradeOff}"). All choices must have real stakes.`);
+            tradeOffsExplicit = false;
+          }
         }
       }
     }
@@ -133,14 +170,11 @@ export class DilemmaQualityChecker {
     if (!dilemma.payoff) {
       errors.push('Dilemma missing payoff object.');
     } else {
-      if (!dilemma.payoff.reveal || dilemma.payoff.reveal.trim().length < 25) {
+      if (!dilemma.payoff.reveal || dilemma.payoff.reveal.trim().length < 20) {
         errors.push('Payoff reveal is missing or too short.');
       }
-      if (!dilemma.payoff.surprisingOutcome || dilemma.payoff.surprisingOutcome.trim().length < 15) {
+      if (!dilemma.payoff.surprisingOutcome || dilemma.payoff.surprisingOutcome.trim().length < 12) {
         errors.push('Payoff surprisingOutcome is missing or too short.');
-      }
-      if (!dilemma.payoff.communityTension || dilemma.payoff.communityTension.trim().length < 15) {
-        errors.push('Payoff communityTension is missing or too short.');
       }
     }
 
@@ -166,18 +200,60 @@ export class DilemmaQualityChecker {
       }
     }
 
-    // 6. Reject Low-Effort Generic Questions
+    // 6. Reject Low-Effort Generic "Would You Rather" Questions
     let noGenericWYR = true;
     for (const pattern of this.LOW_EFFORT_PATTERNS) {
       if (pattern.test(fullText)) {
         const match = fullText.match(pattern)?.[0];
-        errors.push(`Contains low-effort generic question: "${match}".`);
+        errors.push(`Contains low-effort generic question: "${match}". Content must put the user inside a concrete situation with tangible stakes.`);
         noGenericWYR = false;
         break;
       }
     }
 
-    // 7. Telegram HTML Formatting Check
+    // 7. Reject Formulaic "You get X but lose Y" without situational context
+    let noFormulaicTradeoff = true;
+    const trimmedScenario = scenarioText.trim();
+    for (const pattern of this.FORMULAIC_TRADEOFF_PATTERNS) {
+      if (pattern.test(trimmedScenario) && trimmedScenario.length < 80) {
+        errors.push(`Scenario relies on lazy formulaic trade-off ("${trimmedScenario}"). Scenarios must build an immersive situation with scene details and genuine tension.`);
+        noFormulaicTradeoff = false;
+        break;
+      }
+    }
+
+    // 8. Situational Immersion Verification
+    // Scenarios must place the user inside an active situation rather than abstract philosophical theories
+    let hasSituationalImmersion = true;
+    const situationalWords = [
+      'you', 'your', 'room', 'contract', 'timer', 'team', 'ship', 'device', 'partner',
+      'call', 'find', 'face', 'stand', 'walk', 'alarm', 'clock', 'offer', 'crisis',
+      'surrounded', 'threatened', 'investigator', 'colleague', 'money', 'code', 'door',
+      'system', 'passenger', 'vault', 'island', 'station', 'crew', 'screen', 'cell',
+      'trap', 'locked', 'stranger', 'hospital', 'court', 'cabin', 'emergency', 'bridge'
+    ];
+    const lowerScenarioAndHook = `${dilemma.hook} ${scenarioText} ${dilemma.pressure || ''}`.toLowerCase();
+    const situationalMatchCount = situationalWords.filter((w) => lowerScenarioAndHook.includes(w)).length;
+
+    if (situationalMatchCount < 2) {
+      errors.push('Scenario lacks concrete situational immersion. The content must put the user inside an active scenario rather than presenting an abstract debate.');
+      hasSituationalImmersion = false;
+    }
+
+    // 9. Content Depth Requirements
+    let depthRequirementsMet = true;
+    if (depth === 'deep') {
+      const totalNarrativeLength = (dilemma.setup || dilemma.scenario || '').length +
+        (dilemma.pressure ? dilemma.pressure.length : 0) +
+        (dilemma.twist ? dilemma.twist.length : 0);
+
+      if (totalNarrativeLength < 110) {
+        errors.push(`Deep scenario is too brief (${totalNarrativeLength} chars). Deep posts require an immersive scenario, concrete details, and escalating pressure or twist.`);
+        depthRequirementsMet = false;
+      }
+    }
+
+    // 10. Telegram HTML Formatting Check
     let telegramHtmlValid = true;
     if (!dilemma.formattedTelegramText || dilemma.formattedTelegramText.trim().length === 0) {
       errors.push('Dilemma missing formattedTelegramText.');
@@ -201,6 +277,9 @@ export class DilemmaQualityChecker {
       noAcademicJargon,
       noSerializedStory,
       noGenericWYR,
+      noFormulaicTradeoff,
+      hasSituationalImmersion,
+      depthRequirementsMet,
       telegramHtmlValid,
       visualAssetValid: true,
     };

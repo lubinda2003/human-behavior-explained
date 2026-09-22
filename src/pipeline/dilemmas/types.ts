@@ -1,10 +1,89 @@
 /**
- * Interactive Dilemma Types & Schemas (Phase 6 - Entertainment Model)
- * Pure entertainment channel model for "Interactive Dilemmas & Impossible Choices".
- * Completely removed legacy academic psychology and scientific citation requirements.
+ * Interactive Dilemma Types & Schemas (Pick Your Fate Quality Upgrade)
+ * Upgraded content model putting the user inside immersive situations,
+ * with multi-level depth (quick/standard/deep), varied pressures, and 12 distinct content formats.
  */
 
 import { VisualSpec, PostDraft } from '../types.js';
+
+export type ContentDepth = 'quick' | 'standard' | 'deep';
+
+export type PressureType =
+  | 'time_pressure'
+  | 'limited_resources'
+  | 'hidden_information'
+  | 'betrayal'
+  | 'risk_vs_reward'
+  | 'survival'
+  | 'money'
+  | 'relationships'
+  | 'reputation'
+  | 'power'
+  | 'technology'
+  | 'unexpected_consequences'
+  | 'conflicting_goals'
+  | 'strategic_decisions'
+  | 'social_pressure'
+  | 'information_asymmetry'
+  | 'impossible_tradeoffs';
+
+export const ALL_PRESSURE_TYPES: PressureType[] = [
+  'time_pressure',
+  'limited_resources',
+  'hidden_information',
+  'betrayal',
+  'risk_vs_reward',
+  'survival',
+  'money',
+  'relationships',
+  'reputation',
+  'power',
+  'technology',
+  'unexpected_consequences',
+  'conflicting_goals',
+  'strategic_decisions',
+  'social_pressure',
+  'information_asymmetry',
+  'impossible_tradeoffs',
+];
+
+export type ContentFormat =
+  | 'impossible_dilemma'
+  | 'survival_scenario'
+  | 'mini_mystery'
+  | 'strategy_challenge'
+  | 'prediction'
+  | 'versus_battle'
+  | 'chaotic_funny'
+  | 'future_tech'
+  | 'brain_logic'
+  | 'hot_take'
+  | 'interactive_minigame'
+  | 'result_reveal';
+
+export const ALL_CONTENT_FORMATS: ContentFormat[] = [
+  'impossible_dilemma',
+  'survival_scenario',
+  'mini_mystery',
+  'strategy_challenge',
+  'prediction',
+  'versus_battle',
+  'chaotic_funny',
+  'future_tech',
+  'brain_logic',
+  'hot_take',
+  'interactive_minigame',
+  'result_reveal',
+];
+
+export type InteractionType =
+  | 'poll'
+  | 'open_discussion'
+  | 'prediction_vote'
+  | 'mini_game'
+  | 'scenario_choice'
+  | 'versus_vote'
+  | 'reveal_spoiler';
 
 export type DilemmaCategory =
   | 'money/lifestyle'
@@ -59,6 +138,9 @@ export interface DilemmaQualityMetadata {
   noAcademicJargon: boolean;
   noSerializedStory: boolean;
   noGenericWYR: boolean;
+  noFormulaicTradeoff: boolean;
+  hasSituationalImmersion: boolean;
+  depthRequirementsMet: boolean;
   telegramHtmlValid: boolean;
   visualAssetValid: boolean;
 }
@@ -77,9 +159,18 @@ export interface InteractiveDilemma {
   category: DilemmaCategory;
   title: string;
   hook: string;
-  scenario: string;
+  setup?: string;
+  scenario: string; // Alias and backwards-compatibility for setup
+  pressure?: string; // Concrete complication, clock, limited resources, or sudden obstacle
+  pressureTypes?: PressureType[];
+  twist?: string; // Hidden info or surprising complication
+  depth?: ContentDepth; // 'quick' | 'standard' | 'deep'
+  format?: ContentFormat; // 'impossible_dilemma' | 'survival_scenario' | ...
+  interactionType?: InteractionType;
   choices: DilemmaChoice[];
   pollQuestion?: string;
+  discussionPrompt?: string;
+  consequence?: string; // Direct immediate consequence or preview
   payoff: DilemmaPayoff;
   visualSpec: VisualSpec;
   formattedTelegramText: string;
@@ -99,6 +190,8 @@ export interface DilemmaManifestEntry {
   jsonFile: string;
   payoffPreview: string;
   qcPassed: boolean;
+  depth?: ContentDepth;
+  format?: ContentFormat;
 }
 
 export interface DilemmaStressTestManifest {
