@@ -14,4 +14,6 @@ export interface Env {
   GEMINI_API_KEY: string;
   TELEGRAM_BOT_TOKEN: string;
   TELEGRAM_CHANNEL_ID: string;
+  TELEGRAM_WEBHOOK_SECRET?: string;
+  DRY_RUN?: string;
 }

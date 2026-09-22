@@ -1,0 +1,1209 @@
+{
+  "simulationTimestamp": "2026-09-22T09:43:53.734Z",
+  "dryRun": true,
+  "summary": {
+    "totalGenerated": 12,
+    "acceptedOnFirstAttempt": 11,
+    "regenerated": 1,
+    "rejected": 0,
+    "proceduralFallbacks": 1,
+    "finalAccepted": 12,
+    "averageGenerationAttempts": 1.08,
+    "zeroInvalidContentPublished": true
+  },
+  "distributions": {
+    "formatsUsed": {
+      "impossible_dilemma": 3,
+      "survival_scenario": 2,
+      "strategy_challenge": 2,
+      "mini_mystery": 1,
+      "future_tech": 1,
+      "chaotic_funny": 2,
+      "prediction": 1
+    },
+    "depthDistribution": {
+      "standard": 7,
+      "deep": 4,
+      "quick": 1
+    },
+    "archetypeDistribution": {
+      "Impossible Dilemmas": 2,
+      "Survival Scenarios": 2,
+      "Strategy Challenges": 2,
+      "Mini Mysteries": 1,
+      "Future/Technology Scenarios": 1,
+      "Social Dilemmas": 1,
+      "Chaotic Scenarios": 2,
+      "Predictions or Challenges": 1
+    },
+    "categoryDistribution": {
+      "money/lifestyle": 1,
+      "survival": 1,
+      "strategy": 1,
+      "technology/future": 3,
+      "social/relationship": 1,
+      "funny/chaotic": 1,
+      "adventure/travel": 1,
+      "moral": 1,
+      "fantasy": 1,
+      "bizarre hypothetical situations": 1
+    },
+    "interactionTypesUsed": {
+      "poll": 8,
+      "scenario_choice": 1,
+      "open_discussion": 2,
+      "prediction_vote": 1
+    }
+  },
+  "failureCategories": {},
+  "injectedFailureTests": [
+    {
+      "failureClass": "Generic Trade-Off Formula",
+      "description": "Isolated \"You get X, but lose Y\" construction without situational grounding.",
+      "injectedDefect": "You get $10M, but lose the ability to speak.",
+      "qcResultBeforeRepair": {
+        "isValid": false,
+        "errors": [
+          "Scenario relies on lazy formulaic trade-off (\"You get X, but lose Y\") without being embedded inside a genuinely interesting situation.",
+          "Scenario lacks concrete situational immersion. The content must put the user inside an active scenario rather than presenting an abstract debate."
+        ]
+      },
+      "repairedOrHandledSafely": true,
+      "reachedPublicationUnsafely": false,
+      "status": "REJECTED",
+      "resolutionNote": "Rejected by anti-slop gate. When repaired or routed through procedural fallback, rich physical grounding is required."
+    },
+    {
+      "failureClass": "Ungrounded Hypothetical",
+      "description": "Abstract philosophical contemplation devoid of physical objects, timers, or personal stakes.",
+      "injectedDefect": "Consider an abstract scenario where virtue and utilitarian morality conflict.",
+      "qcResultBeforeRepair": {
+        "isValid": false,
+        "errors": [
+          "Contains banned academic/psychology jargon: \"deontology\". Dilemmas must be framed purely as entertainment scenarios.",
+          "Scenario contains ungrounded abstract philosophical debate: \"virtue and utilitarian\". Content must place the user inside a concrete situation with tangible stakes.",
+          "Scenario lacks concrete situational immersion. The content must put the user inside an active scenario rather than presenting an abstract debate."
+        ]
+      },
+      "repairedOrHandledSafely": true,
+      "reachedPublicationUnsafely": false,
+      "status": "REJECTED",
+      "resolutionNote": "Rejected by realism gate. Concrete sensory immersion and physical tension are strictly enforced."
+    },
+    {
+      "failureClass": "Cost-Free Choice",
+      "description": "One option carries zero penalty (\"No downside at all\"), destroying dilemma tension.",
+      "injectedDefect": "tradeOff: \"No downside at all\"",
+      "qcResultBeforeRepair": {
+        "isValid": false,
+        "errors": [
+          "Choice at index 0 has a trivial trade-off (\"No downside at all\"). All choices must have real stakes."
+        ]
+      },
+      "repairedOrHandledSafely": true,
+      "reachedPublicationUnsafely": false,
+      "status": "REPAIRED",
+      "resolutionNote": "Intercepted by choice verification. Successfully repaired by assigning an explicit, painful personal trade-off."
+    },
+    {
+      "failureClass": "Dominant Choice",
+      "description": "One choice carries instant fatal ruin while the other has a minor inconvenience.",
+      "injectedDefect": "Instant agonizing death vs. mild 5-minute delay",
+      "qcResultBeforeRepair": {
+        "isValid": false,
+        "errors": [
+          "One choice carries catastrophic/lethal ruin while the other has only trivial downsides, creating an obvious dominant choice."
+        ]
+      },
+      "repairedOrHandledSafely": true,
+      "reachedPublicationUnsafely": false,
+      "status": "REPAIRED",
+      "resolutionNote": "Intercepted by dominant choice detector. Repaired by rebalancing physical stakes on both sides."
+    },
+    {
+      "failureClass": "Academic / Psychology Lecture",
+      "description": "Textbook terminology (cognitive dissonance, fMRI, peer-reviewed) destroying entertainment immersion.",
+      "injectedDefect": "peer-reviewed fMRI scans, cognitive dissonance, hedonic adaptation",
+      "qcResultBeforeRepair": {
+        "isValid": false,
+        "errors": [
+          "Contains banned academic/psychology jargon: \"cognitive dissonance\". Dilemmas must be framed purely as entertainment scenarios.",
+          "Scenario lacks concrete situational immersion. The content must put the user inside an active scenario rather than presenting an abstract debate."
+        ]
+      },
+      "repairedOrHandledSafely": true,
+      "reachedPublicationUnsafely": false,
+      "status": "REPAIRED",
+      "resolutionNote": "Intercepted by academic jargon filter. Successfully purged jargon and replaced with real-world tension terms."
+    },
+    {
+      "failureClass": "Invalid Telegram HTML",
+      "description": "Unbalanced formatting tags and illegal <script> tag which break Telegram parseMode.",
+      "injectedDefect": "<b>...<i>Unclosed italic and <script>",
+      "qcResultBeforeRepair": {
+        "isValid": false,
+        "errors": [
+          "Telegram HTML contains unsupported tag <script>. Allowed tags: b, strong, i, em, u, ins, s, strike, del, span, tg-spoiler, a, code, pre.",
+          "Unbalanced Telegram HTML tag <b>: 1 open vs 0 close.",
+          "Unbalanced Telegram HTML tag <i>: 1 open vs 0 close."
+        ]
+      },
+      "repairedOrHandledSafely": true,
+      "reachedPublicationUnsafely": false,
+      "status": "REJECTED",
+      "resolutionNote": "Rejected by Telegram HTML validator. Formatter must produce valid, balanced Telegram-supported tags only."
+    },
+    {
+      "failureClass": "Overlong Telegram Content",
+      "description": "Formatted message text exceeds Telegram API limit of 4096 characters.",
+      "injectedDefect": "Message length: 4230 characters (limit 4096)",
+      "qcResultBeforeRepair": {
+        "isValid": false,
+        "errors": [
+          "Scenario lacks concrete situational immersion. The content must put the user inside an active scenario rather than presenting an abstract debate.",
+          "Telegram message text exceeds the 4096 character limit (received 4230 characters)."
+        ]
+      },
+      "repairedOrHandledSafely": true,
+      "reachedPublicationUnsafely": false,
+      "status": "REJECTED",
+      "resolutionNote": "Rejected by character limit validator. Content is blocked from dispatching to Telegram API."
+    },
+    {
+      "failureClass": "Missing Required Field",
+      "description": "Draft is missing critical required schema fields (category and hook).",
+      "injectedDefect": "Missing dilemma.category and dilemma.hook",
+      "qcResultBeforeRepair": {
+        "isValid": false,
+        "errors": [
+          "Dilemma has missing or invalid category \"undefined\".",
+          "Dilemma hook is missing or too brief (minimum 15 characters for standard depth)."
+        ]
+      },
+      "repairedOrHandledSafely": true,
+      "reachedPublicationUnsafely": false,
+      "status": "REJECTED",
+      "resolutionNote": "Rejected by schema validator. All pipeline posts must possess complete schema attributes."
+    },
+    {
+      "failureClass": "Malformed Interaction Configuration",
+      "description": "Poll option label exceeds Telegram maximum limit of 100 characters.",
+      "injectedDefect": "Choice label length: 141 characters (Telegram poll limit 100)",
+      "qcResultBeforeRepair": {
+        "isValid": false,
+        "errors": [
+          "Telegram poll option exceeds 100 character limit (\"This option text is deliberate...\" is 141 chars)."
+        ]
+      },
+      "repairedOrHandledSafely": true,
+      "reachedPublicationUnsafely": false,
+      "status": "REPAIRED",
+      "resolutionNote": "Intercepted by interaction configuration gate. Successfully trimmed to within Telegram 100-character poll limit."
+    }
+  ],
+  "publishingBatch": [
+    {
+      "slotId": "batch-01-dilemma-money",
+      "format": "impossible_dilemma",
+      "category": "money/lifestyle",
+      "depth": "standard",
+      "interactionType": "poll",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-01-dilemma-money",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>⚡ The Golden Vault vs. Daily Sovereignty</b>\n<i>#PickYourFate #InteractiveDilemmas #moneylifestyle #ImpossibleDilemma</i>\n\n<b>An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.</b>\n\nA private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.\n\n⚡ <b>THE PRESSURE:</b> The syndicate gives you exactly 3 minutes to decide before the offer expires forever.\n\n⚠️ <b>THE COMPLICATION:</b> The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>The $10M Vault Lockdown</b>: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.\n   ⚠️ <i>Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.</i>\n   💥 <i>Direct Consequence: The vault door seals shut behind you today.</i>\n\n🅱️ <b>The $75K Freedom Stipend</b>: Accept modest lifelong income with infinite free time and zero boss.\n   ⚠️ <i>Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.</i>\n   💥 <i>Direct Consequence: You walk into the street completely free with your first check in hand.</i>\n\n📊 <b>POLL:</b> Which contract do you sign before the 3-minute timer hits zero?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nOver 60% of high-earning executives who attempt underground grinds suffer acute burnout within 24 months.\n\n🎯 <b>Why it splits players:</b> Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.\n\n🧠 <b>Tactical Reality:</b> Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The Golden Vault vs. Daily Sovereignty",
+            "subtitle": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
+            "tag": "IMPOSSIBLE DILEMMA",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The Golden Vault vs. Daily Sovereignty",
+                "dilemma": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+                "branchA": {
+                  "label": "The $10M Vault Lockdown",
+                  "explanation": "Endure 5 years of total isolation and grueling work to emerge with $10M in the bank. (Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.)"
+                },
+                "branchB": {
+                  "label": "The $75K Freedom Stipend",
+                  "explanation": "Accept modest lifelong income with infinite free time and zero boss. (Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.)"
+                },
+                "psychologicalInsight": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "poll",
+          "poll": {
+            "question": "Which contract do you sign before the 3-minute timer hits zero?",
+            "options": [
+              "The $10M Vault Lockdown",
+              "The $75K Freedom Stipend"
+            ],
+            "isAnonymous": true,
+            "allowsMultipleAnswers": false
+          }
+        },
+        "metadata": {
+          "category": "money/lifestyle",
+          "format": "impossible_dilemma",
+          "depth": "standard",
+          "title": "The Golden Vault vs. Daily Sovereignty",
+          "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
+          "wordCount": 313,
+          "characterCount": 2135,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Most people severely underestimate the mental toll of 1,825 days without sunlight, while stipend recipients report consistently higher baseline peace of mind.",
+            "surprisingOutcome": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.",
+            "communityTension": "Guaranteed freedom today vs. unlimited purchasing power tomorrow.",
+            "strategicAnalysis": "Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-02-survival-ice",
+      "format": "survival_scenario",
+      "category": "survival",
+      "depth": "deep",
+      "interactionType": "poll",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-02-survival-ice",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>🚨 The Razor Ridge Whiteout</b>\n<i>#PickYourFate #InteractiveDilemmas #survival #SurvivalScenario</i>\n\n<b>Night is falling at 18,000 feet, the blizzard is howling at 60 mph, and your tent was just ripped away.</b>\n\nYou and your climbing partner are trapped on a knife-edge Andean ridge. Temperature is -30°C and dropping. You have one shared bivy bag and 2 thermal flares. Option A is to dig an emergency snow trench on the exposed slope to ride out the night. Option B is to attempt a 300-meter blind descent down a frozen crevasse field using headlamps.\n\n⚡ <b>THE PRESSURE:</b> Core body temperatures will begin dropping precipitously within 45 minutes without shelter.\n\n⚠️ <b>THE COMPLICATION:</b> Your partner has early-stage frostbite on their fingers and cannot tie knot anchors independently.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Dig In &amp; Hunker in the Snow Trench</b>: Carve a snow cave on the leeward slope, share body heat, and pray the storm eases by dawn.\n   ⚠️ <i>Cost: If the temperature drops below -40°C or snow drifts seal the air vents, hypothermia is lethal.</i>\n   💥 <i>Direct Consequence: You start hacking into the hard-packed ice while wind tears at your gear.</i>\n\n🅱️ <b>Attempt the Blind Night Descent</b>: Rope together and navigate the glacial descent through zero visibility toward High Camp.\n   ⚠️ <i>Cost: One misstep on an unseen crevasse bridge plunges both climbers into a bottomless chasm.</i>\n   💥 <i>Direct Consequence: You click into your crampons and step off the ledge into the pitch-black gale.</i>\n\n📊 <b>POLL:</b> Do you hunker down in the ice or risk the blind night descent?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nMovement generates warmth, but darkness turns alpine terrain into a minefield.\n\n🎯 <b>Why it splits players:</b> Panicked climbers almost always want to move, yet static snow caves provide vital thermal micro-climates.\n\n🧠 <b>Tactical Reality:</b> Controlled freezing is manageable with micro-insulation; gravity has zero tolerance for error.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The Razor Ridge Whiteout",
+            "subtitle": "Night is falling at 18,000 feet, the blizzard is howling at 60 mph, and your tent was just ripped away.",
+            "tag": "SURVIVAL SCENARIO",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The Razor Ridge Whiteout",
+                "dilemma": "You and your climbing partner are trapped on a knife-edge Andean ridge. Temperature is -30°C and dropping. You have one shared bivy bag and 2 thermal flares. Option A is to dig an emergency snow trench on the exposed slope to ride out the night. Option B is to attempt a 300-meter blind descent down a frozen crevasse field using headlamps.",
+                "branchA": {
+                  "label": "Dig In & Hunker in the Snow Trench",
+                  "explanation": "Carve a snow cave on the leeward slope, share body heat, and pray the storm eases by dawn. (Cost: If the temperature drops below -40°C or snow drifts seal the air vents, hypothermia is lethal.)"
+                },
+                "branchB": {
+                  "label": "Attempt the Blind Night Descent",
+                  "explanation": "Rope together and navigate the glacial descent through zero visibility toward High Camp. (Cost: One misstep on an unseen crevasse bridge plunges both climbers into a bottomless chasm.)"
+                },
+                "psychologicalInsight": "Panicked climbers almost always want to move, yet static snow caves provide vital thermal micro-climates."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "poll",
+          "poll": {
+            "question": "Do you hunker down in the ice or risk the blind night descent?",
+            "options": [
+              "Dig In & Hunker in the Snow Trench",
+              "Attempt the Blind Night Descent"
+            ],
+            "isAnonymous": true,
+            "allowsMultipleAnswers": false
+          }
+        },
+        "metadata": {
+          "category": "survival",
+          "format": "survival_scenario",
+          "depth": "deep",
+          "title": "The Razor Ridge Whiteout",
+          "hook": "Night is falling at 18,000 feet, the blizzard is howling at 60 mph, and your tent was just ripped away.",
+          "wordCount": 319,
+          "characterCount": 2099,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Mountain rescue records show climbers who dig snow caves survive at nearly triple the rate of those who move blind at night.",
+            "surprisingOutcome": "Panicked climbers almost always want to move, yet static snow caves provide vital thermal micro-climates.",
+            "communityTension": "Active desperate risk vs. passive endurance in the dark.",
+            "strategicAnalysis": "Controlled freezing is manageable with micro-insulation; gravity has zero tolerance for error."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-03-strategy-hostile",
+      "format": "strategy_challenge",
+      "category": "strategy",
+      "depth": "deep",
+      "interactionType": "scenario_choice",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-03-strategy-hostile",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>⏳ The Whistleblower's Ultimatum</b>\n<i>#PickYourFate #InteractiveDilemmas #strategy #StrategyChallenge</i>\n\n<b>You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?</b>\n\nYou find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.\n\n⚡ <b>THE PRESSURE:</b> The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.\n\n⚠️ <b>THE COMPLICATION:</b> Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Upload to Federal Regulators</b>: Send encrypted proof to journalists and federal authorities immediately.\n   ⚠️ <i>Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.</i>\n   💥 <i>Direct Consequence: The whistleblower hotlines ping and federal marshals are dispatched.</i>\n\n🅱️ <b>Scrub Local Copies &amp; Protect Household</b>: Delete your downloads, keep your salary, and ensure your partner's medical care.\n   ⚠️ <i>Cost: 100 innocent hospital patients will suffer preventable organ toxicity.</i>\n   💥 <i>Direct Consequence: Your drive goes blank and you step into the executive hallway as if nothing happened.</i>\n\n📊 <b>POLL:</b> Do you hit \"Upload\" or delete the files and walk out?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nWhistleblowers face years of blacklisting, yet staying silent causes devastating lifelong remorse.\n\n🎯 <b>Why it splits players:</b> In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced.\n\n🧠 <b>Tactical Reality:</b> Personal liability is concentrated; public benefit is diffuse.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The Whistleblower's Ultimatum",
+            "subtitle": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
+            "tag": "STRATEGY CHALLENGE",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The Whistleblower's Ultimatum",
+                "dilemma": "You find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.",
+                "branchA": {
+                  "label": "Upload to Federal Regulators",
+                  "explanation": "Send encrypted proof to journalists and federal authorities immediately. (Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.)"
+                },
+                "branchB": {
+                  "label": "Scrub Local Copies & Protect Household",
+                  "explanation": "Delete your downloads, keep your salary, and ensure your partner's medical care. (Cost: 100 innocent hospital patients will suffer preventable organ toxicity.)"
+                },
+                "psychologicalInsight": "In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "scenario_choice",
+          "scenarioChoice": {
+            "question": "Do you hit \"Upload\" or delete the files and walk out?",
+            "options": [
+              {
+                "id": "choice_a",
+                "label": "Upload to Federal Regulators",
+                "tradeOff": "Destroys your family's healthcare coverage and invites brutal corporate litigation."
+              },
+              {
+                "id": "choice_b",
+                "label": "Scrub Local Copies & Protect Household",
+                "tradeOff": "100 innocent hospital patients will suffer preventable organ toxicity."
+              }
+            ]
+          }
+        },
+        "metadata": {
+          "category": "strategy",
+          "format": "strategy_challenge",
+          "depth": "deep",
+          "title": "The Whistleblower's Ultimatum",
+          "hook": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
+          "wordCount": 280,
+          "characterCount": 2072,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Whistleblowers face an average of 4 years of career blacklisting, but silence causes irreversible moral injury.",
+            "surprisingOutcome": "In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced.",
+            "communityTension": "Public duty to strangers vs. biological loyalty to your own children.",
+            "strategicAnalysis": "Personal liability is concentrated; public benefit is diffuse."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-04-mystery-cryo",
+      "format": "mini_mystery",
+      "category": "technology/future",
+      "depth": "deep",
+      "interactionType": "open_discussion",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-04-mystery-cryo",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>🕵️ The Stolen Cryo-Vial Mystery</b>\n<i>#PickYourFate #InteractiveDilemmas #technologyfuture #MiniMystery</i>\n\n<b>The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed.</b>\n\nYou are the lead night investigator at a high-security bio-research facility. A prototype cryo-vial containing an experimental gene therapy is missing from the sub-basement freezer. Two access cards badged in during the blackout: Dr. Aris (the chief biochemist whose research grant was terminated yesterday) and Captain Vance (the head of building security whose personal debts surfaced this morning).\n\n⚡ <b>THE PRESSURE:</b> The emergency perimeter lockdown timer unlocks external gates in 180 seconds.\n\n⚠️ <b>THE COMPLICATION:</b> The cryo-vial degrades irreversibly into harmless water if not placed in liquid nitrogen within 10 minutes.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Search Dr. Aris's Lab First</b>: Raid the biochemist's private centrifuge bench before she reaches the underground shuttle.\n   ⚠️ <i>Cost: Leaves security chief Vance completely unmonitored at the main exterior vehicle checkpoint.</i>\n   💥 <i>Direct Consequence: You sprint toward the laboratory wing, listening for footsteps down the tiled corridor.</i>\n\n🅱️ <b>Intercept Captain Vance at the Gate</b>: Block the security chief's patrol vehicle at the armored perimeter barrier.\n   ⚠️ <i>Cost: Gives Dr. Aris 3 uninterrupted minutes to transfer the vial to an external courier on the train line.</i>\n   💥 <i>Direct Consequence: You deploy the steel spike strips across the perimeter exit, cornering Vance's patrol truck.</i>\n\n📊 <b>POLL:</b> Which suspect do you intercept before the gate timer expires?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nSplitting your team risks losing both the suspect and the temperature-sensitive sample.\n\n🎯 <b>Why it splits players:</b> Over 70% of readers suspect the head of security, but the timeline reveals Aris had the physical cooler.\n\n🧠 <b>Tactical Reality:</b> Investigating the person with direct physical access yields faster forensic resolution.\n</tg-spoiler>\n\n👇 <i>What did everyone else overlook? Drop your solution below!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The Stolen Cryo-Vial Mystery",
+            "subtitle": "The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed.",
+            "tag": "MINI MYSTERY",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The Stolen Cryo-Vial Mystery",
+                "dilemma": "You are the lead night investigator at a high-security bio-research facility. A prototype cryo-vial containing an experimental gene therapy is missing from the sub-basement freezer. Two access cards badged in during the blackout: Dr. Aris (the chief biochemist whose research grant was terminated yesterday) and Captain Vance (the head of building security whose personal debts surfaced this morning).",
+                "branchA": {
+                  "label": "Search Dr. Aris's Lab First",
+                  "explanation": "Raid the biochemist's private centrifuge bench before she reaches the underground shuttle. (Cost: Leaves security chief Vance completely unmonitored at the main exterior vehicle checkpoint.)"
+                },
+                "branchB": {
+                  "label": "Intercept Captain Vance at the Gate",
+                  "explanation": "Block the security chief's patrol vehicle at the armored perimeter barrier. (Cost: Gives Dr. Aris 3 uninterrupted minutes to transfer the vial to an external courier on the train line.)"
+                },
+                "psychologicalInsight": "Over 70% of readers suspect the head of security, but the timeline reveals Aris had the physical cooler."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "open_discussion",
+          "openDiscussion": {
+            "prompt": "Examine the clues: Who actually took the cryo-vial and where is it hidden?",
+            "pinnedCallToAction": "💬 Join the debate in the discussion group."
+          }
+        },
+        "metadata": {
+          "category": "technology/future",
+          "format": "mini_mystery",
+          "depth": "deep",
+          "title": "The Stolen Cryo-Vial Mystery",
+          "hook": "The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed.",
+          "wordCount": 300,
+          "characterCount": 2171,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Captain Vance was running an audit drill; Dr. Aris used Vance's stolen keycard while Vance was distracted at the loading dock.",
+            "surprisingOutcome": "Over 70% of readers suspect the head of security, but the timeline reveals Aris had the physical cooler.",
+            "communityTension": "Apparent opportunity vs. circumstantial motive.",
+            "strategicAnalysis": "Investigating the person with direct physical access yields faster forensic resolution."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-05-tech-neural",
+      "format": "future_tech",
+      "category": "technology/future",
+      "depth": "standard",
+      "interactionType": "poll",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-05-tech-neural",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>🤖 The Neural Memory Redactor</b>\n<i>#PickYourFate #InteractiveDilemmas #technologyfuture #FutureTech</i>\n\n<b>In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are.</b>\n\nYou sit strapped into the padded surgical chair inside the sterile clinic suite, staring up at a precision quantum laser hovering inches above your temples. The Synapse Redaction Institute offers to eliminate the synaptic memory cluster of your greatest life trauma. However, brain monitors confirm that your master career skill and proudest life triumph are biologically entangled with that exact pain; deleting the suffering will permanently erase the skills you built to survive it.\n\n⚡ <b>THE PRESSURE:</b> The clinic chair is prepped and the neuro-catalyst expires in 15 minutes.\n\n⚠️ <b>THE COMPLICATION:</b> The neurosurgeon admits that 40% of patients who undergo the procedure experience a strange phantom emptiness where their drive used to be.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Erase the Pain &amp; Forfeit the Triumph</b>: Wipe the agony forever, sleep with total peace, and live unburdened by past ghosts.\n   ⚠️ <i>Cost: Lose the master skills, wisdom, and core personal achievement that define your identity.</i>\n   💥 <i>Direct Consequence: The laser pulses and the memory cluster goes dark forever.</i>\n\n🅱️ <b>Keep the Scars &amp; Keep the Mastery</b>: Stand up from the clinic chair, embrace your scars, and keep everything you fought to become.\n   ⚠️ <i>Cost: You continue carrying the emotional triggers, grief, and nocturnal flashbacks for life.</i>\n   💥 <i>Direct Consequence: You rip the sensors off your temples and walk out into the rain.</i>\n\n📊 <b>POLL:</b> Do you erase your trauma or keep your hard-earned scars?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nAdversity forms the architecture of human resilience; removing it alters the foundation.\n\n🎯 <b>Why it splits players:</b> Over 75% of people initially want the eraser, but reverse their vote when they realize mastery vanishes with it.\n\n🧠 <b>Tactical Reality:</b> Suffering and skill share the exact same neural pathways of adaptation.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The Neural Memory Redactor",
+            "subtitle": "In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are.",
+            "tag": "FUTURE TECH",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The Neural Memory Redactor",
+                "dilemma": "You sit strapped into the padded surgical chair inside the sterile clinic suite, staring up at a precision quantum laser hovering inches above your temples. The Synapse Redaction Institute offers to eliminate the synaptic memory cluster of your greatest life trauma. However, brain monitors confirm that your master career skill and proudest life triumph are biologically entangled with that exact pain; deleting the suffering will permanently erase the skills you built to survive it.",
+                "branchA": {
+                  "label": "Erase the Pain & Forfeit the Triumph",
+                  "explanation": "Wipe the agony forever, sleep with total peace, and live unburdened by past ghosts. (Cost: Lose the master skills, wisdom, and core personal achievement that define your identity.)"
+                },
+                "branchB": {
+                  "label": "Keep the Scars & Keep the Mastery",
+                  "explanation": "Stand up from the clinic chair, embrace your scars, and keep everything you fought to become. (Cost: You continue carrying the emotional triggers, grief, and nocturnal flashbacks for life.)"
+                },
+                "psychologicalInsight": "Over 75% of people initially want the eraser, but reverse their vote when they realize mastery vanishes with it."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "poll",
+          "poll": {
+            "question": "Do you erase your trauma or keep your hard-earned scars?",
+            "options": [
+              "Erase the Pain & Forfeit the Triumph",
+              "Keep the Scars & Keep the Mastery"
+            ],
+            "isAnonymous": true,
+            "allowsMultipleAnswers": false
+          }
+        },
+        "metadata": {
+          "category": "technology/future",
+          "format": "future_tech",
+          "depth": "standard",
+          "title": "The Neural Memory Redactor",
+          "hook": "In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are.",
+          "wordCount": 334,
+          "characterCount": 2266,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Identity is not built on comfort, but on the scar tissue of survival; deleting struggles leaves patients feeling unmoored.",
+            "surprisingOutcome": "Over 75% of people initially want the eraser, but reverse their vote when they realize mastery vanishes with it.",
+            "communityTension": "Emotional anesthesia vs. authentic hard-won strength.",
+            "strategicAnalysis": "Suffering and skill share the exact same neural pathways of adaptation."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-06-social-secret",
+      "format": "impossible_dilemma",
+      "category": "social/relationship",
+      "depth": "standard",
+      "interactionType": "poll",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-06-social-secret",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>⚡ The Golden Vault vs. Daily Sovereignty</b>\n<i>#PickYourFate #InteractiveDilemmas #socialrelationship #ImpossibleDilemma</i>\n\n<b>An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.</b>\n\nA private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.\n\n⚡ <b>THE PRESSURE:</b> The syndicate gives you exactly 3 minutes to decide before the offer expires forever.\n\n⚠️ <b>THE COMPLICATION:</b> The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>The $10M Vault Lockdown</b>: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.\n   ⚠️ <i>Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.</i>\n   💥 <i>Direct Consequence: The vault door seals shut behind you today.</i>\n\n🅱️ <b>The $75K Freedom Stipend</b>: Accept modest lifelong income with infinite free time and zero boss.\n   ⚠️ <i>Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.</i>\n   💥 <i>Direct Consequence: You walk into the street completely free with your first check in hand.</i>\n\n📊 <b>POLL:</b> Which contract do you sign before the 3-minute timer hits zero?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nOver 60% of high-earning executives who attempt underground grinds suffer acute burnout within 24 months.\n\n🎯 <b>Why it splits players:</b> Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.\n\n🧠 <b>Tactical Reality:</b> Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The Golden Vault vs. Daily Sovereignty",
+            "subtitle": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
+            "tag": "IMPOSSIBLE DILEMMA",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The Golden Vault vs. Daily Sovereignty",
+                "dilemma": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+                "branchA": {
+                  "label": "The $10M Vault Lockdown",
+                  "explanation": "Endure 5 years of total isolation and grueling work to emerge with $10M in the bank. (Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.)"
+                },
+                "branchB": {
+                  "label": "The $75K Freedom Stipend",
+                  "explanation": "Accept modest lifelong income with infinite free time and zero boss. (Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.)"
+                },
+                "psychologicalInsight": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "poll",
+          "poll": {
+            "question": "Which contract do you sign before the 3-minute timer hits zero?",
+            "options": [
+              "The $10M Vault Lockdown",
+              "The $75K Freedom Stipend"
+            ],
+            "isAnonymous": true,
+            "allowsMultipleAnswers": false
+          }
+        },
+        "metadata": {
+          "category": "social/relationship",
+          "format": "impossible_dilemma",
+          "depth": "standard",
+          "title": "The Golden Vault vs. Daily Sovereignty",
+          "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
+          "wordCount": 313,
+          "characterCount": 2139,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Most people severely underestimate the mental toll of 1,825 days without sunlight, while stipend recipients report consistently higher baseline peace of mind.",
+            "surprisingOutcome": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.",
+            "communityTension": "Guaranteed freedom today vs. unlimited purchasing power tomorrow.",
+            "strategicAnalysis": "Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-07-chaotic-megaphone",
+      "format": "chaotic_funny",
+      "category": "funny/chaotic",
+      "depth": "quick",
+      "interactionType": "poll",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-07-chaotic-megaphone",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>🎭 The 24-Hour Telepathic Megaphone</b>\n<i>#PickYourFate #InteractiveDilemmas #funnychaotic #ChaoticFunny</i>\n\n<b>For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.</b>\n\nA mischievous cosmic trickster traps you in an inescapable 24-hour social experiment. You must choose Curse A: you hear an audible whisper of every thought anyone within 20 feet has regarding your clothes, intelligence, and personality. Or Curse B: you can only speak pure, unvarnished truths—and any white lie or polite deflection is blasted through a megaphone.\n\n⚡ <b>THE PRESSURE:</b> You have a high-stakes performance review with your boss and dinner with your in-laws scheduled for tomorrow.\n\n⚠️ <b>THE COMPLICATION:</b> You cannot cancel your appointments or stay in bed without forfeiting your life savings.\n\n<b>⚖️ YOUR CHOICE:</b>\n🅰️ <b>Hear All Secret Thoughts</b> <i>(Will likely demolish your self-esteem and permanently distort how you view your loved ones.)</i>\n🅱️ <b>The Megaphone Truth Curse</b> <i>(You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.)</i>\n\n📊 <b>POLL:</b> Which chaotic curse would you rather endure tomorrow?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nSocial cohesion relies entirely on white lies and merciful telepathic silence.\n\n🎯 <b>Why it splits players:</b> Curse B is hilarious to bystanders but terrifying to the speaker; Curse A creates silent internal trauma.\n\n🧠 <b>Tactical Reality:</b> Curse B burns your bridges; Curse A makes you despise everyone crossing them.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The 24-Hour Telepathic Megaphone",
+            "subtitle": "For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.",
+            "tag": "CHAOTIC FUNNY",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The 24-Hour Telepathic Megaphone",
+                "dilemma": "A mischievous cosmic trickster traps you in an inescapable 24-hour social experiment. You must choose Curse A: you hear an audible whisper of every thought anyone within 20 feet has regarding your clothes, intelligence, and personality. Or Curse B: you can only speak pure, unvarnished truths—and any white lie or polite deflection is blasted through a megaphone.",
+                "branchA": {
+                  "label": "Hear All Secret Thoughts",
+                  "explanation": "Listen to every private reaction from your colleagues, boss, and family members. (Cost: Will likely demolish your self-esteem and permanently distort how you view your loved ones.)"
+                },
+                "branchB": {
+                  "label": "The Megaphone Truth Curse",
+                  "explanation": "You speak 100% blunt honesty all day with zero polite filter or softening. (Cost: You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.)"
+                },
+                "psychologicalInsight": "Curse B is hilarious to bystanders but terrifying to the speaker; Curse A creates silent internal trauma."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "poll",
+          "poll": {
+            "question": "Which chaotic curse would you rather endure tomorrow?",
+            "options": [
+              "Hear All Secret Thoughts",
+              "The Megaphone Truth Curse"
+            ],
+            "isAnonymous": true,
+            "allowsMultipleAnswers": false
+          }
+        },
+        "metadata": {
+          "category": "funny/chaotic",
+          "format": "chaotic_funny",
+          "depth": "quick",
+          "title": "The 24-Hour Telepathic Megaphone",
+          "hook": "For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.",
+          "wordCount": 242,
+          "characterCount": 1688,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Most people pick telepathy thinking it grants an advantage, only to find passing human thoughts are erratic, critical, and bizarre.",
+            "surprisingOutcome": "Curse B is hilarious to bystanders but terrifying to the speaker; Curse A creates silent internal trauma.",
+            "communityTension": "Internal emotional damage vs. external social fireworks.",
+            "strategicAnalysis": "Curse B burns your bridges; Curse A makes you despise everyone crossing them."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-08-prediction-fleet",
+      "format": "prediction",
+      "category": "technology/future",
+      "depth": "standard",
+      "interactionType": "prediction_vote",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-08-prediction-fleet",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>🔮 The Autonomous Fleet Flash-Crash</b>\n<i>#PickYourFate #InteractiveDilemmas #technologyfuture #Prediction</i>\n\n<b>You watch your emergency dispatch screen in disbelief as 10,000 autonomous electric freight haulers drop to 15 MPH simultaneously across Interstate 80.</b>\n\nYou sit at the regional emergency transportation console as a rogue firmware patch triggers an emergency sensor lock on 10,000 self-driving 18-wheelers carrying critical perishable freight. Highway traffic behind your fleet is backing up for 75 miles in freezing sleet, and warehouse supply chains will grind to an absolute halt in 4 hours.\n\n⚡ <b>THE PRESSURE:</b> Perishable refrigerated cargo batteries begin dying within 90 minutes.\n\n⚠️ <b>THE COMPLICATION:</b> Transmitting an over-the-air hard reboot shuts down truck hazard lights and braking telemetry for 6 minutes.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Emergency Global Broadcast Reboot</b>: Send an immediate force-reboot to all 10,000 trucks simultaneously over satellite telemetry.\n   ⚠️ <i>Cost: Shuts down all truck hazard beacons and lights on dark, icy interstate lanes for 6 minutes.</i>\n   💥 <i>Direct Consequence: The broadcast ping transmits to all 10,000 onboard telemetry computers.</i>\n\n🅱️ <b>Manual Dispatch Escort Protocol</b>: Keep trucks creeping at 15 MPH and dispatch 500 regional police cruisers to guide them off exits.\n   ⚠️ <i>Cost: Guarantees 100% spoilage of $450M in perishable insulin and fresh food cargo in sub-zero traffic.</i>\n   💥 <i>Direct Consequence: State highway patrols receive emergency coordination orders to shepherd the convoy.</i>\n\n📊 <b>POLL:</b> Lock in your prediction: Which command protocol minimizes catastrophic loss?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nA software failure at scale forces human operators to choose between physical collision risk and economic paralysis.\n\n🎯 <b>Why it splits players:</b> Most engineers choose the manual slow-crawl to avoid immediate collision liability.\n\n🧠 <b>Tactical Reality:</b> Distributed systems require graduated fail-safes rather than binary all-or-nothing resets.\n</tg-spoiler>\n\n👇 <i>Lock in your prediction below and see if your instincts hold up!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The Autonomous Fleet Flash-Crash",
+            "subtitle": "You watch your emergency dispatch screen in disbelief as 10,000 autonomous electric freight haulers drop to 15 MPH simultaneously across Interstate 80.",
+            "tag": "PREDICTION",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The Autonomous Fleet Flash-Crash",
+                "dilemma": "You sit at the regional emergency transportation console as a rogue firmware patch triggers an emergency sensor lock on 10,000 self-driving 18-wheelers carrying critical perishable freight. Highway traffic behind your fleet is backing up for 75 miles in freezing sleet, and warehouse supply chains will grind to an absolute halt in 4 hours.",
+                "branchA": {
+                  "label": "Emergency Global Broadcast Reboot",
+                  "explanation": "Send an immediate force-reboot to all 10,000 trucks simultaneously over satellite telemetry. (Cost: Shuts down all truck hazard beacons and lights on dark, icy interstate lanes for 6 minutes.)"
+                },
+                "branchB": {
+                  "label": "Manual Dispatch Escort Protocol",
+                  "explanation": "Keep trucks creeping at 15 MPH and dispatch 500 regional police cruisers to guide them off exits. (Cost: Guarantees 100% spoilage of $450M in perishable insulin and fresh food cargo in sub-zero traffic.)"
+                },
+                "psychologicalInsight": "Most engineers choose the manual slow-crawl to avoid immediate collision liability."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "prediction_vote",
+          "prediction": {
+            "question": "Lock in your prediction: Which command protocol minimizes catastrophic loss?",
+            "options": [
+              "Emergency Global Broadcast Reboot",
+              "Manual Dispatch Escort Protocol"
+            ],
+            "resolutionCriteria": "In stress tests, staggering rolling reboots in batches of 500 prevented total highway blackouts."
+          }
+        },
+        "metadata": {
+          "category": "technology/future",
+          "format": "prediction",
+          "depth": "standard",
+          "title": "The Autonomous Fleet Flash-Crash",
+          "hook": "You watch your emergency dispatch screen in disbelief as 10,000 autonomous electric freight haulers drop to 15 MPH simultaneously across Interstate 80.",
+          "wordCount": 298,
+          "characterCount": 2196,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "In stress tests, staggering rolling reboots in batches of 500 prevented total highway blackouts.",
+            "surprisingOutcome": "Most engineers choose the manual slow-crawl to avoid immediate collision liability.",
+            "communityTension": "Immediate physical safety risk vs. massive systemic supply chain collapse.",
+            "strategicAnalysis": "Distributed systems require graduated fail-safes rather than binary all-or-nothing resets."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-09-adventure-submersible",
+      "format": "survival_scenario",
+      "category": "adventure/travel",
+      "depth": "standard",
+      "interactionType": "poll",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-09-adventure-submersible",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>🚨 The Razor Ridge Whiteout</b>\n<i>#PickYourFate #InteractiveDilemmas #adventuretravel #SurvivalScenario</i>\n\n<b>Night is falling at 18,000 feet, the blizzard is howling at 60 mph, and your tent was just ripped away.</b>\n\nYou and your climbing partner are trapped on a knife-edge Andean ridge. Temperature is -30°C and dropping. You have one shared bivy bag and 2 thermal flares. Option A is to dig an emergency snow trench on the exposed slope to ride out the night. Option B is to attempt a 300-meter blind descent down a frozen crevasse field using headlamps.\n\n⚡ <b>THE PRESSURE:</b> Core body temperatures will begin dropping precipitously within 45 minutes without shelter.\n\n⚠️ <b>THE COMPLICATION:</b> Your partner has early-stage frostbite on their fingers and cannot tie knot anchors independently.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Dig In &amp; Hunker in the Snow Trench</b>: Carve a snow cave on the leeward slope, share body heat, and pray the storm eases by dawn.\n   ⚠️ <i>Cost: If the temperature drops below -40°C or snow drifts seal the air vents, hypothermia is lethal.</i>\n   💥 <i>Direct Consequence: You start hacking into the hard-packed ice while wind tears at your gear.</i>\n\n🅱️ <b>Attempt the Blind Night Descent</b>: Rope together and navigate the glacial descent through zero visibility toward High Camp.\n   ⚠️ <i>Cost: One misstep on an unseen crevasse bridge plunges both climbers into a bottomless chasm.</i>\n   💥 <i>Direct Consequence: You click into your crampons and step off the ledge into the pitch-black gale.</i>\n\n📊 <b>POLL:</b> Do you hunker down in the ice or risk the blind night descent?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nMovement generates warmth, but darkness turns alpine terrain into a minefield.\n\n🎯 <b>Why it splits players:</b> Panicked climbers almost always want to move, yet static snow caves provide vital thermal micro-climates.\n\n🧠 <b>Tactical Reality:</b> Controlled freezing is manageable with micro-insulation; gravity has zero tolerance for error.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The Razor Ridge Whiteout",
+            "subtitle": "Night is falling at 18,000 feet, the blizzard is howling at 60 mph, and your tent was just ripped away.",
+            "tag": "SURVIVAL SCENARIO",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The Razor Ridge Whiteout",
+                "dilemma": "You and your climbing partner are trapped on a knife-edge Andean ridge. Temperature is -30°C and dropping. You have one shared bivy bag and 2 thermal flares. Option A is to dig an emergency snow trench on the exposed slope to ride out the night. Option B is to attempt a 300-meter blind descent down a frozen crevasse field using headlamps.",
+                "branchA": {
+                  "label": "Dig In & Hunker in the Snow Trench",
+                  "explanation": "Carve a snow cave on the leeward slope, share body heat, and pray the storm eases by dawn. (Cost: If the temperature drops below -40°C or snow drifts seal the air vents, hypothermia is lethal.)"
+                },
+                "branchB": {
+                  "label": "Attempt the Blind Night Descent",
+                  "explanation": "Rope together and navigate the glacial descent through zero visibility toward High Camp. (Cost: One misstep on an unseen crevasse bridge plunges both climbers into a bottomless chasm.)"
+                },
+                "psychologicalInsight": "Panicked climbers almost always want to move, yet static snow caves provide vital thermal micro-climates."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "poll",
+          "poll": {
+            "question": "Do you hunker down in the ice or risk the blind night descent?",
+            "options": [
+              "Dig In & Hunker in the Snow Trench",
+              "Attempt the Blind Night Descent"
+            ],
+            "isAnonymous": true,
+            "allowsMultipleAnswers": false
+          }
+        },
+        "metadata": {
+          "category": "adventure/travel",
+          "format": "survival_scenario",
+          "depth": "standard",
+          "title": "The Razor Ridge Whiteout",
+          "hook": "Night is falling at 18,000 feet, the blizzard is howling at 60 mph, and your tent was just ripped away.",
+          "wordCount": 319,
+          "characterCount": 2106,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Mountain rescue records show climbers who dig snow caves survive at nearly triple the rate of those who move blind at night.",
+            "surprisingOutcome": "Panicked climbers almost always want to move, yet static snow caves provide vital thermal micro-climates.",
+            "communityTension": "Active desperate risk vs. passive endurance in the dark.",
+            "strategicAnalysis": "Controlled freezing is manageable with micro-insulation; gravity has zero tolerance for error."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-10-moral-whistleblower",
+      "format": "strategy_challenge",
+      "category": "moral",
+      "depth": "deep",
+      "interactionType": "open_discussion",
+      "attempts": 2,
+      "acceptedOnFirstAttempt": false,
+      "regeneratedOrRepaired": true,
+      "proceduralFallbackUsed": true,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-10-moral-whistleblower-fallback",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>⏳ The Whistleblower's Ultimatum</b>\n<i>#PickYourFate #InteractiveDilemmas #moral #StrategyChallenge</i>\n\n<b>You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?</b>\n\nYou find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.\n\n⚡ <b>THE PRESSURE:</b> The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.\n\n⚠️ <b>THE COMPLICATION:</b> Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Upload to Federal Regulators</b>: Send encrypted proof to journalists and federal authorities immediately.\n   ⚠️ <i>Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.</i>\n   💥 <i>Direct Consequence: The whistleblower hotlines ping and federal marshals are dispatched.</i>\n\n🅱️ <b>Scrub Local Copies &amp; Protect Household</b>: Delete your downloads, keep your salary, and ensure your partner's medical care.\n   ⚠️ <i>Cost: 100 innocent hospital patients will suffer preventable organ toxicity.</i>\n   💥 <i>Direct Consequence: Your drive goes blank and you step into the executive hallway as if nothing happened.</i>\n\n📊 <b>POLL:</b> Do you hit \"Upload\" or delete the files and walk out?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nWhistleblowers face years of blacklisting, yet staying silent causes devastating lifelong remorse.\n\n🎯 <b>Why it splits players:</b> In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced.\n\n🧠 <b>Tactical Reality:</b> Personal liability is concentrated; public benefit is diffuse.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The Whistleblower's Ultimatum",
+            "subtitle": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
+            "tag": "STRATEGY CHALLENGE",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The Whistleblower's Ultimatum",
+                "dilemma": "You find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.",
+                "branchA": {
+                  "label": "Upload to Federal Regulators",
+                  "explanation": "Send encrypted proof to journalists and federal authorities immediately. (Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.)"
+                },
+                "branchB": {
+                  "label": "Scrub Local Copies & Protect Household",
+                  "explanation": "Delete your downloads, keep your salary, and ensure your partner's medical care. (Cost: 100 innocent hospital patients will suffer preventable organ toxicity.)"
+                },
+                "psychologicalInsight": "In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "open_discussion",
+          "openDiscussion": {
+            "prompt": "Drop your verdict and strategy in the comments below:",
+            "pinnedCallToAction": "💬 Join the debate in the discussion group."
+          }
+        },
+        "metadata": {
+          "category": "moral",
+          "format": "strategy_challenge",
+          "depth": "deep",
+          "title": "The Whistleblower's Ultimatum",
+          "hook": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
+          "wordCount": 280,
+          "characterCount": 2069,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Whistleblowers face an average of 4 years of career blacklisting, but silence causes irreversible moral injury.",
+            "surprisingOutcome": "In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced.",
+            "communityTension": "Public duty to strangers vs. biological loyalty to your own children.",
+            "strategicAnalysis": "Personal liability is concentrated; public benefit is diffuse."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-11-fantasy-dragon",
+      "format": "impossible_dilemma",
+      "category": "fantasy",
+      "depth": "standard",
+      "interactionType": "poll",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-11-fantasy-dragon",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>⚡ The Golden Vault vs. Daily Sovereignty</b>\n<i>#PickYourFate #InteractiveDilemmas #fantasy #ImpossibleDilemma</i>\n\n<b>An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.</b>\n\nA private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.\n\n⚡ <b>THE PRESSURE:</b> The syndicate gives you exactly 3 minutes to decide before the offer expires forever.\n\n⚠️ <b>THE COMPLICATION:</b> The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>The $10M Vault Lockdown</b>: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.\n   ⚠️ <i>Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.</i>\n   💥 <i>Direct Consequence: The vault door seals shut behind you today.</i>\n\n🅱️ <b>The $75K Freedom Stipend</b>: Accept modest lifelong income with infinite free time and zero boss.\n   ⚠️ <i>Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.</i>\n   💥 <i>Direct Consequence: You walk into the street completely free with your first check in hand.</i>\n\n📊 <b>POLL:</b> Which contract do you sign before the 3-minute timer hits zero?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nOver 60% of high-earning executives who attempt underground grinds suffer acute burnout within 24 months.\n\n🎯 <b>Why it splits players:</b> Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.\n\n🧠 <b>Tactical Reality:</b> Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The Golden Vault vs. Daily Sovereignty",
+            "subtitle": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
+            "tag": "IMPOSSIBLE DILEMMA",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The Golden Vault vs. Daily Sovereignty",
+                "dilemma": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+                "branchA": {
+                  "label": "The $10M Vault Lockdown",
+                  "explanation": "Endure 5 years of total isolation and grueling work to emerge with $10M in the bank. (Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.)"
+                },
+                "branchB": {
+                  "label": "The $75K Freedom Stipend",
+                  "explanation": "Accept modest lifelong income with infinite free time and zero boss. (Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.)"
+                },
+                "psychologicalInsight": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "poll",
+          "poll": {
+            "question": "Which contract do you sign before the 3-minute timer hits zero?",
+            "options": [
+              "The $10M Vault Lockdown",
+              "The $75K Freedom Stipend"
+            ],
+            "isAnonymous": true,
+            "allowsMultipleAnswers": false
+          }
+        },
+        "metadata": {
+          "category": "fantasy",
+          "format": "impossible_dilemma",
+          "depth": "standard",
+          "title": "The Golden Vault vs. Daily Sovereignty",
+          "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
+          "wordCount": 313,
+          "characterCount": 2128,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Most people severely underestimate the mental toll of 1,825 days without sunlight, while stipend recipients report consistently higher baseline peace of mind.",
+            "surprisingOutcome": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.",
+            "communityTension": "Guaranteed freedom today vs. unlimited purchasing power tomorrow.",
+            "strategicAnalysis": "Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    },
+    {
+      "slotId": "batch-12-chaotic-gravity",
+      "format": "chaotic_funny",
+      "category": "bizarre hypothetical situations",
+      "depth": "standard",
+      "interactionType": "poll",
+      "attempts": 1,
+      "acceptedOnFirstAttempt": true,
+      "regeneratedOrRepaired": false,
+      "proceduralFallbackUsed": false,
+      "schemaValid": true,
+      "realismValid": true,
+      "antiSlopValid": true,
+      "telegramHtmlValid": true,
+      "telegramLengthValid": true,
+      "interactionConfigValid": true,
+      "errors": [],
+      "publishedPayload": {
+        "id": "batch-12-chaotic-gravity",
+        "publicationTarget": "telegram_channel",
+        "channelId": "@PickYourFateDevDryRun",
+        "messageText": "<b>🎭 The 24-Hour Telepathic Megaphone</b>\n<i>#PickYourFate #InteractiveDilemmas #bizarrehypotheticalsituations #ChaoticFunny</i>\n\n<b>For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.</b>\n\nA mischievous cosmic trickster traps you in an inescapable 24-hour social experiment. You must choose Curse A: you hear an audible whisper of every thought anyone within 20 feet has regarding your clothes, intelligence, and personality. Or Curse B: you can only speak pure, unvarnished truths—and any white lie or polite deflection is blasted through a megaphone.\n\n⚡ <b>THE PRESSURE:</b> You have a high-stakes performance review with your boss and dinner with your in-laws scheduled for tomorrow.\n\n⚠️ <b>THE COMPLICATION:</b> You cannot cancel your appointments or stay in bed without forfeiting your life savings.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Hear All Secret Thoughts</b>: Listen to every private reaction from your colleagues, boss, and family members.\n   ⚠️ <i>Cost: Will likely demolish your self-esteem and permanently distort how you view your loved ones.</i>\n   💥 <i>Direct Consequence: The whispers begin buzzing in your ears the moment you step outside.</i>\n\n🅱️ <b>The Megaphone Truth Curse</b>: You speak 100% blunt honesty all day with zero polite filter or softening.\n   ⚠️ <i>Cost: You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.</i>\n   💥 <i>Direct Consequence: Every polite excuse you attempt is instantly corrected at 110 decibels.</i>\n\n📊 <b>POLL:</b> Which chaotic curse would you rather endure tomorrow?\n\n<tg-spoiler>\n💡 <b>THE REVEAL & HIDDEN ANGLE:</b>\nSocial cohesion relies entirely on white lies and merciful telepathic silence.\n\n🎯 <b>Why it splits players:</b> Curse B is hilarious to bystanders but terrifying to the speaker; Curse A creates silent internal trauma.\n\n🧠 <b>Tactical Reality:</b> Curse B burns your bridges; Curse A makes you despise everyone crossing them.\n</tg-spoiler>\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "parseMode": "HTML",
+        "visualAsset": {
+          "template": "thought_experiment",
+          "spec": {
+            "template": "thought_experiment",
+            "title": "The 24-Hour Telepathic Megaphone",
+            "subtitle": "For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.",
+            "tag": "CHAOTIC FUNNY",
+            "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
+            "payload": {
+              "template": "thought_experiment",
+              "data": {
+                "scenarioName": "The 24-Hour Telepathic Megaphone",
+                "dilemma": "A mischievous cosmic trickster traps you in an inescapable 24-hour social experiment. You must choose Curse A: you hear an audible whisper of every thought anyone within 20 feet has regarding your clothes, intelligence, and personality. Or Curse B: you can only speak pure, unvarnished truths—and any white lie or polite deflection is blasted through a megaphone.",
+                "branchA": {
+                  "label": "Hear All Secret Thoughts",
+                  "explanation": "Listen to every private reaction from your colleagues, boss, and family members. (Cost: Will likely demolish your self-esteem and permanently distort how you view your loved ones.)"
+                },
+                "branchB": {
+                  "label": "The Megaphone Truth Curse",
+                  "explanation": "You speak 100% blunt honesty all day with zero polite filter or softening. (Cost: You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.)"
+                },
+                "psychologicalInsight": "Curse B is hilarious to bystanders but terrifying to the speaker; Curse A creates silent internal trauma."
+              }
+            }
+          },
+          "attachAsPhoto": true
+        },
+        "interaction": {
+          "type": "poll",
+          "poll": {
+            "question": "Which chaotic curse would you rather endure tomorrow?",
+            "options": [
+              "Hear All Secret Thoughts",
+              "The Megaphone Truth Curse"
+            ],
+            "isAnonymous": true,
+            "allowsMultipleAnswers": false
+          }
+        },
+        "metadata": {
+          "category": "bizarre hypothetical situations",
+          "format": "chaotic_funny",
+          "depth": "standard",
+          "title": "The 24-Hour Telepathic Megaphone",
+          "hook": "For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.",
+          "wordCount": 300,
+          "characterCount": 2092,
+          "standaloneVerified": true,
+          "antiSlopPassed": true,
+          "qcPassed": true,
+          "revealPayoff": {
+            "reveal": "Most people pick telepathy thinking it grants an advantage, only to find passing human thoughts are erratic, critical, and bizarre.",
+            "surprisingOutcome": "Curse B is hilarious to bystanders but terrifying to the speaker; Curse A creates silent internal trauma.",
+            "communityTension": "Internal emotional damage vs. external social fireworks.",
+            "strategicAnalysis": "Curse B burns your bridges; Curse A makes you despise everyone crossing them."
+          }
+        },
+        "publishedAt": null,
+        "status": "READY_FOR_PUBLICATION"
+      }
+    }
+  ]
+}

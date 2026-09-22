@@ -1,0 +1,139 @@
+{
+  "timestamp": "2026-09-22T08:45:00.000Z",
+  "engine": "Pick Your Fate & Interactive Dilemmas Telegram Interaction Engine",
+  "auditVerdict": "READY_FOR_DEPLOYMENT",
+  "summary": {
+    "totalAreasAudited": 13,
+    "blockers": 0,
+    "warnings": 3,
+    "info": 9,
+    "totalTests": 67,
+    "passingTests": 67,
+    "failingTests": 0
+  },
+  "areas": {
+    "1_workerEntrypoint": {
+      "status": "PASSED",
+      "verdict": "INFO",
+      "entrypoint": "worker/src/index.ts",
+      "routesHandled": ["/health", "/webhook", "/telegram/webhook", "/plan"],
+      "scheduledHandler": "ctx.waitUntil(tick(env, event))",
+      "localDevServerRequired": false
+    },
+    "2_environmentVariablesAndSecrets": {
+      "status": "PASSED",
+      "verdict": "WARNING",
+      "publicVars": ["GEMINI_MODEL", "PUBLISHING_ENABLED", "DISCUSSION_GROUP_LINKED"],
+      "secretVars": [
+        "TELEGRAM_BOT_TOKEN",
+        "TELEGRAM_CHANNEL_ID",
+        "TELEGRAM_WEBHOOK_SECRET",
+        "GEMINI_API_KEY",
+        "DRY_RUN"
+      ],
+      "secretsHardcoded": false,
+      "remediationApplied": "Updated worker/.dev.vars.example to include TELEGRAM_WEBHOOK_SECRET and DRY_RUN"
+    },
+    "3_cloudflareBindings": {
+      "status": "PASSED",
+      "verdict": "WARNING",
+      "bindings": {
+        "D1": "DB",
+        "KV": "KV",
+        "R2": "ARCHIVE"
+      },
+      "filesystemPersistenceUsed": false,
+      "note": "Wrangler auto-provisions locally; production headless deployment requires explicit database_id and namespace id"
+    },
+    "4_d1Migrations": {
+      "status": "PASSED",
+      "verdict": "INFO",
+      "migrationFile": "worker/migrations/0001_interaction_engine.sql",
+      "schemaVersion": "2",
+      "tablesCount": 11,
+      "foreignKeysValid": true,
+      "coveringIndexesPresent": true,
+      "idempotentExecution": true
+    },
+    "5_cronScheduledHandler": {
+      "status": "PASSED",
+      "verdict": "INFO",
+      "cronTrigger": "*/30 * * * *",
+      "nonBlocking": true,
+      "atomicLocking": true,
+      "idempotentRetry": true
+    },
+    "6_telegramWebhook": {
+      "status": "PASSED",
+      "verdict": "INFO",
+      "routes": ["/webhook", "/telegram/webhook"],
+      "secretTokenAuth": "Constant-time XOR verification",
+      "deduplication": "update_id PRIMARY KEY with INSERT ON CONFLICT DO NOTHING",
+      "malformedPayloadHandling": "400 Bad Request",
+      "unknownPollHandling": "200 OK with ignored_unknown_poll status"
+    },
+    "7_telegramApiClient": {
+      "status": "PASSED",
+      "verdict": "INFO",
+      "mockInDryRun": true,
+      "requestTimeouts": "15000ms AbortSignal timeout added to HttpTelegramClient",
+      "tokenLeakageInErrors": false,
+      "stopPollGracefulHandling": true
+    },
+    "8_geminiIntegration": {
+      "status": "PASSED",
+      "verdict": "INFO",
+      "sdk": "@google/genai",
+      "model": "gemini-2.5-flash",
+      "proceduralFallbackAvailable": true,
+      "retryLimit": 2,
+      "infiniteLoopRisk": false,
+      "tokenLeakageInLogs": false
+    },
+    "9_databasePerformance": {
+      "status": "PASSED",
+      "verdict": "INFO",
+      "indexedFields": [
+        "users(telegram_user_id)",
+        "posts(status, scheduled_for)",
+        "published_messages(post_id, message_type)",
+        "published_messages(telegram_chat_id, telegram_message_id)",
+        "interactions(lifecycle_state, closes_at)",
+        "polls(telegram_poll_id)",
+        "votes(poll_id, user_id)",
+        "votes(interaction_id, status)",
+        "results(interaction_id)",
+        "webhook_events(update_id)"
+      ],
+      "inefficientQueriesDetected": 0
+    },
+    "10_observability": {
+      "status": "PASSED",
+      "verdict": "INFO",
+      "structuredLogs": true,
+      "sensitiveFieldsRedacted": true,
+      "tokensLogged": false
+    },
+    "11_failureRecovery": {
+      "status": "PASSED",
+      "verdict": "INFO",
+      "caseA_workerCrashBeforePublish": "Handled: existing draft/validated interaction is resumed cleanly",
+      "caseB_telegramAcceptsWorkerTimeout": "Documented: manual audit or idempotent retry verification",
+      "caseC_duplicateWebhookDelivery": "Handled: update_id deduplication returns HTTP 200 without duplicate votes",
+      "caseD_concurrentScheduledClosure": "Handled: atomic SQL UPDATE WHERE lifecycle_state = 'OPEN' guarantees single execution",
+      "caseE_resultPublishFailure": "Handled: status stays generated, retries on subsequent cron without regenerating",
+      "caseF_crashBeforeCompletedState": "Handled: existing published result detected, advances to COMPLETED without re-sending"
+    },
+    "12_serverStartFailure": {
+      "status": "RESOLVED",
+      "verdict": "WARNING",
+      "rootCause": "Root package.json lacked dev and start scripts. Google AI Studio expects a dev server on port 3000 to render the container preview iframe.",
+      "resolution": "Added standalone server.ts on port 3000 and configured dev and start scripts in package.json."
+    },
+    "13_deploymentChecklist": {
+      "status": "COMPLETED",
+      "verdict": "INFO",
+      "documentationPath": "docs/deployment-readiness.md"
+    }
+  }
+}

@@ -1,0 +1,227 @@
+{
+  "timestamp": "2026-09-22T09:43:52.107Z",
+  "dryRun": true,
+  "summary": {
+    "scenariosExecuted": 6,
+    "scenariosPassed": 6,
+    "scenariosFailed": 0,
+    "zeroRealTelegramCalls": true,
+    "zeroOrphanRecords": true,
+    "zeroDuplicatePublications": true
+  },
+  "scenarios": {
+    "scenario1_nativePoll": {
+      "status": "passed",
+      "generatedContentId": "dilemma-101",
+      "title": "The Golden Vault vs. Daily Sovereignty",
+      "category": "survival",
+      "format": "impossible_dilemma",
+      "depth": "deep",
+      "qualityPassed": true,
+      "lifecycleTransitions": [
+        "DRAFT",
+        "VALIDATED",
+        "PUBLISHED",
+        "OPEN",
+        "CLOSED",
+        "RESOLVING",
+        "RESULT_POSTED",
+        "COMPLETED"
+      ],
+      "telegramMockIds": {
+        "mainMessageId": 1001,
+        "pollMessageId": 1002,
+        "telegramPollId": "tg_poll_5001",
+        "resultMessageId": 1003
+      },
+      "simulatedUsers": [
+        {
+          "telegramUserId": 1001,
+          "username": "ranger_apex",
+          "action": "vote",
+          "optionIndex": 0
+        },
+        {
+          "telegramUserId": 1002,
+          "username": "sara_v",
+          "action": "vote",
+          "optionIndex": 0
+        },
+        {
+          "telegramUserId": 1003,
+          "username": "dr_morales",
+          "action": "vote",
+          "optionIndex": 1
+        },
+        {
+          "telegramUserId": 1004,
+          "username": "ghost_pilot",
+          "action": "vote",
+          "optionIndex": 1
+        },
+        {
+          "telegramUserId": 1005,
+          "username": "outpost_lead",
+          "action": "vote",
+          "optionIndex": 0
+        }
+      ],
+      "voteChanges": {
+        "initialVotesCount": 5,
+        "afterChangeCount": 5,
+        "afterWithdrawCount": 4,
+        "duplicateUpdateHandled": true
+      },
+      "finalVoteDistribution": {
+        "totalParticipants": 4,
+        "winningOptionText": "The $10M Vault Lockdown",
+        "winningPercentage": 75,
+        "options": [
+          {
+            "text": "The $10M Vault Lockdown",
+            "voteCount": 3,
+            "percentage": 75,
+            "isWinner": true
+          },
+          {
+            "text": "The $75K Freedom Stipend",
+            "voteCount": 1,
+            "percentage": 25,
+            "isWinner": false
+          }
+        ]
+      },
+      "revealText": "Most people severely underestimate the mental toll of 1,825 days without sunlight, while stipend recipients report consistently higher baseline peace of mind."
+    },
+    "scenario2_nonPollContent": {
+      "status": "passed",
+      "generatedContentId": "dilemma-102",
+      "title": "The Stolen Cryo-Vial Mystery",
+      "format": "mini_mystery",
+      "qualityPassed": true,
+      "interactionType": "open_discussion",
+      "pollCreated": false,
+      "lifecycleTransitions": [
+        "DRAFT",
+        "VALIDATED",
+        "PUBLISHED",
+        "OPEN",
+        "CLOSED",
+        "RESOLVING",
+        "RESULT_POSTED",
+        "COMPLETED"
+      ],
+      "resultPublished": true,
+      "telegramMessageId": 1004
+    },
+    "scenario3_failureRecovery": {
+      "status": "passed",
+      "tests": [
+        {
+          "caseName": "Telegram API publish failure interception",
+          "passed": true,
+          "detail": "Initial publish call failed safely when Telegram client returned network error"
+        },
+        {
+          "caseName": "Safe publish retry recovery",
+          "passed": true,
+          "detail": "Retrying publish succeeded and updated post status to published"
+        },
+        {
+          "caseName": "Vote rejection after interaction closed",
+          "passed": true,
+          "detail": "Votes received after closure are ignored without throwing errors"
+        },
+        {
+          "caseName": "Resilient poll closure on stopPoll error",
+          "passed": true,
+          "detail": "Closure service handled stopPoll failure gracefully and proceeded to post reveal"
+        }
+      ],
+      "duplicatePostsPrevented": true,
+      "duplicateResultsPrevented": true,
+      "lifecycleTransitionsGuarded": true
+    },
+    "scenario4_concurrency": {
+      "status": "passed",
+      "interactionId": "int_post_concurrency_01",
+      "workerA_outcome": {
+        "interactionId": "int_post_concurrency_01",
+        "processed": true,
+        "resultPostMessageId": 1013,
+        "totalParticipants": 0
+      },
+      "workerB_outcome": {
+        "interactionId": "int_post_concurrency_01",
+        "processed": false,
+        "reason": "already_closed_or_not_open"
+      },
+      "totalPollStops": 1,
+      "totalResultPosts": 1,
+      "isConsistent": true
+    },
+    "scenario5_webhookSecurity": {
+      "status": "passed",
+      "checks": [
+        {
+          "test": "valid Telegram secret token",
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        {
+          "test": "invalid Telegram secret token",
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        },
+        {
+          "test": "missing secret token header",
+          "expectedStatus": 401,
+          "actualStatus": 401,
+          "passed": true
+        },
+        {
+          "test": "duplicate update_id safe acknowledgement",
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        },
+        {
+          "test": "malformed update missing update_id",
+          "expectedStatus": 400,
+          "actualStatus": 400,
+          "passed": true
+        },
+        {
+          "test": "unknown poll_id handled safely without error",
+          "expectedStatus": 200,
+          "actualStatus": 200,
+          "passed": true
+        }
+      ],
+      "secretsExposedInLogs": false
+    },
+    "scenario6_dataIntegrity": {
+      "status": "passed",
+      "totalPosts": 5,
+      "totalInteractions": 5,
+      "totalPublishedMessages": 14,
+      "totalPolls": 4,
+      "totalPollOptions": 8,
+      "totalUsers": 5,
+      "totalVotes": 5,
+      "totalResults": 4,
+      "orphanChecks": {
+        "interactionsWithoutPost": 0,
+        "publishedMessagesWithoutPost": 0,
+        "pollsWithoutInteraction": 0,
+        "pollOptionsWithoutPoll": 0,
+        "votesWithoutPoll": 0,
+        "votesWithoutUser": 0,
+        "resultsWithoutInteraction": 0
+      },
+      "allChainsIntact": true
+    }
+  }
+}

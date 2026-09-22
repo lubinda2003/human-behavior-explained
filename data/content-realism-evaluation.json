@@ -1,0 +1,775 @@
+{
+  "generatedAt": "2026-09-22T09:43:48.746Z",
+  "channelContext": "Pick Your Fate · Interactive Dilemmas & Impossible Choices",
+  "totalSamples": 16,
+  "classifications": {
+    "STRONG": 12,
+    "ACCEPTABLE": 0,
+    "WEAK": 1,
+    "REJECT": 3
+  },
+  "recurringWeaknesses": {
+    "repetitiveOpenings": {
+      "count": 1,
+      "examples": [
+        "eval-sample-13-control-wyr: \"Would you rather receive $1 million but you can never spend ...\""
+      ]
+    },
+    "repetitiveTradeoffStructures": {
+      "count": 0,
+      "examples": []
+    },
+    "obviousChoices": {
+      "count": 1,
+      "examples": [
+        "eval-sample-16-control-obvious: The Trivial Snack vs. Pit of Vipers"
+      ]
+    },
+    "weakStakes": {
+      "count": 3,
+      "examples": [
+        "eval-sample-13-control-wyr: The Million Dollar Vault Riddle",
+        "eval-sample-15-control-academic: The Dissonance Experiment",
+        "eval-sample-16-control-obvious: The Trivial Snack vs. Pit of Vipers"
+      ]
+    },
+    "artificialScenarios": {
+      "count": 1,
+      "examples": [
+        "eval-sample-13-control-wyr: The Million Dollar Vault Riddle"
+      ]
+    },
+    "excessiveExposition": {
+      "count": 0,
+      "examples": []
+    },
+    "predictableTwists": {
+      "count": 0,
+      "examples": []
+    },
+    "genericWording": {
+      "count": 1,
+      "phrases": [
+        "eval-sample-15-control-academic: academic jargon detected"
+      ]
+    },
+    "overuseMoneyLifeDeath": {
+      "count": 6,
+      "percentage": "37.5%",
+      "examples": [
+        "eval-sample-03: The Golden Vault vs. Daily Sovereignty",
+        "eval-sample-04: The Golden Vault vs. Daily Sovereignty",
+        "eval-sample-05: The Golden Vault vs. Daily Sovereignty",
+        "eval-sample-11: The Golden Vault vs. Daily Sovereignty",
+        "eval-sample-13-control-wyr: The Million Dollar Vault Riddle",
+        "eval-sample-16-control-obvious: The Trivial Snack vs. Pit of Vipers"
+      ]
+    },
+    "excessiveXButLoseY": {
+      "count": 2,
+      "examples": [
+        "eval-sample-13-control-wyr: \"You receive $1 million, but you can never spend it on anythi...\"",
+        "eval-sample-14-control-formulaic: \"You get unlimited energy, but you lose the ability to sleep....\""
+      ]
+    }
+  },
+  "samples": [
+    {
+      "sampleId": "eval-sample-01",
+      "title": "The Razor Ridge Whiteout",
+      "format": "survival_scenario",
+      "depth": "quick",
+      "archetype": "Survival",
+      "category": "survival",
+      "generatedScenario": {
+        "hook": "Night is falling at 18,000 feet, the blizzard is howling at 60 mph, and your tent was just ripped away.",
+        "setup": "You and your climbing partner are trapped on a knife-edge Andean ridge. Temperature is -30°C and dropping. You have one shared bivy bag and 2 thermal flares. Option A is to dig an emergency snow trench on the exposed slope to ride out the night. Option B is to attempt a 300-meter blind descent down a frozen crevasse field using headlamps.",
+        "pressure": "Core body temperatures will begin dropping precipitously within 45 minutes without shelter.",
+        "twist": "Your partner has early-stage frostbite on their fingers and cannot tie knot anchors independently.",
+        "choices": [
+          {
+            "label": "Dig In & Hunker in the Snow Trench",
+            "tradeOff": "If the temperature drops below -40°C or snow drifts seal the air vents, hypothermia is lethal."
+          },
+          {
+            "label": "Attempt the Blind Night Descent",
+            "tradeOff": "One misstep on an unseen crevasse bridge plunges both climbers into a bottomless chasm."
+          }
+        ],
+        "question": "Do you hunker down in the ice or risk the blind night descent?",
+        "wordCount": 247
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-02",
+      "title": "The Whistleblower's Ultimatum",
+      "format": "strategy_challenge",
+      "depth": "quick",
+      "archetype": "Countdown",
+      "category": "strategy",
+      "generatedScenario": {
+        "hook": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
+        "setup": "You find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.",
+        "pressure": "The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.",
+        "twist": "Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.",
+        "choices": [
+          {
+            "label": "Upload to Federal Regulators",
+            "tradeOff": "Destroys your family's healthcare coverage and invites brutal corporate litigation."
+          },
+          {
+            "label": "Scrub Local Copies & Protect Household",
+            "tradeOff": "100 innocent hospital patients will suffer preventable organ toxicity."
+          }
+        ],
+        "question": "Do you hit \"Upload\" or delete the files and walk out?",
+        "wordCount": 206
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-03",
+      "title": "The Golden Vault vs. Daily Sovereignty",
+      "format": "impossible_dilemma",
+      "depth": "quick",
+      "archetype": "Social dilemma",
+      "category": "social/relationship",
+      "generatedScenario": {
+        "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
+        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+        "pressure": "The syndicate gives you exactly 3 minutes to decide before the offer expires forever.",
+        "twist": "The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.",
+        "choices": [
+          {
+            "label": "The $10M Vault Lockdown",
+            "tradeOff": "Lose 5 prime years of life, relationships, and sunlight with zero early exit."
+          },
+          {
+            "label": "The $75K Freedom Stipend",
+            "tradeOff": "Permanently caps your wealth; you will never own luxury properties or high-end assets."
+          }
+        ],
+        "question": "Which contract do you sign before the 3-minute timer hits zero?",
+        "wordCount": 233
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-04",
+      "title": "The Golden Vault vs. Daily Sovereignty",
+      "format": "impossible_dilemma",
+      "depth": "standard",
+      "archetype": "Negotiation",
+      "category": "money/lifestyle",
+      "generatedScenario": {
+        "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
+        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+        "pressure": "The syndicate gives you exactly 3 minutes to decide before the offer expires forever.",
+        "twist": "The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.",
+        "choices": [
+          {
+            "label": "The $10M Vault Lockdown",
+            "tradeOff": "Lose 5 prime years of life, relationships, and sunlight with zero early exit."
+          },
+          {
+            "label": "The $75K Freedom Stipend",
+            "tradeOff": "Permanently caps your wealth; you will never own luxury properties or high-end assets."
+          }
+        ],
+        "question": "Which contract do you sign before the 3-minute timer hits zero?",
+        "wordCount": 233
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-05",
+      "title": "The Golden Vault vs. Daily Sovereignty",
+      "format": "impossible_dilemma",
+      "depth": "standard",
+      "archetype": "Asymmetric information",
+      "category": "moral",
+      "generatedScenario": {
+        "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
+        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+        "pressure": "The syndicate gives you exactly 3 minutes to decide before the offer expires forever.",
+        "twist": "The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.",
+        "choices": [
+          {
+            "label": "The $10M Vault Lockdown",
+            "tradeOff": "Lose 5 prime years of life, relationships, and sunlight with zero early exit."
+          },
+          {
+            "label": "The $75K Freedom Stipend",
+            "tradeOff": "Permanently caps your wealth; you will never own luxury properties or high-end assets."
+          }
+        ],
+        "question": "Which contract do you sign before the 3-minute timer hits zero?",
+        "wordCount": 233
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-06",
+      "title": "The 24-Hour Telepathic Megaphone",
+      "format": "chaotic_funny",
+      "depth": "standard",
+      "archetype": "Chaotic scenario",
+      "category": "funny/chaotic",
+      "generatedScenario": {
+        "hook": "For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.",
+        "setup": "A mischievous cosmic trickster traps you in an inescapable 24-hour social experiment. You must choose Curse A: you hear an audible whisper of every thought anyone within 20 feet has regarding your clothes, intelligence, and personality. Or Curse B: you can only speak pure, unvarnished truths—and any white lie or polite deflection is blasted through a megaphone.",
+        "pressure": "You have a high-stakes performance review with your boss and dinner with your in-laws scheduled for tomorrow.",
+        "twist": "You cannot cancel your appointments or stay in bed without forfeiting your life savings.",
+        "choices": [
+          {
+            "label": "Hear All Secret Thoughts",
+            "tradeOff": "Will likely demolish your self-esteem and permanently distort how you view your loved ones."
+          },
+          {
+            "label": "The Megaphone Truth Curse",
+            "tradeOff": "You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem."
+          }
+        ],
+        "question": "Which chaotic curse would you rather endure tomorrow?",
+        "wordCount": 223
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-07",
+      "title": "The Whistleblower's Ultimatum",
+      "format": "strategy_challenge",
+      "depth": "standard",
+      "archetype": "Strategy",
+      "category": "strategy",
+      "generatedScenario": {
+        "hook": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
+        "setup": "You find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.",
+        "pressure": "The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.",
+        "twist": "Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.",
+        "choices": [
+          {
+            "label": "Upload to Federal Regulators",
+            "tradeOff": "Destroys your family's healthcare coverage and invites brutal corporate litigation."
+          },
+          {
+            "label": "Scrub Local Copies & Protect Household",
+            "tradeOff": "100 innocent hospital patients will suffer preventable organ toxicity."
+          }
+        ],
+        "question": "Do you hit \"Upload\" or delete the files and walk out?",
+        "wordCount": 206
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-08",
+      "title": "The Neural Memory Redactor",
+      "format": "future_tech",
+      "depth": "deep",
+      "archetype": "Future/technology",
+      "category": "technology/future",
+      "generatedScenario": {
+        "hook": "In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are.",
+        "setup": "You sit strapped into the padded surgical chair inside the sterile clinic suite, staring up at a precision quantum laser hovering inches above your temples. The Synapse Redaction Institute offers to eliminate the synaptic memory cluster of your greatest life trauma. However, brain monitors confirm that your master career skill and proudest life triumph are biologically entangled with that exact pain; deleting the suffering will permanently erase the skills you built to survive it.",
+        "pressure": "The clinic chair is prepped and the neuro-catalyst expires in 15 minutes.",
+        "twist": "The neurosurgeon admits that 40% of patients who undergo the procedure experience a strange phantom emptiness where their drive used to be.",
+        "choices": [
+          {
+            "label": "Erase the Pain & Forfeit the Triumph",
+            "tradeOff": "Lose the master skills, wisdom, and core personal achievement that define your identity."
+          },
+          {
+            "label": "Keep the Scars & Keep the Mastery",
+            "tradeOff": "You continue carrying the emotional triggers, grief, and nocturnal flashbacks for life."
+          }
+        ],
+        "question": "Do you erase your trauma or keep your hard-earned scars?",
+        "wordCount": 255
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-09",
+      "title": "The Stolen Cryo-Vial Mystery",
+      "format": "mini_mystery",
+      "depth": "deep",
+      "archetype": "Mystery/challenge",
+      "category": "bizarre hypothetical situations",
+      "generatedScenario": {
+        "hook": "The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed.",
+        "setup": "You are the lead night investigator at a high-security bio-research facility. A prototype cryo-vial containing an experimental gene therapy is missing from the sub-basement freezer. Two access cards badged in during the blackout: Dr. Aris (the chief biochemist whose research grant was terminated yesterday) and Captain Vance (the head of building security whose personal debts surfaced this morning).",
+        "pressure": "The emergency perimeter lockdown timer unlocks external gates in 180 seconds.",
+        "twist": "The cryo-vial degrades irreversibly into harmless water if not placed in liquid nitrogen within 10 minutes.",
+        "choices": [
+          {
+            "label": "Search Dr. Aris's Lab First",
+            "tradeOff": "Leaves security chief Vance completely unmonitored at the main exterior vehicle checkpoint."
+          },
+          {
+            "label": "Intercept Captain Vance at the Gate",
+            "tradeOff": "Gives Dr. Aris 3 uninterrupted minutes to transfer the vial to an external courier on the train line."
+          }
+        ],
+        "question": "Which suspect do you intercept before the gate timer expires?",
+        "wordCount": 239
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-10",
+      "title": "The Razor Ridge Whiteout",
+      "format": "survival_scenario",
+      "depth": "deep",
+      "archetype": "Survival",
+      "category": "adventure/travel",
+      "generatedScenario": {
+        "hook": "Night is falling at 18,000 feet, the blizzard is howling at 60 mph, and your tent was just ripped away.",
+        "setup": "You and your climbing partner are trapped on a knife-edge Andean ridge. Temperature is -30°C and dropping. You have one shared bivy bag and 2 thermal flares. Option A is to dig an emergency snow trench on the exposed slope to ride out the night. Option B is to attempt a 300-meter blind descent down a frozen crevasse field using headlamps.",
+        "pressure": "Core body temperatures will begin dropping precipitously within 45 minutes without shelter.",
+        "twist": "Your partner has early-stage frostbite on their fingers and cannot tie knot anchors independently.",
+        "choices": [
+          {
+            "label": "Dig In & Hunker in the Snow Trench",
+            "tradeOff": "If the temperature drops below -40°C or snow drifts seal the air vents, hypothermia is lethal."
+          },
+          {
+            "label": "Attempt the Blind Night Descent",
+            "tradeOff": "One misstep on an unseen crevasse bridge plunges both climbers into a bottomless chasm."
+          }
+        ],
+        "question": "Do you hunker down in the ice or risk the blind night descent?",
+        "wordCount": 247
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-11",
+      "title": "The Golden Vault vs. Daily Sovereignty",
+      "format": "impossible_dilemma",
+      "depth": "deep",
+      "archetype": "Negotiation",
+      "category": "strategy",
+      "generatedScenario": {
+        "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
+        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+        "pressure": "The syndicate gives you exactly 3 minutes to decide before the offer expires forever.",
+        "twist": "The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.",
+        "choices": [
+          {
+            "label": "The $10M Vault Lockdown",
+            "tradeOff": "Lose 5 prime years of life, relationships, and sunlight with zero early exit."
+          },
+          {
+            "label": "The $75K Freedom Stipend",
+            "tradeOff": "Permanently caps your wealth; you will never own luxury properties or high-end assets."
+          }
+        ],
+        "question": "Which contract do you sign before the 3-minute timer hits zero?",
+        "wordCount": 233
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-12",
+      "title": "The Whistleblower's Ultimatum",
+      "format": "strategy_challenge",
+      "depth": "deep",
+      "archetype": "Social dilemma",
+      "category": "moral",
+      "generatedScenario": {
+        "hook": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
+        "setup": "You find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.",
+        "pressure": "The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.",
+        "twist": "Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.",
+        "choices": [
+          {
+            "label": "Upload to Federal Regulators",
+            "tradeOff": "Destroys your family's healthcare coverage and invites brutal corporate litigation."
+          },
+          {
+            "label": "Scrub Local Copies & Protect Household",
+            "tradeOff": "100 innocent hospital patients will suffer preventable organ toxicity."
+          }
+        ],
+        "question": "Do you hit \"Upload\" or delete the files and walk out?",
+        "wordCount": 206
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [],
+      "overallClassification": "STRONG",
+      "summaryRationale": "Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes."
+    },
+    {
+      "sampleId": "eval-sample-13-control-wyr",
+      "title": "The Million Dollar Vault Riddle",
+      "format": "impossible_dilemma",
+      "depth": "quick",
+      "archetype": "Generic WYR (Control)",
+      "category": "money/lifestyle",
+      "generatedScenario": {
+        "hook": "Would you rather receive $1 million but you can never spend it?",
+        "setup": "You receive $1 million, but you can never spend it on anything. Would you accept?",
+        "choices": [
+          {
+            "label": "Accept the $1M",
+            "tradeOff": "Cannot spend it."
+          },
+          {
+            "label": "Decline",
+            "tradeOff": "Get nothing."
+          }
+        ],
+        "question": "Would you rather accept or decline?",
+        "wordCount": 67
+      },
+      "qualityChecks": {
+        "immediateCuriosity": false,
+        "concreteScenario": true,
+        "visualizablePresence": true,
+        "genuinePressure": false,
+        "meaningfulTradeoff": false,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": false,
+        "avoidsGenericWYR": false,
+        "avoidsFormulaicPatterns": false,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [
+        "WEAK_OPENING: Opening starts with a passive or cliché formula (e.g. \"Would you rather\", \"Imagine\").",
+        "LACKS_PRESSURE: Scenario lacks a ticking clock, dwindling resource, or active threat urgency.",
+        "TRIVIAL_DOWNSIDE: Choice 2 has a cost-free or trivial trade-off (\"Get nothing.\").",
+        "SHALLOW_WYR: Scenario relies on a generic \"Would You Rather\" cliché (e.g. $1M you cannot spend).",
+        "LAZY_X_BUT_Y_CONSTRUCTION: Scenario uses a shallow \"You get X, but you lose Y\" template without worldbuilding."
+      ],
+      "overallClassification": "REJECT",
+      "summaryRationale": "Rejected due to critical quality failure: WEAK_OPENING: Opening starts with a passive or cliché formula (e.g. \"Would you rather\", \"Imagine\").; LACKS_PRESSURE: Scenario lacks a ticking clock, dwindling resource, or active threat urgency.; TRIVIAL_DOWNSIDE: Choice 2 has a cost-free or trivial trade-off (\"Get nothing.\").; SHALLOW_WYR: Scenario relies on a generic \"Would You Rather\" cliché (e.g. $1M you cannot spend).; LAZY_X_BUT_Y_CONSTRUCTION: Scenario uses a shallow \"You get X, but you lose Y\" template without worldbuilding.."
+    },
+    {
+      "sampleId": "eval-sample-14-control-formulaic",
+      "title": "The Energy Swap",
+      "format": "impossible_dilemma",
+      "depth": "quick",
+      "archetype": "Formulaic Trade-off (Control)",
+      "category": "funny/chaotic",
+      "generatedScenario": {
+        "hook": "You get unlimited energy, but you lose the ability to sleep.",
+        "setup": "You get unlimited energy, but you lose the ability to sleep.",
+        "choices": [
+          {
+            "label": "Take Energy",
+            "tradeOff": "No sleep ever."
+          },
+          {
+            "label": "Stay Normal",
+            "tradeOff": "Still get tired."
+          }
+        ],
+        "question": "Do you take the trade?",
+        "wordCount": 52
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": false,
+        "genuinePressure": true,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": false,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [
+        "LACKS_SENSORY_GROUNDING: The reader cannot easily visualize their physical position in the scene.",
+        "LAZY_X_BUT_Y_CONSTRUCTION: Scenario uses a shallow \"You get X, but you lose Y\" template without worldbuilding."
+      ],
+      "overallClassification": "WEAK",
+      "summaryRationale": "Suffers from formulaic patterns or insufficient tension: LACKS_SENSORY_GROUNDING: The reader cannot easily visualize their physical position in the scene.; LAZY_X_BUT_Y_CONSTRUCTION: Scenario uses a shallow \"You get X, but you lose Y\" template without worldbuilding.."
+    },
+    {
+      "sampleId": "eval-sample-15-control-academic",
+      "title": "The Dissonance Experiment",
+      "format": "impossible_dilemma",
+      "depth": "standard",
+      "archetype": "Academic Jargon (Control)",
+      "category": "moral",
+      "generatedScenario": {
+        "hook": "A cognitive dissonance test on hospital patients reveals ethical tensions in clinical medicine.",
+        "setup": "In a peer-reviewed laboratory study, psychologists study how hedonic adaptation impacts cortisol levels under fMRI scans.",
+        "choices": [
+          {
+            "label": "Condition A",
+            "tradeOff": "High cortisol levels."
+          },
+          {
+            "label": "Condition B",
+            "tradeOff": "Diminished hedonic baseline."
+          }
+        ],
+        "question": "Which clinical condition would you enroll in?",
+        "wordCount": 63
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": false,
+        "genuinePressure": false,
+        "meaningfulTradeoff": true,
+        "bothChoicesTempting": true,
+        "uncertainOutcome": true,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": false,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [
+        "LACKS_SENSORY_GROUNDING: The reader cannot easily visualize their physical position in the scene.",
+        "LACKS_PRESSURE: Scenario lacks a ticking clock, dwindling resource, or active threat urgency.",
+        "ACADEMIC_LECTURING: Uses textbook research jargon (\"cognitive dissonance\"). Scenarios must remain pure entertainment."
+      ],
+      "overallClassification": "REJECT",
+      "summaryRationale": "Rejected due to critical quality failure: LACKS_SENSORY_GROUNDING: The reader cannot easily visualize their physical position in the scene.; LACKS_PRESSURE: Scenario lacks a ticking clock, dwindling resource, or active threat urgency.; ACADEMIC_LECTURING: Uses textbook research jargon (\"cognitive dissonance\"). Scenarios must remain pure entertainment.."
+    },
+    {
+      "sampleId": "eval-sample-16-control-obvious",
+      "title": "The Trivial Snack vs. Pit of Vipers",
+      "format": "survival_scenario",
+      "depth": "quick",
+      "archetype": "Obvious Choice (Control)",
+      "category": "survival",
+      "generatedScenario": {
+        "hook": "You are standing in an empty cafeteria with two doors.",
+        "setup": "Door A leads to a fresh hot buffet with zero catch. Door B drops you into a pit of 500 starving lethal vipers where you die in 10 seconds.",
+        "choices": [
+          {
+            "label": "Door A: Hot Buffet",
+            "tradeOff": "Mild calorie gain."
+          },
+          {
+            "label": "Door B: Viper Pit",
+            "tradeOff": "Instant agonizing death."
+          }
+        ],
+        "question": "Which door do you open?",
+        "wordCount": 80
+      },
+      "qualityChecks": {
+        "immediateCuriosity": true,
+        "concreteScenario": true,
+        "visualizablePresence": false,
+        "genuinePressure": true,
+        "meaningfulTradeoff": false,
+        "bothChoicesTempting": false,
+        "uncertainOutcome": false,
+        "avoidsGenericWYR": true,
+        "avoidsFormulaicPatterns": true,
+        "standaloneClarity": true,
+        "entertainmentFocus": true,
+        "invitesParticipation": true
+      },
+      "detectedWeaknesses": [
+        "LACKS_SENSORY_GROUNDING: The reader cannot easily visualize their physical position in the scene.",
+        "TRIVIAL_DOWNSIDE: Choice 1 has a cost-free or trivial trade-off (\"Mild calorie gain.\").",
+        "OBVIOUS_CHOICE: One choice carries lethal certainty or catastrophic ruin while the other has only trivial downsides, destroying tension."
+      ],
+      "overallClassification": "REJECT",
+      "summaryRationale": "Rejected due to critical quality failure: LACKS_SENSORY_GROUNDING: The reader cannot easily visualize their physical position in the scene.; TRIVIAL_DOWNSIDE: Choice 1 has a cost-free or trivial trade-off (\"Mild calorie gain.\").; OBVIOUS_CHOICE: One choice carries lethal certainty or catastrophic ruin while the other has only trivial downsides, destroying tension.."
+    }
+  ]
+}

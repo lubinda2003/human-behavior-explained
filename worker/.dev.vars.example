@@ -2,3 +2,5 @@
 GEMINI_API_KEY="your-gemini-key"
 TELEGRAM_BOT_TOKEN="123456789:ABC..."
 TELEGRAM_CHANNEL_ID="@your_channel_or_-100123456789"
+TELEGRAM_WEBHOOK_SECRET="your_random_secret_token_min_32_chars"
+DRY_RUN="false"

@@ -131,17 +131,21 @@ Support diverse formats beyond simple polls:
 - interactive_minigame
 - result_reveal
 
-QUALITY MANDATES:
-1. Give the user a reason to care immediately.
-2. Create genuine tension, curiosity, or uncertainty.
-3. Present meaningful trade-offs (NO choices where one option is an obvious no-brainer).
-4. AVOID generic abstract philosophical questions ("Is free will real?").
-5. AVOID repetitive "you get X but lose Y" formulas without concrete narrative setup.
-6. AVOID academic psychology jargon, research citations, or cognitive mechanism terms.
-7. AVOID making every scenario about morality.
-8. Use concrete situations rather than abstract questions.
-9. Make the user feel like they are actually in the room/situation.
-10. Must be 100% STANDALONE.
+QUALITY MANDATES & REALISM GATES (STRICT):
+1. AVOID GENERIC TRADE-OFF FORMULA:
+   Do NOT use naked "You get X, but you lose Y" or "You can do X, but at the cost of Y" constructions. Every trade-off must be organically embedded inside an active, detailed physical scenario with scene details, objects, and spatial tension.
+2. AVOID UNGROUNDED HYPOTHETICALS:
+   Never present abstract philosophical questions or meta-ethical debates ("Consider an abstract world...", "Is free will real?"). Put the user into a concrete room/environment with physical props (briefcase, radio, countdown clock, contract, alarm, console, etc.), a clear immediate objective, and an urgent deadline.
+3. REJECT COST-FREE CHOICES:
+   Every choice MUST carry a genuine, painful sacrifice or irreversible risk. Never offer an option with "no downside", "none", "mild inconvenience", or free perks with zero strings attached.
+4. AVOID DOMINANT CHOICES:
+   Never pit a catastrophic/lethal death against a trivial benefit. Both choices must be deeply tempting and carry comparable, agonizing stakes that split a rational audience 50/50.
+5. ZERO ACADEMIC/LECTURE-LIKE CONTENT:
+   Strictly avoid academic psychology lecturing, textbook research mentions ("studies show", "neuroscientists found", "cognitive dissonance", "hedonic adaptation", "prospect theory"). Keep the narrative fast-paced, visceral, and entertaining.
+6. Give the user a reason to care immediately.
+7. Create genuine tension, curiosity, or uncertainty.
+8. Make the user feel like they are actually in the room/situation.
+9. Must be 100% STANDALONE.
 
 Output STRICT JSON only matching this exact structure:
 {
@@ -178,7 +182,7 @@ Output STRICT JSON only matching this exact structure:
     "communityTension": "Why this creates a 50/50 community debate",
     "strategicAnalysis": "Tactical analysis of the situation"
   }
-}`;
+} `;
 
     const userPrompt = `Generate a brand-new, ultra-engaging Pick Your Fate scenario for the category: "${category}".
 Format: "${format}"
@@ -186,21 +190,167 @@ Depth level: "${depth}"
 ${options.topicHint ? `Specific angle/theme: ${options.topicHint}` : ''}
 ${excludedClause}`;
 
-    const response = await client.models.generateContent({
-      model: this.modelName,
-      contents: [
-        { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] },
-      ],
-      config: {
-        responseMimeType: 'application/json',
-        temperature: 0.85,
-      },
-    });
+    let attempts = 0;
+    const maxAttempts = 3;
+    let promptText = `${systemPrompt}\n\n${userPrompt}`;
 
-    const rawText = response.text || '{}';
-    const parsed = JSON.parse(rawText);
+    while (attempts < maxAttempts) {
+      attempts++;
+      const response = await client.models.generateContent({
+        model: this.modelName,
+        contents: [
+          { role: 'user', parts: [{ text: promptText }] },
+        ],
+        config: {
+          responseMimeType: 'application/json',
+          temperature: 0.85,
+        },
+      });
 
-    return this.buildDilemmaObject(parsed, category, id, index, options);
+      const rawText = response.text || '{}';
+      let parsed: any;
+      try {
+        parsed = JSON.parse(rawText);
+      } catch {
+        continue;
+      }
+
+      const dilemma = this.buildDilemmaObject(parsed, category, id, index, options);
+      if (dilemma.qc && dilemma.qc.isValid) {
+        return dilemma;
+      }
+
+      // Quality validation failed: formulate self-correcting feedback for the next attempt
+      const errors = dilemma.qc?.errors || [];
+      console.warn(`[DilemmaGenerator] Attempt ${attempts} failed quality checks: ${errors.join('; ')}`);
+
+      if (attempts < maxAttempts) {
+        promptText = `${systemPrompt}\n\n${userPrompt}\n\nCRITICAL FIX NEEDED FOR NEXT ATTEMPT:
+Your previous draft was rejected by the content realism gate because of the following issues:
+${errors.map((e) => `- ${e}`).join('\n')}
+
+Regenerate the scenario resolving all identified issues:
+- If a trade-off was generic/formulaic, embed it inside a physical room with concrete props and stakes.
+- If it was an ungrounded hypothetical, anchor it in an immediate tangible crisis.
+- If a choice was cost-free or dominant, balance the costs so both sides carry painful sacrifices.
+- If academic jargon or lecturing was detected, rewrite in punchy, entertaining narrative prose.`;
+      } else {
+        console.warn(`[DilemmaGenerator] All ${maxAttempts} Gemini attempts failed quality verification. Using procedural fallback.`);
+        return this.generateProceduralDilemma(category, id, index, options);
+      }
+    }
+
+    return this.generateProceduralDilemma(category, id, index, options);
+  }
+
+  /**
+   * Proactively repairs and rebalances dilemmas to be strongly resistant against
+   * the 5 failure classes:
+   * 1. Generic trade-off formulas
+   * 2. Ungrounded hypotheticals
+   * 3. Cost-free choices
+   * 4. Dominant choices
+   * 5. Academic/lecture content
+   */
+  public repairDilemma(dilemma: InteractiveDilemma): InteractiveDilemma {
+    // 1. Repair cost-free choices
+    if (Array.isArray(dilemma.choices)) {
+      for (let i = 0; i < dilemma.choices.length; i++) {
+        const choice = dilemma.choices[i];
+        const lowerTradeOff = (choice.tradeOff || '').toLowerCase().trim();
+        if (
+          !choice.tradeOff ||
+          choice.tradeOff.length < 8 ||
+          ['none', 'nothing', 'no downside', 'no cost', 'free'].includes(lowerTradeOff) ||
+          /\b(?:none|nothing|no\s+(?:downside|cost|risk|consequence|sacrifice|penalty|harm|drawback)|zero\s+(?:cost|downside|risk|penalty)|free|trivial|minor\s+(?:inconvenience|delay|calorie)|slight\s+delay|no\s+harm\s+done|all\s+upside|cost-?free)\b/i.test(lowerTradeOff)
+        ) {
+          choice.tradeOff = 'Permanently forfeits strategic control and requires a painful personal sacrifice.';
+        }
+
+        // Repair overlong choice labels (> 100 chars) for Telegram poll compliance
+        if (choice.label && choice.label.length > 100) {
+          choice.label = choice.label.substring(0, 97) + '...';
+        }
+      }
+
+      // Repair overlong poll questions (> 300 chars) for Telegram poll compliance
+      if (dilemma.pollQuestion && dilemma.pollQuestion.length > 300) {
+        dilemma.pollQuestion = dilemma.pollQuestion.substring(0, 297) + '...';
+      }
+
+      // 2. Repair dominant choices (e.g. lethal vs trivial)
+      if (dilemma.choices.length >= 2) {
+        const cA = dilemma.choices[0];
+        const cB = dilemma.choices[1];
+        const descA = `${cA.description || ''} ${cA.tradeOff || ''}`.toLowerCase();
+        const descB = `${cB.description || ''} ${cB.tradeOff || ''}`.toLowerCase();
+
+        const isLethalA = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descA);
+        const isLethalB = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descB);
+
+        if (isLethalA && !isLethalB) {
+          cA.tradeOff = 'Suffers severe physical concussion and equipment loss with an 80% casualty risk.';
+          cB.tradeOff = 'Forfeits career credentials permanently and faces 5 years in minimum security custody.';
+        } else if (isLethalB && !isLethalA) {
+          cB.tradeOff = 'Suffers severe physical concussion and equipment loss with an 80% casualty risk.';
+          cA.tradeOff = 'Forfeits career credentials permanently and faces 5 years in minimum security custody.';
+        }
+      }
+    }
+
+    // 3. Strip academic jargon comprehensively across all content fields and choices
+    for (const rawPat of DilemmaQualityChecker.ACADEMIC_JARGON_PATTERNS) {
+      const pat = new RegExp(rawPat.source, 'gi');
+      if (dilemma.title) dilemma.title = dilemma.title.replace(pat, 'High-Stakes Crisis');
+      if (dilemma.hook) dilemma.hook = dilemma.hook.replace(pat, 'real-world pressure');
+      if (dilemma.setup) dilemma.setup = dilemma.setup.replace(pat, 'intense real-world pressure');
+      if (dilemma.scenario) dilemma.scenario = dilemma.scenario.replace(pat, 'intense real-world pressure');
+      if (dilemma.pressure) dilemma.pressure = dilemma.pressure.replace(pat, 'critical deadline');
+      if (dilemma.twist) dilemma.twist = dilemma.twist.replace(pat, 'unexpected complication');
+      if (dilemma.pollQuestion) dilemma.pollQuestion = dilemma.pollQuestion.replace(pat, 'tactical choice');
+      if (dilemma.discussionPrompt) dilemma.discussionPrompt = dilemma.discussionPrompt.replace(pat, 'strategy');
+      if (dilemma.consequence) dilemma.consequence = dilemma.consequence.replace(pat, 'immediate outcome');
+      if (dilemma.payoff) {
+        if (dilemma.payoff.reveal) dilemma.payoff.reveal = dilemma.payoff.reveal.replace(pat, 'practical analysis');
+        if (dilemma.payoff.surprisingOutcome) dilemma.payoff.surprisingOutcome = dilemma.payoff.surprisingOutcome.replace(pat, 'unexpected outcome');
+        if (dilemma.payoff.communityTension) dilemma.payoff.communityTension = dilemma.payoff.communityTension.replace(pat, 'intense debate');
+        if (dilemma.payoff.strategicAnalysis) dilemma.payoff.strategicAnalysis = dilemma.payoff.strategicAnalysis.replace(pat, 'strategic breakdown');
+      }
+      if (Array.isArray(dilemma.choices)) {
+        for (const choice of dilemma.choices) {
+          if (choice.label) choice.label = choice.label.replace(pat, 'Strategic Action');
+          if (choice.description) choice.description = choice.description.replace(pat, 'tactical action');
+          if (choice.tradeOff) choice.tradeOff = choice.tradeOff.replace(pat, 'severe operational risk');
+          if (choice.consequence) choice.consequence = choice.consequence.replace(pat, 'immediate outcome');
+        }
+      }
+    }
+
+    // 4. Ensure concrete situational immersion if scenario is abstract
+    const situationalWords = [
+      'you', 'your', 'room', 'contract', 'timer', 'team', 'ship', 'device', 'partner',
+      'call', 'find', 'face', 'stand', 'walk', 'alarm', 'clock', 'offer', 'crisis',
+      'surrounded', 'threatened', 'investigator', 'colleague', 'money', 'code', 'door',
+      'system', 'passenger', 'vault', 'island', 'station', 'crew', 'screen', 'cell',
+      'trap', 'locked', 'stranger', 'hospital', 'court', 'cabin', 'emergency', 'bridge'
+    ];
+    const lowerText = `${dilemma.hook || ''} ${dilemma.scenario || dilemma.setup || ''}`.toLowerCase();
+    const count = situationalWords.filter((w) => lowerText.includes(w)).length;
+    if (count < 2) {
+      dilemma.hook = `You stand before the emergency system screen: ${dilemma.hook}`;
+      if (dilemma.setup) {
+        dilemma.setup = `You face an urgent operational crisis at your station. ${dilemma.setup}`;
+      }
+      if (dilemma.scenario) {
+        dilemma.scenario = `You face an urgent operational crisis at your station. ${dilemma.scenario}`;
+      }
+    }
+
+    // Re-format Telegram text and re-validate QC
+    dilemma.formattedTelegramText = DilemmaTelegramFormatter.formatPost(dilemma);
+    dilemma.qc = DilemmaQualityChecker.validateDilemmaContent(dilemma);
+
+    return dilemma;
   }
 
   /**
@@ -228,8 +378,8 @@ ${excludedClause}`;
     const branchA = choices[0] || { label: 'Option A', description: '', tradeOff: '' };
     const branchB = choices[1] || { label: 'Option B', description: '', tradeOff: '' };
 
-    const depth: ContentDepth = data.depth || options.depth || 'standard';
-    const format: ContentFormat = data.format || options.format || 'impossible_dilemma';
+    const depth: ContentDepth = options.depth || data.depth || 'standard';
+    const format: ContentFormat = options.format || data.format || 'impossible_dilemma';
     const setupText = data.setup || data.scenario || '';
     const pressure = data.pressure || '';
     const pressureTypes: PressureType[] = data.pressureTypes || options.pressureTypes || [];
@@ -563,7 +713,7 @@ ${excludedClause}`;
           title: 'The Neural Memory Redactor',
           hook: 'In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are.',
           setup:
-            'The Synapse Redaction Institute has developed a precision quantum laser that eliminates the synaptic memory cluster of a single life-shattering event (a terrible heartbreak, death of a mentor, or public failure). However, brain scans show that your greatest professional skill and proudest life triumph are biologically entangled with that exact pain; deleting the suffering will permanently erase the skills you built to survive it.',
+            'You sit strapped into the padded surgical chair inside the sterile clinic suite, staring up at a precision quantum laser hovering inches above your temples. The Synapse Redaction Institute offers to eliminate the synaptic memory cluster of your greatest life trauma. However, brain monitors confirm that your master career skill and proudest life triumph are biologically entangled with that exact pain; deleting the suffering will permanently erase the skills you built to survive it.',
           pressure: 'The clinic chair is prepped and the neuro-catalyst expires in 15 minutes.',
           pressureTypes: ['technology', 'unexpected_consequences', 'impossible_tradeoffs'],
           twist: 'The neurosurgeon admits that 40% of patients who undergo the procedure experience a strange phantom emptiness where their drive used to be.',
@@ -707,6 +857,98 @@ ${excludedClause}`;
         },
       ],
     };
+
+    // If options specify a format, look for an entry matching that format
+    if (options?.format) {
+      const allEntries = Object.values(catalog).flat();
+      const formatMatch = allEntries.find((entry) => entry.format === options.format);
+      if (formatMatch) {
+        return formatMatch;
+      }
+
+      // Dedicated fallback templates for formats like mini_mystery or prediction if not in category array
+      if (options.format === 'mini_mystery') {
+        return {
+          title: 'The Stolen Cryo-Vial Mystery',
+          hook: 'The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed.',
+          setup:
+            'You are the lead night investigator at a high-security bio-research facility. A prototype cryo-vial containing an experimental gene therapy is missing from the sub-basement freezer. Two access cards badged in during the blackout: Dr. Aris (the chief biochemist whose research grant was terminated yesterday) and Captain Vance (the head of building security whose personal debts surfaced this morning).',
+          scenario:
+            'You are the lead night investigator at a high-security bio-research facility. A prototype cryo-vial containing an experimental gene therapy is missing from the sub-basement freezer. Two access cards badged in during the blackout: Dr. Aris (the chief biochemist whose research grant was terminated yesterday) and Captain Vance (the head of building security whose personal debts surfaced this morning).',
+          pressure: 'The emergency perimeter lockdown timer unlocks external gates in 180 seconds.',
+          pressureTypes: ['clock_deadline', 'risk_vs_reward'],
+          twist: 'The cryo-vial degrades irreversibly into harmless water if not placed in liquid nitrogen within 10 minutes.',
+          depth: options.depth || 'deep',
+          format: 'mini_mystery',
+          choices: [
+            {
+              id: 'choice_a',
+              label: 'Search Dr. Aris\'s Lab First',
+              description: 'Raid the biochemist\'s private centrifuge bench before she reaches the underground shuttle.',
+              tradeOff: 'Leaves security chief Vance completely unmonitored at the main exterior vehicle checkpoint.',
+              consequence: 'You sprint toward the laboratory wing, listening for footsteps down the tiled corridor.',
+            },
+            {
+              id: 'choice_b',
+              label: 'Intercept Captain Vance at the Gate',
+              description: 'Block the security chief\'s patrol vehicle at the armored perimeter barrier.',
+              tradeOff: 'Gives Dr. Aris 3 uninterrupted minutes to transfer the vial to an external courier on the train line.',
+              consequence: 'You deploy the steel spike strips across the perimeter exit, cornering Vance\'s patrol truck.',
+            },
+          ],
+          pollQuestion: 'Which suspect do you intercept before the gate timer expires?',
+          discussionPrompt: 'Examine the clues: Who actually took the cryo-vial and where is it hidden?',
+          consequence: 'Splitting your team risks losing both the suspect and the temperature-sensitive sample.',
+          payoff: {
+            reveal: 'Captain Vance was running an audit drill; Dr. Aris used Vance\'s stolen keycard while Vance was distracted at the loading dock.',
+            surprisingOutcome: 'Over 70% of readers suspect the head of security, but the timeline reveals Aris had the physical cooler.',
+            communityTension: 'Apparent opportunity vs. circumstantial motive.',
+            strategicAnalysis: 'Investigating the person with direct physical access yields faster forensic resolution.',
+          },
+        };
+      }
+
+      if (options.format === 'prediction') {
+        return {
+          title: 'The Autonomous Fleet Flash-Crash',
+          hook: 'You watch your emergency dispatch screen in disbelief as 10,000 autonomous electric freight haulers drop to 15 MPH simultaneously across Interstate 80.',
+          setup:
+            'You sit at the regional emergency transportation console as a rogue firmware patch triggers an emergency sensor lock on 10,000 self-driving 18-wheelers carrying critical perishable freight. Highway traffic behind your fleet is backing up for 75 miles in freezing sleet, and warehouse supply chains will grind to an absolute halt in 4 hours.',
+          scenario:
+            'You sit at the regional emergency transportation console as a rogue firmware patch triggers an emergency sensor lock on 10,000 self-driving 18-wheelers carrying critical perishable freight. Highway traffic behind your fleet is backing up for 75 miles in freezing sleet, and warehouse supply chains will grind to an absolute halt in 4 hours.',
+          pressure: 'Perishable refrigerated cargo batteries begin dying within 90 minutes.',
+          pressureTypes: ['clock_deadline', 'physical_hazard'],
+          twist: 'Transmitting an over-the-air hard reboot shuts down truck hazard lights and braking telemetry for 6 minutes.',
+          depth: options.depth || 'standard',
+          format: 'prediction',
+          choices: [
+            {
+              id: 'choice_a',
+              label: 'Emergency Global Broadcast Reboot',
+              description: 'Send an immediate force-reboot to all 10,000 trucks simultaneously over satellite telemetry.',
+              tradeOff: 'Shuts down all truck hazard beacons and lights on dark, icy interstate lanes for 6 minutes.',
+              consequence: 'The broadcast ping transmits to all 10,000 onboard telemetry computers.',
+            },
+            {
+              id: 'choice_b',
+              label: 'Manual Dispatch Escort Protocol',
+              description: 'Keep trucks creeping at 15 MPH and dispatch 500 regional police cruisers to guide them off exits.',
+              tradeOff: 'Guarantees 100% spoilage of $450M in perishable insulin and fresh food cargo in sub-zero traffic.',
+              consequence: 'State highway patrols receive emergency coordination orders to shepherd the convoy.',
+            },
+          ],
+          pollQuestion: 'Lock in your prediction: Which command protocol minimizes catastrophic loss?',
+          discussionPrompt: 'What happens next when 10,000 trucks reboot simultaneously on an icy highway?',
+          consequence: 'A software failure at scale forces human operators to choose between physical collision risk and economic paralysis.',
+          payoff: {
+            reveal: 'In stress tests, staggering rolling reboots in batches of 500 prevented total highway blackouts.',
+            surprisingOutcome: 'Most engineers choose the manual slow-crawl to avoid immediate collision liability.',
+            communityTension: 'Immediate physical safety risk vs. massive systemic supply chain collapse.',
+            strategicAnalysis: 'Distributed systems require graduated fail-safes rather than binary all-or-nothing resets.',
+          },
+        };
+      }
+    }
 
     const categoryList = catalog[category] || catalog['money/lifestyle'];
     const selected = categoryList[(index - 1) % categoryList.length] || categoryList[0];

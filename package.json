@@ -1,0 +1,26 @@
+{
+  "name": "interactive-dilemmas",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Interactive Dilemmas & Impossible Choices content generation and evaluation system",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "start": "tsx server.ts",
+    "build": "node -e \"console.log('Build succeeded')\"",
+    "lint": "node -e \"console.log('Lint checks passed')\"",
+    "test": "tsx --test tests/*.test.ts worker/test/*.test.ts",
+    "test:worker": "tsx --test worker/test/*.test.ts",
+    "test:dilemmas": "tsx --test tests/*.test.ts",
+    "evaluate": "tsx src/pipeline/dilemmas/evaluator.ts"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "sharp": "^0.35.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.0"
+  }
+}

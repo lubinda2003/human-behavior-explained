@@ -143,6 +143,12 @@ export interface DilemmaQualityMetadata {
   depthRequirementsMet: boolean;
   telegramHtmlValid: boolean;
   visualAssetValid: boolean;
+  noDominantChoice?: boolean;
+  noCostFreeChoices?: boolean;
+  noUngroundedHypothetical?: boolean;
+  telegramLengthValid?: boolean;
+  interactionConfigValid?: boolean;
+  schemaFieldsValid?: boolean;
 }
 
 export interface DilemmaQCResult {
@@ -210,4 +216,61 @@ export interface DilemmaStressTestManifest {
     avgWordCount: number;
     executionTimeMs: number;
   };
+}
+
+export interface TelegramPublicationPayload {
+  id: string;
+  publicationTarget: 'telegram_channel';
+  channelId?: string; // dry-run placeholder
+  messageText: string;
+  parseMode: 'HTML';
+  visualAsset?: {
+    template: string;
+    spec: VisualSpec;
+    filePath?: string;
+    attachAsPhoto: boolean;
+  };
+  interaction: {
+    type: InteractionType;
+    poll?: {
+      question: string;
+      options: string[];
+      isAnonymous: boolean;
+      allowsMultipleAnswers: boolean;
+    };
+    openDiscussion?: {
+      prompt: string;
+      pinnedCallToAction: string;
+    };
+    prediction?: {
+      question: string;
+      options: string[];
+      resolutionCriteria: string;
+    };
+    scenarioChoice?: {
+      question: string;
+      options: Array<{ id: string; label: string; tradeOff: string }>;
+    };
+  };
+  metadata: {
+    category: DilemmaCategory;
+    format: ContentFormat;
+    depth: ContentDepth;
+    tone?: string;
+    title: string;
+    hook: string;
+    wordCount: number;
+    characterCount: number;
+    standaloneVerified: boolean;
+    antiSlopPassed: boolean;
+    qcPassed: boolean;
+    revealPayoff: {
+      reveal: string;
+      surprisingOutcome: string;
+      communityTension?: string;
+      strategicAnalysis?: string;
+    };
+  };
+  publishedAt: null; // Dry-run only
+  status: 'READY_FOR_PUBLICATION' | 'REJECTED' | 'FALLBACK_GENERATED';
 }
