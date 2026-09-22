@@ -1,6 +1,6 @@
 # Pick Your Fate · Content Realism & Entertainment Evaluation Report
 
-**Generated At:** 2026-09-22T10:57:35.365Z
+**Generated At:** 2026-09-22T12:44:28.038Z
 **Total Samples Evaluated:** 16
 
 ## 1. Classification Summary
