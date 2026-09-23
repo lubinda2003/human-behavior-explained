@@ -2,7 +2,6 @@
   "name": "interactive-dilemmas",
   "private": true,
   "version": "1.0.0",
-  "packageManager": "npm@10.9.8",
   "type": "module",
   "description": "Interactive Dilemmas & Impossible Choices content generation and evaluation system",
   "scripts": {
@@ -17,8 +16,7 @@
     "evaluate": "tsx src/pipeline/dilemmas/evaluator.ts"
   },
   "dependencies": {
-    "@google/genai": "^2.4.0",
-    "sharp": "^0.35.4"
+    "@google/genai": "^2.4.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
