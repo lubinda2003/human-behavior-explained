@@ -193,6 +193,7 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
         opensAt: new Date(Date.now() - 50000).toISOString(),
         closesAt: pastClosing,
         createdAt: new Date(Date.now() - 50000).toISOString(),
+        updatedAt: new Date(Date.now() - 50000).toISOString(),
       });
 
       await repo.createPoll(
