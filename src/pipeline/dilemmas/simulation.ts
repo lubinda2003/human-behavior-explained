@@ -342,15 +342,15 @@ export class ProductionSimulator {
       messageText: dilemma.formattedTelegramText,
       parseMode: 'HTML',
       visualAsset: {
-        template: dilemma.visualSpec.template,
-        spec: dilemma.visualSpec,
+        template: dilemma.visualSpec?.template || 'standard_split',
+        spec: dilemma.visualSpec || { template: 'standard_split' },
         attachAsPhoto: true,
       },
       interaction: {
         type: slot.interactionType || 'poll',
       },
       metadata: {
-        category: dilemma.category,
+        category: dilemma.category || 'moral',
         format: dilemma.format || slot.format,
         depth: dilemma.depth || slot.depth,
         title: dilemma.title,
@@ -361,10 +361,10 @@ export class ProductionSimulator {
         antiSlopPassed: true,
         qcPassed: true,
         revealPayoff: {
-          reveal: dilemma.payoff.reveal,
-          surprisingOutcome: dilemma.payoff.surprisingOutcome,
-          communityTension: dilemma.payoff.communityTension,
-          strategicAnalysis: dilemma.payoff.strategicAnalysis,
+          reveal: dilemma.payoff.reveal || '',
+          surprisingOutcome: dilemma.payoff.surprisingOutcome || '',
+          communityTension: dilemma.payoff.communityTension || '',
+          strategicAnalysis: dilemma.payoff.strategicAnalysis || '',
         },
       },
       publishedAt: null, // Dry run only: strictly null
@@ -387,7 +387,7 @@ export class ProductionSimulator {
       payload.interaction.prediction = {
         question: dilemma.pollQuestion || `Prediction: Which outcome occurs?`,
         options: dilemma.choices.map((c) => c.label),
-        resolutionCriteria: dilemma.payoff.reveal,
+        resolutionCriteria: dilemma.payoff.reveal || '',
       };
     } else if (slot.interactionType === 'scenario_choice') {
       payload.interaction.scenarioChoice = {

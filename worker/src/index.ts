@@ -22,6 +22,7 @@ import {
   verifyPublishingKillSwitch,
   runFullSmokeTest,
 } from './smoke-test';
+import { AutonomousPipelineService } from './pipeline/autonomous-pipeline';
 
 type BindingStatus = 'ok' | string;
 
@@ -78,15 +79,11 @@ function verifySmokeTestAuth(request: Request, env: Env): boolean {
   return match === 0;
 }
 
-/** Scheduled tick: ensures schema and processes any interactions due for closure. */
+/** Scheduled tick: ensures schema, advances due interactions, and executes autonomous production pipeline. */
 async function tick(env: Env, event: ScheduledController): Promise<void> {
   const schema = await ensureSchema(env);
-  const repo = new D1InteractionRepository(env.DB);
-  const telegram = getTelegramClient(env);
-  const resultGen = new ResultGenerator();
-  const closureService = new InteractionClosureService(repo, telegram, resultGen);
-
-  const closedInteractions = await closureService.processDueInteractions();
+  const pipeline = new AutonomousPipelineService(env);
+  const result = await pipeline.runPipeline(`cron:${event.cron}`);
 
   console.log(
     JSON.stringify({
@@ -94,7 +91,7 @@ async function tick(env: Env, event: ScheduledController): Promise<void> {
       cron: event.cron,
       scheduledTime: new Date(event.scheduledTime).toISOString(),
       schema,
-      closedInteractionsCount: closedInteractions.length,
+      result,
       publishingEnabled: env.PUBLISHING_ENABLED === 'true',
     }),
   );
@@ -200,6 +197,11 @@ export default {
           const res = verifyPublishingKillSwitch(env);
           return Response.json(res, { status: 200 });
         }
+        case 'pipeline': {
+          const pipeline = new AutonomousPipelineService(env);
+          const res = await pipeline.runPipeline('smoke_test');
+          return Response.json(res, { status: res.success ? 200 : 500 });
+        }
         case 'all':
         default: {
           const res = await runFullSmokeTest(env);
@@ -208,7 +210,25 @@ export default {
       }
     }
 
-    // 3. Telegram Bot API Webhook endpoint
+    // 3. Protected Autonomous Pipeline Execution Endpoint (On-demand trigger)
+    if (
+      request.method === 'POST' &&
+      (url.pathname === '/pipeline/run' || url.pathname === '/cron/trigger')
+    ) {
+      if (!verifySmokeTestAuth(request, env)) {
+        return Response.json(
+          { ok: false, error: 'Unauthorized: invalid or missing secret token' },
+          { status: 401 },
+        );
+      }
+
+      await ensureSchema(env);
+      const pipeline = new AutonomousPipelineService(env);
+      const res = await pipeline.runPipeline('manual_trigger');
+      return Response.json(res, { status: res.success ? 200 : 500 });
+    }
+
+    // 4. Telegram Bot API Webhook endpoint
     if (request.method === 'POST' && (url.pathname === '/webhook' || url.pathname === '/telegram/webhook')) {
       await ensureSchema(env);
       const repo = new D1InteractionRepository(env.DB);

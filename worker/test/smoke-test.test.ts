@@ -67,6 +67,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
       GEMINI_API_KEY: TEST_API_KEY,
       GEMINI_MODEL: 'gemini-2.5-flash',
       PUBLISHING_ENABLED: 'false',
+      DISCUSSION_GROUP_LINKED: 'false',
       DRY_RUN: 'true',
     };
   });
@@ -98,11 +99,11 @@ describe('Controlled Production Smoke-Test Suite', () => {
     });
 
     it('flags MISSING configuration accurately', async () => {
-      const emptyEnv: Env = {
+      const emptyEnv = {
         DB: db,
         KV: kv,
         ARCHIVE: r2,
-      };
+      } as unknown as Env;
       const health = await runHealthCheck(emptyEnv);
       assert.equal(health.configuration.telegramBotToken, 'MISSING');
       assert.equal(health.configuration.telegramChannelId, 'MISSING');
@@ -144,7 +145,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
     });
 
     it('fails clearly when TELEGRAM_BOT_TOKEN is missing', async () => {
-      const noTokenEnv: Env = { ...baseEnv, TELEGRAM_BOT_TOKEN: undefined };
+      const noTokenEnv = { ...baseEnv, TELEGRAM_BOT_TOKEN: undefined } as unknown as Env;
       const res = await testTelegramConnectivity(noTokenEnv);
 
       assert.equal(res.ok, false);
@@ -183,7 +184,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
     });
 
     it('fails when GEMINI_API_KEY is missing', async () => {
-      const noKeyEnv: Env = { ...baseEnv, GEMINI_API_KEY: undefined };
+      const noKeyEnv = { ...baseEnv, GEMINI_API_KEY: undefined } as unknown as Env;
       const res = await testGeminiConnectivity(noKeyEnv);
 
       assert.equal(res.ok, false);
@@ -335,7 +336,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
   describe('Worker Fetch Routes & Authentication', () => {
     it('allows public access to /health', async () => {
       const req = new Request('http://localhost/health');
-      const res = await worker.fetch(req, baseEnv);
+      const res = await worker.fetch(req as any, baseEnv);
 
       assert.equal(res.status, 200);
       const data = (await res.json()) as any;
@@ -347,7 +348,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
 
     it('rejects unauthenticated requests to /smoke-test with 401', async () => {
       const req = new Request('http://localhost/smoke-test');
-      const res = await worker.fetch(req, baseEnv);
+      const res = await worker.fetch(req as any, baseEnv);
 
       assert.equal(res.status, 401);
       const data = (await res.json()) as any;
@@ -361,7 +362,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
           'X-Smoke-Test-Secret': 'wrong_secret_token_123',
         },
       });
-      const res = await worker.fetch(req, baseEnv);
+      const res = await worker.fetch(req as any, baseEnv);
       assert.equal(res.status, 401);
     });
 
@@ -371,7 +372,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
           'X-Smoke-Test-Secret': TEST_SECRET,
         },
       });
-      const res = await worker.fetch(req, baseEnv);
+      const res = await worker.fetch(req as any, baseEnv);
       assert.equal(res.status, 200);
       const data = (await res.json()) as any;
       assert.equal(data.clientType, 'MockTelegramClient');
@@ -383,7 +384,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
           'X-Telegram-Bot-Api-Secret-Token': TEST_SECRET,
         },
       });
-      const res = await worker.fetch(req, baseEnv);
+      const res = await worker.fetch(req as any, baseEnv);
       assert.equal(res.status, 200);
       const data = (await res.json()) as any;
       assert.equal(data.status, 'PASS');
@@ -395,7 +396,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
           'X-Smoke-Test-Secret': TEST_SECRET,
         },
       });
-      const res = await worker.fetch(req, baseEnv);
+      const res = await worker.fetch(req as any, baseEnv);
       assert.equal(res.status, 200);
       const data = (await res.json()) as any;
       assert.equal(data.write, 'PASS');

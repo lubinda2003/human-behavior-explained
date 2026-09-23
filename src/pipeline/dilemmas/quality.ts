@@ -4,8 +4,6 @@
  * validates Telegram HTML markup, and verifies visual assets.
  */
 
-import fs from 'node:fs';
-import sharp from 'sharp';
 import {
   InteractiveDilemma,
   DilemmaQCResult,
@@ -473,6 +471,10 @@ export class DilemmaQualityChecker {
   ): Promise<DilemmaVisualAssetQC> {
     const errors: string[] = [];
 
+    const fs = await import('node:fs');
+    const sharpModule = await import('sharp');
+    const sharp = (sharpModule.default || sharpModule) as any;
+
     if (!fs.existsSync(filePath)) {
       return {
         isValid: false,
@@ -500,12 +502,12 @@ export class DilemmaQualityChecker {
       }
 
       const stats = await image.stats();
-      const channelStdevs = stats.channels.map((c) => c.stdev);
-      const isNotBlank = channelStdevs.some((stdev) => stdev >= 2.0);
+      const channelStdevs: number[] = (stats.channels || []).map((c: any) => Number(c.stdev));
+      const isNotBlank = channelStdevs.some((stdev: number) => stdev >= 2.0);
 
       if (!isNotBlank) {
         errors.push(
-          `Image appears blank/uniform (channel std devs: [${channelStdevs.map((s) => s.toFixed(2)).join(', ')}]).`
+          `Image appears blank/uniform (channel std devs: [${channelStdevs.map((s: number) => s.toFixed(2)).join(', ')}]).`
         );
       }
 

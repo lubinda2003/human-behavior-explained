@@ -71,7 +71,7 @@ export class TelegramInteractionPublisher {
       return {
         postId: params.post.id,
         interactionId,
-        telegramMessageId: interaction.mainMessageId,
+        telegramMessageId: interaction.mainMessageId ?? undefined,
       };
     }
 

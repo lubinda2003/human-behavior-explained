@@ -161,8 +161,8 @@ export interface DilemmaQCResult {
 
 export interface InteractiveDilemma {
   id: string;
-  index: number;
-  category: DilemmaCategory;
+  index?: number;
+  category?: DilemmaCategory;
   title: string;
   hook: string;
   setup?: string;
@@ -178,7 +178,7 @@ export interface InteractiveDilemma {
   discussionPrompt?: string;
   consequence?: string; // Direct immediate consequence or preview
   payoff: DilemmaPayoff;
-  visualSpec: VisualSpec;
+  visualSpec?: VisualSpec;
   formattedTelegramText: string;
   draft?: PostDraft;
   qc?: DilemmaQCResult;

@@ -28,6 +28,7 @@ export interface GenerateDilemmaOptions {
   topicHint?: string;
   excludedTopics?: string[];
   index?: number;
+  interactionType?: string;
 }
 
 export class DilemmaGenerator {
@@ -35,8 +36,12 @@ export class DilemmaGenerator {
   private apiKey: string;
   private modelName = 'gemini-2.5-flash';
 
-  constructor(apiKey?: string) {
-    this.apiKey = apiKey || process.env.GEMINI_API_KEY || '';
+  constructor(apiKey?: string, modelName?: string) {
+    this.apiKey =
+      apiKey ||
+      (typeof process !== 'undefined' && process.env ? process.env.GEMINI_API_KEY : '') ||
+      '';
+    if (modelName) this.modelName = modelName;
   }
 
   private hasValidApiKey(): boolean {
@@ -358,13 +363,30 @@ Regenerate the scenario resolving all identified issues:
    * formats, and depth levels without requiring live network/API calls.
    */
   public generateProceduralDilemma(
-    category: DilemmaCategory,
-    id: string,
-    index: number,
-    options: GenerateDilemmaOptions = {}
+    categoryOrOptions: DilemmaCategory | GenerateDilemmaOptions = 'moral',
+    id?: string,
+    index?: number,
+    options?: GenerateDilemmaOptions
   ): InteractiveDilemma {
-    const rawData = this.getProceduralDilemmaData(category, index, options);
-    return this.buildDilemmaObject(rawData, category, id, index, options);
+    let category: DilemmaCategory;
+    let actualId: string;
+    let actualIndex: number;
+    let actualOptions: GenerateDilemmaOptions;
+
+    if (typeof categoryOrOptions === 'object') {
+      actualOptions = categoryOrOptions;
+      category = actualOptions.category || 'moral';
+      actualId = id || `proc_${Date.now()}`;
+      actualIndex = index ?? actualOptions.index ?? 0;
+    } else {
+      category = categoryOrOptions;
+      actualId = id || `proc_${Date.now()}`;
+      actualIndex = index ?? 0;
+      actualOptions = options || {};
+    }
+
+    const rawData = this.getProceduralDilemmaData(category, actualIndex, actualOptions);
+    return this.buildDilemmaObject(rawData, category, actualId, actualIndex, actualOptions);
   }
 
   private buildDilemmaObject(

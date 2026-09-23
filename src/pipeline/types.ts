@@ -4,7 +4,7 @@
 
 export interface VisualSpec {
   template: string;
-  title: string;
+  title?: string;
   subtitle?: string;
   tag?: string;
   sourceCitation?: string;

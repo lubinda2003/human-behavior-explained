@@ -1,4 +1,5 @@
 import { DatabaseSync } from 'node:sqlite';
+import type { D1Database } from '@cloudflare/workers-types';
 
 export class MockD1PreparedStatement {
   private boundValues: any[] = [];
@@ -51,7 +52,7 @@ export class MockD1PreparedStatement {
         results: [],
         success: true,
         meta: {
-          changes: res.changes,
+          changes: Number(res.changes),
           last_row_id: Number(res.lastInsertRowid),
         },
       };

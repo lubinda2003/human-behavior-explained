@@ -53,7 +53,7 @@ export class DilemmaTelegramFormatter {
 
     // 1. Header & Channel Hashtags
     const safeTitle = this.escapeHtml(dilemma.title);
-    const catHashtag = this.categoryToHashtag(dilemma.category);
+    const catHashtag = this.categoryToHashtag(dilemma.category || 'general');
     const formatHashtag = '#' + format.split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join('');
 
     lines.push(`<b>${icon} ${safeTitle}</b>`);

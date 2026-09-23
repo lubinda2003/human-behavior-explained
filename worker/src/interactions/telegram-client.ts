@@ -7,6 +7,15 @@ import type {
   TelegramUser,
 } from './types';
 
+export type {
+  SendMessageParams,
+  SendPollParams,
+  StopPollParams,
+  TelegramMessage,
+  TelegramPoll,
+  TelegramUser,
+};
+
 export interface TelegramClient {
   getMe(): Promise<TelegramUser>;
   sendMessage(params: SendMessageParams): Promise<TelegramMessage>;

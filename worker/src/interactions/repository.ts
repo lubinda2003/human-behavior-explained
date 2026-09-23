@@ -185,6 +185,35 @@ export class D1InteractionRepository {
       .run();
   }
 
+  async getRecentPosts(limit: number = 10): Promise<PostRecord[]> {
+    const { results } = await this.db
+      .prepare('SELECT * FROM posts ORDER BY created_at DESC LIMIT ?')
+      .bind(limit)
+      .all<any>();
+
+    return (results || []).map((row) => ({
+      id: row.id,
+      contentType: row.content_type,
+      category: row.category,
+      tone: row.tone,
+      stakes: row.stakes,
+      layout: row.layout,
+      hookStyle: row.hook_style,
+      title: row.title,
+      status: row.status,
+      payload: JSON.parse(row.payload_json || '{}'),
+      parentPostId: row.parent_post_id,
+      telegramMessageId: row.telegram_message_id,
+      telegramPollMessageId: row.telegram_poll_message_id,
+      rawR2Key: row.raw_r2_key,
+      scheduledFor: row.scheduled_for,
+      publishedAt: row.published_at,
+      failureReason: row.failure_reason,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    }));
+  }
+
   // ---------------------------------------------------------
   // PUBLISHED MESSAGES
   // ---------------------------------------------------------
@@ -255,8 +284,8 @@ export class D1InteractionRepository {
         interaction.resolvedAt ?? null,
         interaction.resultPostId ?? null,
         interaction.metadata ? JSON.stringify(interaction.metadata) : null,
-        interaction.createdAt,
-        interaction.updatedAt,
+        interaction.createdAt || new Date().toISOString(),
+        interaction.updatedAt || interaction.createdAt || new Date().toISOString(),
       )
       .run();
   }

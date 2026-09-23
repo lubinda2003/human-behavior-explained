@@ -227,15 +227,15 @@ export class E2ESimulationRunner {
     // 4. Persist in D1 and publish via Mock Telegram
     const postRecord: PostRecord = {
       id: `post_${dilemma.id}`,
-      contentType: dilemma.format,
-      category: dilemma.category,
+      contentType: dilemma.format || 'impossible_dilemma',
+      category: dilemma.category || 'moral',
       tone: 'tense',
       stakes: 'survival',
       layout: 'stacked',
       hookStyle: 'statement',
       title: dilemma.title,
       status: 'draft',
-      payload: dilemma,
+      payload: dilemma as any,
       createdAt: new Date().toISOString(),
     };
 
@@ -287,7 +287,7 @@ export class E2ESimulationRunner {
         update_id: ++updateSeq,
         poll_answer: {
           poll_id: telegramPollId,
-          user: { id: 1003, is_bot: false, username: 'dr_morales' },
+          user: { id: 1003, is_bot: false, username: 'dr_morales', first_name: 'Dr. Morales' },
           option_ids: [0],
         },
       },
@@ -301,7 +301,7 @@ export class E2ESimulationRunner {
         update_id: ++updateSeq,
         poll_answer: {
           poll_id: telegramPollId,
-          user: { id: 1005, is_bot: false, username: 'outpost_lead' },
+          user: { id: 1005, is_bot: false, username: 'outpost_lead', first_name: 'Outpost Lead' },
           option_ids: [],
         },
       },
@@ -315,7 +315,7 @@ export class E2ESimulationRunner {
         update_id: updateSeq, // duplicate of user 1005's update_id
         poll_answer: {
           poll_id: telegramPollId,
-          user: { id: 1005, is_bot: false, username: 'outpost_lead' },
+          user: { id: 1005, is_bot: false, username: 'outpost_lead', first_name: 'Outpost Lead' },
           option_ids: [],
         },
       },
@@ -339,9 +339,9 @@ export class E2ESimulationRunner {
       status: 'passed',
       generatedContentId: dilemma.id,
       title: dilemma.title,
-      category: dilemma.category,
-      format: dilemma.format,
-      depth: dilemma.depth,
+      category: dilemma.category || 'moral',
+      format: dilemma.format || 'impossible_dilemma',
+      depth: dilemma.depth || 'standard',
       qualityPassed: qc.isValid,
       lifecycleTransitions: transitions,
       telegramMockIds: {
@@ -359,8 +359,8 @@ export class E2ESimulationRunner {
       },
       finalVoteDistribution: {
         totalParticipants: resultRecord.totalParticipants,
-        winningOptionText: resultRecord.winningOptionText,
-        winningPercentage: resultRecord.winningPercentage,
+        winningOptionText: resultRecord.winningOptionText || null,
+        winningPercentage: resultRecord.winningPercentage || null,
         options: resultRecord.voteDistribution.map((o) => ({
           text: o.optionText,
           voteCount: o.voteCount,
@@ -402,14 +402,14 @@ export class E2ESimulationRunner {
     const postRecord: PostRecord = {
       id: `post_${dilemma.id}`,
       contentType: 'mini_mystery',
-      category: dilemma.category,
+      category: dilemma.category || 'moral',
       tone: 'mysterious',
       stakes: 'high',
       layout: 'stacked',
       hookStyle: 'curiosity',
       title: dilemma.title,
       status: 'draft',
-      payload: dilemma,
+      payload: dilemma as any,
       createdAt: new Date().toISOString(),
     };
 
@@ -435,7 +435,7 @@ export class E2ESimulationRunner {
       status: 'passed',
       generatedContentId: dilemma.id,
       title: dilemma.title,
-      format: dilemma.format,
+      format: dilemma.format || 'mini_mystery',
       qualityPassed: qc.isValid,
       interactionType: plan.interactionType,
       pollCreated,

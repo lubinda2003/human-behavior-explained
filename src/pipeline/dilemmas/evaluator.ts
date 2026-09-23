@@ -373,7 +373,7 @@ export class ContentRealismEvaluator {
       format: dilemma.format || 'impossible_dilemma',
       depth: dilemma.depth || 'standard',
       archetype,
-      category: dilemma.category,
+      category: dilemma.category || 'moral',
       generatedScenario: {
         hook: dilemma.hook,
         setup: dilemma.setup || dilemma.scenario || '',
