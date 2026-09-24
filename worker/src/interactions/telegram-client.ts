@@ -99,7 +99,7 @@ export class MockTelegramClient implements TelegramClient {
       options: params.options.map((text) => ({ text, voter_count: 0 })),
       total_voter_count: 0,
       is_closed: false,
-      is_anonymous: params.is_anonymous ?? false,
+      is_anonymous: params.is_anonymous ?? true,
       type: params.type ?? 'regular',
       allows_multiple_answers: params.allows_multiple_answers ?? false,
       correct_option_id: params.correct_option_id,

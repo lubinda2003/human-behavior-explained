@@ -89,7 +89,7 @@ export class InteractionPlanner {
             text: c.label.length > 100 ? c.label.slice(0, 97) + '...' : c.label,
             tradeOff: c.tradeOff,
           })),
-          isAnonymous: false,
+          isAnonymous: true,
           allowsMultipleAnswers: false,
         },
         targetChatId,
@@ -125,7 +125,7 @@ export class InteractionPlanner {
           text: c.label.length > 100 ? c.label.slice(0, 97) + '...' : c.label,
           tradeOff: c.tradeOff,
         })),
-        isAnonymous: false, // Non-anonymous to track participants in D1 per requirement 3 & 4
+        isAnonymous: true, // Anonymous for channel chats per Telegram requirements
         allowsMultipleAnswers: isInteractiveRanking,
       },
       targetChatId,
@@ -164,7 +164,7 @@ export class InteractionPlanner {
               text: c.label.slice(0, 100),
               tradeOff: c.tradeOff,
             })),
-            isAnonymous: false,
+            isAnonymous: true,
             allowsMultipleAnswers: false,
           },
           targetChatId,

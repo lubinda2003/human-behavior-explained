@@ -116,7 +116,7 @@ describe('Pick Your Fate — Telegram Interaction Engine', () => {
       assert.ok(published.telegramPollId);
       const poll = await repo.getPollByTelegramId(published.telegramPollId);
       assert.ok(poll);
-      assert.equal(poll.isAnonymous, false); // non-anonymous for tracking
+      assert.equal(poll.isAnonymous, true); // anonymous for channel chats per Telegram requirements
 
       const options = await repo.getPollOptions(poll.id);
       assert.equal(options.length, 2);
@@ -180,7 +180,7 @@ describe('Pick Your Fate — Telegram Interaction Engine', () => {
   });
 
   describe('3. Native Poll Creation & Payload Validation', () => {
-    it('correctly creates native poll with non-anonymous configuration and option metadata', async () => {
+    it('correctly creates native poll with anonymous configuration for channels and option metadata', async () => {
       const plan = planner.plan({
         id: 'test_poll_01',
         title: 'Tactical Dilemma',
@@ -193,7 +193,7 @@ describe('Pick Your Fate — Telegram Interaction Engine', () => {
 
       assert.equal(plan.interactionType, 'poll');
       assert.ok(plan.pollConfig);
-      assert.equal(plan.pollConfig.isAnonymous, false);
+      assert.equal(plan.pollConfig.isAnonymous, true);
       assert.equal(plan.pollConfig.allowsMultipleAnswers, false);
       assert.equal(plan.pollConfig.options.length, 2);
 
@@ -205,7 +205,7 @@ describe('Pick Your Fate — Telegram Interaction Engine', () => {
 
       assert.ok(pubResult.telegramPollId);
       assert.equal(telegram.history.polls.length, 1);
-      assert.equal(telegram.history.polls[0].is_anonymous, false);
+      assert.equal(telegram.history.polls[0].is_anonymous, true);
     });
   });
 
@@ -556,7 +556,7 @@ describe('Pick Your Fate — Telegram Interaction Engine', () => {
 
       assert.equal(plan.interactionType, 'prediction_vote');
       assert.ok(plan.pollConfig);
-      assert.equal(plan.pollConfig.isAnonymous, false);
+      assert.equal(plan.pollConfig.isAnonymous, true);
 
       const published = await publisher.publishInteraction({
         post: { ...sampleDilemmaPost, id: 'pred_post_01', contentType: 'prediction' },
