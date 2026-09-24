@@ -14,7 +14,7 @@
   // TELEGRAM_CHANNEL_ID) are set in the Cloudflare dashboard, never in this file.
   "vars": {
     "GEMINI_MODEL": "gemini-2.5-flash",
-    "PUBLISHING_ENABLED": "false",
+    "PUBLISHING_ENABLED": "true",
     "DISCUSSION_GROUP_LINKED": "false"
   },
 
