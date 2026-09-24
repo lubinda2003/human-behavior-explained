@@ -53,6 +53,20 @@ import { DilemmaTelegramFormatter } from '../../../src/pipeline/dilemmas/formatt
 import { DilemmaQualityChecker } from '../../../src/pipeline/dilemmas/quality';
 import type { InteractiveDilemma } from '../../../src/pipeline/dilemmas/types';
 
+/**
+ * Generates a collision-safe, unique post ID with a timestamp component and random UUID.
+ * Ensures two pipeline executions cannot collide even if given identical dilemma objects or IDs.
+ */
+export function generatePostId(_dilemmaId?: string): string {
+  const timestamp = Date.now();
+  const uuid =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID().replace(/-/g, '')
+      : Math.random().toString(36).slice(2, 14);
+
+  return `post_${timestamp}_${uuid}`;
+}
+
 export interface PipelineExecutionResult {
   success: boolean;
   skipped?: boolean;
@@ -218,7 +232,7 @@ export class AutonomousPipelineService {
         dilemma.formattedTelegramText || DilemmaTelegramFormatter.formatPost(dilemma);
 
       // Step 7: Persist post as DRAFT in D1 (idempotency anchor)
-      const postId = `post_${dilemma.id || Date.now()}`;
+      const postId = generatePostId(dilemma.id);
       const nowIso = new Date().toISOString();
 
       const postRecord: PostRecord = {

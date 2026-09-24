@@ -2,7 +2,7 @@ import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { createMockD1Database } from './mock-d1';
 import { SCHEMA_STATEMENTS } from '../src/store/schema';
-import { AutonomousPipelineService } from '../src/pipeline/autonomous-pipeline';
+import { AutonomousPipelineService, generatePostId } from '../src/pipeline/autonomous-pipeline';
 import {
   CONTENT_TAXONOMY,
   mapContentTypeToFormat,
@@ -239,5 +239,73 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
       assert.ok(updatedInteraction);
       assert.equal(updatedInteraction.lifecycleState, 'COMPLETED');
     });
+
+    it('generates collision-safe unique post IDs across consecutive runs with same dilemma', async () => {
+      const offlineEnv: Env = {
+        ...baseEnv,
+        GEMINI_API_KEY: '', // Force procedural generator which might return recurring dilemmas
+      };
+
+      const pipeline = new AutonomousPipelineService(offlineEnv);
+
+      // Run pipeline multiple times
+      const result1 = await pipeline.runPipeline('run_1');
+      assert.equal(result1.success, true);
+      assert.ok(result1.postId);
+
+      // Release lock if any and run second time immediately
+      await kv.delete('pipeline:autonomous_lock');
+
+      const result2 = await pipeline.runPipeline('run_2');
+      assert.equal(result2.success, true);
+      assert.ok(result2.postId);
+
+      // Ensure post IDs are strictly unique
+      assert.notEqual(result1.postId, result2.postId);
+
+      // Verify both posts exist in D1 database without UNIQUE constraint collisions
+      const repo = new D1InteractionRepository(db);
+      const post1 = await repo.getPost(result1.postId!);
+      const post2 = await repo.getPost(result2.postId!);
+      assert.ok(post1);
+      assert.ok(post2);
+      assert.notEqual(post1.id, post2.id);
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // 3. Post ID Uniqueness & Collision Safety Unit Tests
+  // --------------------------------------------------------------------------
+  describe('Post ID Generation & Collision Safety', () => {
+    it('preserves the "post_" prefix and includes timestamp and random component', () => {
+      const id = generatePostId();
+      assert.match(id, /^post_\d+_[a-zA-Z0-9]+$/);
+    });
+
+    it('does not use dilemmaId as the sole ID and ensures uniqueness even with identical dilemma IDs', () => {
+      const sameDilemmaId = 'dilemma-moral-001';
+      const id1 = generatePostId(sameDilemmaId);
+      const id2 = generatePostId(sameDilemmaId);
+
+      assert.notEqual(id1, id2);
+      assert.notEqual(id1, `post_${sameDilemmaId}`);
+      assert.notEqual(id2, `post_${sameDilemmaId}`);
+      assert.match(id1, /^post_\d+_[a-zA-Z0-9]+$/);
+      assert.match(id2, /^post_\d+_[a-zA-Z0-9]+$/);
+    });
+
+    it('guarantees zero collisions across high-volume ID generations', () => {
+      const generated = new Set<string>();
+      const iterations = 1000;
+
+      for (let i = 0; i < iterations; i++) {
+        const id = generatePostId('recurring_dilemma_id');
+        assert.equal(generated.has(id), false, `Collision detected for ID: ${id}`);
+        generated.add(id);
+      }
+
+      assert.equal(generated.size, iterations);
+    });
   });
 });
+
