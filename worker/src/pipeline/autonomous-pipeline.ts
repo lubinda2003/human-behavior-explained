@@ -39,7 +39,7 @@ import {
 } from '../interactions';
 import { getTelegramClient } from '../index';
 import { planVariety } from '../variety/planner';
-import type { HistoryEntry } from '../types';
+import type { HistoryEntry, ContentTypeId } from '../types';
 import type { PostRecord } from '../interactions/types';
 import {
   mapContentTypeToFormat,
@@ -168,7 +168,7 @@ export class AutonomousPipelineService {
       // Step 2: Inspect recent D1 history for anti-repetition planning
       const recentPosts = await this.repo.getRecentPosts(15);
       const recentHistory: HistoryEntry[] = recentPosts.map((p) => ({
-        contentType: p.contentType as any,
+        contentType: (mapContentTypeToFormat(p.contentType) || p.contentType) as ContentTypeId,
         category: p.category as any,
         tone: p.tone as any,
         stakes: p.stakes as any,
@@ -181,8 +181,8 @@ export class AutonomousPipelineService {
       const hasDiscussionGroup = this.env.DISCUSSION_GROUP_LINKED === 'true';
       const varietyPlan = planVariety(recentHistory, { discussionGroup: hasDiscussionGroup });
 
-      // Step 4: Reconcile taxonomy (Content Format vs Interaction Mechanism)
-      const contentFormat = mapContentTypeToFormat(varietyPlan.contentType);
+      // Step 4: Content format is directly selected by the variety planner
+      const contentFormat = varietyPlan.contentType;
       const pipelineCategory = mapWorkerCategoryToPipeline(varietyPlan.category);
       const mechanism = resolveInteractionMechanism(contentFormat);
 

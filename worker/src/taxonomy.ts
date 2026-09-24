@@ -107,9 +107,24 @@ export const CONTENT_TAXONOMY: Record<ContentFormat, ContentTaxonomyDefinition> 
 
 /**
  * Maps a variety planner ContentTypeId to a concrete ContentFormat.
+ * Supports the 12 Pick Your Fate formats directly, with legacy backward-compatibility.
  */
-export function mapContentTypeToFormat(typeId: ContentTypeId): ContentFormat {
+export function mapContentTypeToFormat(typeId: ContentTypeId | string): ContentFormat {
   switch (typeId) {
+    case 'impossible_dilemma':
+    case 'survival_scenario':
+    case 'mini_mystery':
+    case 'strategy_challenge':
+    case 'prediction':
+    case 'versus_battle':
+    case 'chaotic_funny':
+    case 'future_tech':
+    case 'brain_logic':
+    case 'hot_take':
+    case 'interactive_minigame':
+    case 'result_reveal':
+      return typeId;
+    // Legacy compatibility for historical D1 records and tests
     case 'classic_poll':
       return 'impossible_dilemma';
     case 'reaction_vote':

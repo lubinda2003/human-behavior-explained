@@ -105,10 +105,6 @@ export class DilemmaTelegramFormatter {
 
           lines.push(`${emoji} <b>${safeLabel}</b>: ${safeDesc}`);
           lines.push(`   ⚠️ <i>Cost: ${safeTradeOff}</i>`);
-          if (choice.consequence) {
-            const safeCons = this.escapeHtml(choice.consequence);
-            lines.push(`   💥 <i>Direct Consequence: ${safeCons}</i>`);
-          }
           lines.push('');
         });
       }
@@ -125,33 +121,7 @@ export class DilemmaTelegramFormatter {
       lines.push('');
     }
 
-    // 7. Payoff / Consequence / Reveal (Spoiler-tagged for interactive reveal)
-    const revealText = dilemma.consequence || dilemma.payoff?.reveal;
-    if (revealText && revealText.trim().length > 0) {
-      const safeReveal = this.escapeHtml(revealText);
-      const safeOutcome = dilemma.payoff?.surprisingOutcome
-        ? this.escapeHtml(dilemma.payoff.surprisingOutcome)
-        : '';
-      const safeStrategic = dilemma.payoff?.strategicAnalysis
-        ? this.escapeHtml(dilemma.payoff.strategicAnalysis)
-        : '';
-
-      lines.push('<tg-spoiler>');
-      lines.push('💡 <b>THE REVEAL & HIDDEN ANGLE:</b>');
-      lines.push(safeReveal);
-      if (safeOutcome) {
-        lines.push('');
-        lines.push(`🎯 <b>Why it splits players:</b> ${safeOutcome}`);
-      }
-      if (safeStrategic) {
-        lines.push('');
-        lines.push(`🧠 <b>Tactical Reality:</b> ${safeStrategic}`);
-      }
-      lines.push('</tg-spoiler>');
-      lines.push('');
-    }
-
-    // 8. Interactive Call to Action
+    // 7. Interactive Call to Action
     if (format === 'prediction') {
       lines.push('👇 <i>Lock in your prediction below and see if your instincts hold up!</i>');
     } else if (format === 'versus_battle') {

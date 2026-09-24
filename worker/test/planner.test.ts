@@ -82,8 +82,8 @@ test('covers all ten categories over a long run', () => {
 });
 
 test('forced type and category are respected', () => {
-  const plan = planVariety([], { forceType: 'rank_it', forceCategory: 'survival' });
-  assert.equal(plan.contentType, 'rank_it');
+  const plan = planVariety([], { forceType: 'interactive_minigame', forceCategory: 'survival' });
+  assert.equal(plan.contentType, 'interactive_minigame');
   assert.equal(plan.category, 'survival');
 });
 

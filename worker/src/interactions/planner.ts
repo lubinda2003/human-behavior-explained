@@ -57,8 +57,6 @@ export class InteractionPlanner {
     // Choose interaction mechanism according to content format & archetype:
     if (
       format === 'open_discussion' ||
-      format === 'open_debate' ||
-      format === 'story_fork' ||
       format === 'mini_mystery' ||
       format === 'hot_take'
     ) {
@@ -98,7 +96,7 @@ export class InteractionPlanner {
       };
     }
 
-    if (format === 'result_reveal' || format === 'trap_breakdown') {
+    if (format === 'result_reveal') {
       return {
         interactionType: 'result_reveal',
         closeStrategy: 'never',
@@ -114,7 +112,7 @@ export class InteractionPlanner {
           { label: 'Option B', tradeOff: 'Heavy trade-off B' },
         ];
 
-    const isRankIt = format === 'rank_it';
+    const isInteractiveRanking = format === 'interactive_minigame';
 
     return {
       interactionType: 'poll',
@@ -128,7 +126,7 @@ export class InteractionPlanner {
           tradeOff: c.tradeOff,
         })),
         isAnonymous: false, // Non-anonymous to track participants in D1 per requirement 3 & 4
-        allowsMultipleAnswers: isRankIt,
+        allowsMultipleAnswers: isInteractiveRanking,
       },
       targetChatId,
     };

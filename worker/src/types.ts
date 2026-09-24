@@ -54,16 +54,18 @@ export const HOOK_STYLES = [
 export type HookStyle = (typeof HOOK_STYLES)[number];
 
 export const CONTENT_TYPE_IDS = [
-  // "fresh" types: generated from scratch
-  'classic_poll',
-  'reaction_vote',
-  'open_debate',
-  'story_fork',
-  'rank_it',
-  // "derived" types: built from earlier posts and their real results
-  'trap_breakdown',
-  'results_reveal',
-  'weekly_recap',
+  'impossible_dilemma',
+  'survival_scenario',
+  'mini_mystery',
+  'strategy_challenge',
+  'prediction',
+  'versus_battle',
+  'chaotic_funny',
+  'future_tech',
+  'brain_logic',
+  'hot_take',
+  'interactive_minigame',
+  'result_reveal',
 ] as const;
 export type ContentTypeId = (typeof CONTENT_TYPE_IDS)[number];
 
