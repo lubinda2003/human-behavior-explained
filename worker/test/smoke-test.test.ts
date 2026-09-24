@@ -48,6 +48,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
   const TEST_SECRET = 'secure_webhook_secret_9876543210';
   const TEST_BOT_TOKEN = '123456789:ABCDefghIJKLmnOPQRstuvWXYZ';
   const TEST_API_KEY = 'AIzaSyA_test_gemini_api_key_secret';
+  const TEST_BROWSER_TOKEN = 'browser_trigger_secret_token_12345';
 
   beforeEach(async () => {
     db = createMockD1Database();
@@ -64,6 +65,7 @@ describe('Controlled Production Smoke-Test Suite', () => {
       TELEGRAM_BOT_TOKEN: TEST_BOT_TOKEN,
       TELEGRAM_CHANNEL_ID: '@pickyourfate_test',
       TELEGRAM_WEBHOOK_SECRET: TEST_SECRET,
+      BROWSER_TRIGGER_TOKEN: TEST_BROWSER_TOKEN,
       GEMINI_API_KEY: TEST_API_KEY,
       GEMINI_MODEL: 'gemini-2.5-flash',
       PUBLISHING_ENABLED: 'false',
@@ -402,6 +404,53 @@ describe('Controlled Production Smoke-Test Suite', () => {
       assert.equal(data.write, 'PASS');
       assert.equal(data.read, 'PASS');
       assert.equal(data.cleanup, 'PASS');
+    });
+  });
+
+  // -----------------------------------------------------------
+  // 9. Browser Trigger Endpoint (GET /trigger?token=...)
+  // -----------------------------------------------------------
+  describe('Browser Trigger Endpoint (GET /trigger)', () => {
+    it('rejects unauthenticated request with missing token with 401', async () => {
+      const req = new Request('http://localhost/trigger');
+      const res = await worker.fetch(req as any, baseEnv);
+
+      assert.equal(res.status, 401);
+      const text = await res.text();
+      assert.match(text, /Unauthorized/);
+      assert.ok(!text.includes(TEST_BROWSER_TOKEN));
+    });
+
+    it('rejects invalid trigger token with 401', async () => {
+      const req = new Request('http://localhost/trigger?token=incorrect_token_xyz');
+      const res = await worker.fetch(req as any, baseEnv);
+
+      assert.equal(res.status, 401);
+      const text = await res.text();
+      assert.match(text, /Unauthorized/);
+      assert.ok(!text.includes(TEST_BROWSER_TOKEN));
+      assert.ok(!text.includes('incorrect_token_xyz'));
+    });
+
+    it('rejects request if BROWSER_TRIGGER_TOKEN is not configured on worker', async () => {
+      const unconfiguredEnv = { ...baseEnv, BROWSER_TRIGGER_TOKEN: undefined };
+      const req = new Request(`http://localhost/trigger?token=${TEST_BROWSER_TOKEN}`);
+      const res = await worker.fetch(req as any, unconfiguredEnv);
+
+      assert.equal(res.status, 401);
+    });
+
+    it('executes autonomous pipeline on valid token and returns text confirmation', async () => {
+      const req = new Request(`http://localhost/trigger?token=${TEST_BROWSER_TOKEN}`);
+      const res = await worker.fetch(req as any, baseEnv);
+
+      assert.equal(res.status, 200);
+      assert.equal(res.headers.get('Content-Type'), 'text/plain; charset=utf-8');
+      const text = await res.text();
+      assert.match(text, /Pick Your Fate Pipeline Triggered Successfully!/);
+      assert.ok(!text.includes(TEST_BROWSER_TOKEN));
+      assert.ok(!text.includes(TEST_API_KEY));
+      assert.ok(!text.includes(TEST_BOT_TOKEN));
     });
   });
 });

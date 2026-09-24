@@ -35,13 +35,17 @@ test/                 Planner tests (node:test via tsx)
    - `GEMINI_API_KEY`
    - `TELEGRAM_BOT_TOKEN`
    - `TELEGRAM_CHANNEL_ID`
+   - `TELEGRAM_WEBHOOK_SECRET`
+   - `BROWSER_TRIGGER_TOKEN` (optional secret for manual single-click triggers via web browser)
 
 D1, KV and R2 are created automatically on the first deploy because the bindings in `wrangler.jsonc` have no IDs.
 
-## Verify
+## Triggers & Endpoints
 
 - `GET /health` returns `{"ok":true,...}` with `d1`, `kv` and `r2` all `"ok"`. The first call also creates the D1 tables.
 - `GET /plan?n=10` previews a sequence of planned posts (type, category, tone, stakes, layout, hook style). Read-only.
+- `GET /trigger?token=YOUR_TOKEN` triggers a single execution of the autonomous pipeline directly from your browser. Authenticated via `BROWSER_TRIGGER_TOKEN`.
+- `POST /pipeline/run` manual API trigger authenticated via `X-Smoke-Test-Secret: <TELEGRAM_WEBHOOK_SECRET>`.
 
 ## Settings (`wrangler.jsonc` vars)
 

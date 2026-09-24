@@ -15,5 +15,6 @@ export interface Env {
   TELEGRAM_BOT_TOKEN: string;
   TELEGRAM_CHANNEL_ID: string;
   TELEGRAM_WEBHOOK_SECRET?: string;
+  BROWSER_TRIGGER_TOKEN?: string;
   DRY_RUN?: string;
 }

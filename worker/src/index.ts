@@ -79,6 +79,30 @@ function verifySmokeTestAuth(request: Request, env: Env): boolean {
   return match === 0;
 }
 
+function verifyBrowserTriggerAuth(request: Request, env: Env): boolean {
+  const expectedSecret = env.BROWSER_TRIGGER_TOKEN;
+  if (!expectedSecret) {
+    return false;
+  }
+
+  const url = new URL(request.url);
+  const providedToken = url.searchParams.get('token');
+
+  if (!providedToken) {
+    return false;
+  }
+
+  if (providedToken.length !== expectedSecret.length) {
+    return false;
+  }
+
+  let match = 0;
+  for (let i = 0; i < expectedSecret.length; i++) {
+    match |= expectedSecret.charCodeAt(i) ^ providedToken.charCodeAt(i);
+  }
+  return match === 0;
+}
+
 /** Scheduled tick: ensures schema, advances due interactions, and executes autonomous production pipeline. */
 async function tick(env: Env, event: ScheduledController): Promise<void> {
   const schema = await ensureSchema(env);
@@ -228,7 +252,59 @@ export default {
       return Response.json(res, { status: res.success ? 200 : 500 });
     }
 
-    // 4. Telegram Bot API Webhook endpoint
+    // 4. Protected Browser Trigger Endpoint (GET /trigger?token=...)
+    if (request.method === 'GET' && url.pathname === '/trigger') {
+      if (!verifyBrowserTriggerAuth(request, env)) {
+        return new Response('Unauthorized: invalid or missing trigger token\n', {
+          status: 401,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        });
+      }
+
+      try {
+        await ensureSchema(env);
+        const pipeline = new AutonomousPipelineService(env);
+        const res = await pipeline.runPipeline('browser_trigger');
+
+        if (!res.success) {
+          return new Response(
+            `Pipeline execution failed.\n\nError: ${res.error || 'Unknown error'}\n`,
+            {
+              status: 500,
+              headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+            },
+          );
+        }
+
+        const lines = [
+          'Pick Your Fate Pipeline Triggered Successfully!',
+          '-----------------------------------------------',
+          res.skipped ? `Status: Skipped (${res.skipReason})` : 'Status: Executed',
+          `Publishing Enabled: ${res.publishingEnabled}`,
+          res.title ? `Title: ${res.title}` : '',
+          res.contentFormat ? `Format: ${res.contentFormat}` : '',
+          res.interactionMechanism ? `Mechanism: ${res.interactionMechanism}` : '',
+          res.telegramMessageId ? `Telegram Message ID: ${res.telegramMessageId}` : '',
+          `Closed Interactions: ${res.closedInteractionsCount}`,
+          `Duration: ${res.durationMs}ms`,
+        ].filter(Boolean);
+
+        return new Response(lines.join('\n') + '\n', {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        });
+      } catch (err: any) {
+        return new Response(
+          `Internal server error during pipeline trigger.\n\n${err?.message || String(err)}\n`,
+          {
+            status: 500,
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+          },
+        );
+      }
+    }
+
+    // 5. Telegram Bot API Webhook endpoint
     if (request.method === 'POST' && (url.pathname === '/webhook' || url.pathname === '/telegram/webhook')) {
       await ensureSchema(env);
       const repo = new D1InteractionRepository(env.DB);
