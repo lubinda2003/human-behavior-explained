@@ -20,17 +20,24 @@ export class ResultGenerator {
     nowIso?: string;
   }): FormattedResultPost {
     const now = params.nowIso ?? new Date().toISOString();
-    const totalParticipants = params.activeVotes.length;
+    const hasActiveVotes = params.activeVotes.length > 0;
+    const totalVotesFromOptions = params.pollOptions.reduce((sum, o) => sum + (o.voteCount || 0), 0);
+    const totalParticipants = hasActiveVotes ? params.activeVotes.length : totalVotesFromOptions;
 
-    // Count occurrences of each option index from active votes
+    // Count occurrences of each option index
     const counts = new Map<number, number>();
     for (const opt of params.pollOptions) {
-      counts.set(opt.optionIndex, 0);
+      counts.set(opt.optionIndex, opt.voteCount || 0);
     }
 
-    for (const v of params.activeVotes) {
-      for (const idx of v.selectedOptionIndices) {
-        counts.set(idx, (counts.get(idx) ?? 0) + 1);
+    if (hasActiveVotes) {
+      for (const opt of params.pollOptions) {
+        counts.set(opt.optionIndex, 0);
+      }
+      for (const v of params.activeVotes) {
+        for (const idx of v.selectedOptionIndices) {
+          counts.set(idx, (counts.get(idx) ?? 0) + 1);
+        }
       }
     }
 

@@ -567,5 +567,68 @@ describe('Pick Your Fate — Telegram Interaction Engine', () => {
       assert.ok(published.telegramPollId);
       assert.equal(telegram.history.polls.length, 1);
     });
+
+    it('processes anonymous channel poll webhook updates and closure results from option counts', async () => {
+      const plan = planner.plan({
+        id: 'anon_channel_post_01',
+        title: 'High-Altitude Oxygen Crisis',
+        choices: [
+          { label: 'Vent to Research Lab', tradeOff: 'Flora dies' },
+          { label: 'Vent to Greenhouse', tradeOff: 'Scientists evacuate' },
+        ],
+      });
+
+      const published = await publisher.publishInteraction({
+        post: { ...sampleDilemmaPost, id: 'anon_channel_post_01' },
+        plan,
+        formattedText: 'Emergency oxygen scenario in channel.',
+      });
+
+      assert.ok(published.telegramPollId);
+
+      // Simulate Telegram channel poll update webhook (update.poll)
+      const webhookHandler = new TelegramWebhookHandler(repo, voteTracker);
+      const updateRes = await webhookHandler.handleUpdate({
+        update_id: 999123,
+        poll: {
+          id: published.telegramPollId,
+          question: plan.pollConfig!.question,
+          options: [
+            { text: 'Vent to Research Lab', voter_count: 15 },
+            { text: 'Vent to Greenhouse', voter_count: 5 },
+          ],
+          total_voter_count: 20,
+          is_closed: false,
+          is_anonymous: true,
+          type: 'regular',
+          allows_multiple_answers: false,
+        },
+      });
+
+      assert.equal(updateRes.status, 200);
+      assert.equal((updateRes.body as any).pollUpdated, true);
+
+      // Verify D1 poll options and poll records were updated
+      const pollRecord = await repo.getPollByTelegramId(published.telegramPollId);
+      assert.ok(pollRecord);
+      assert.equal(pollRecord.totalVoterCount, 20);
+
+      const options = await repo.getPollOptions(pollRecord.id);
+      assert.equal(options[0].voteCount, 15);
+      assert.equal(options[1].voteCount, 5);
+
+      // Trigger closure
+      const interaction = await repo.getInteraction(published.interactionId);
+      const closeRes = await closureService.closeInteraction(interaction!);
+      assert.equal(closeRes.processed, true);
+
+      // Verify result post calculates accurately from option counts
+      const resultMsg = telegram.history.messages.find((m) => m.text.includes('High-Altitude Oxygen Crisis'));
+      assert.ok(resultMsg);
+      assert.ok(resultMsg.text.includes('75%')); // 15 of 20 = 75%
+      assert.ok(resultMsg.text.includes('25%')); // 5 of 20 = 25%
+      assert.ok(resultMsg.text.includes('15 votes'));
+      assert.ok(resultMsg.text.includes('5 votes'));
+    });
   });
 });

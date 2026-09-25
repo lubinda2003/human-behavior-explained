@@ -10,7 +10,7 @@
     "build": "node -e \"console.log('Build succeeded')\"",
     "deploy": "wrangler deploy",
     "lint": "node -e \"console.log('Lint checks passed')\"",
-    "test": "tsx --test tests/*.test.ts worker/test/*.test.ts",
+    "test": "tsx --test --test-concurrency=1 tests/*.test.ts worker/test/*.test.ts",
     "test:worker": "tsx --test worker/test/*.test.ts",
     "test:dilemmas": "tsx --test tests/*.test.ts",
     "evaluate": "tsx src/pipeline/dilemmas/evaluator.ts"

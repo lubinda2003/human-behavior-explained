@@ -6,6 +6,7 @@ import type {
   PostRecord,
   PublishedMessageRecord,
   ResultRecord,
+  TelegramPoll,
   UserRecord,
   VoteRecord,
   WebhookEventRecord,
@@ -481,6 +482,44 @@ export class D1InteractionRepository {
       .prepare('UPDATE polls SET is_closed = 1, closed_at = ? WHERE id = ?')
       .bind(closedAt, pollId)
       .run();
+  }
+
+  async updatePollCountsFromTelegram(pollData: TelegramPoll, closedAt?: string): Promise<void> {
+    const existing = await this.getPollByTelegramId(pollData.id);
+    if (!existing) return;
+
+    const statements: D1PreparedStatement[] = [];
+
+    statements.push(
+      this.db
+        .prepare(
+          `UPDATE polls
+           SET total_voter_count = ?, is_closed = ?, closed_at = COALESCE(?, closed_at)
+           WHERE id = ?`,
+        )
+        .bind(
+          pollData.total_voter_count,
+          pollData.is_closed ? 1 : 0,
+          pollData.is_closed ? (closedAt ?? new Date().toISOString()) : null,
+          existing.id,
+        ),
+    );
+
+    if (Array.isArray(pollData.options)) {
+      pollData.options.forEach((opt, idx) => {
+        statements.push(
+          this.db
+            .prepare(
+              `UPDATE poll_options
+               SET vote_count = ?
+               WHERE poll_id = ? AND option_index = ?`,
+            )
+            .bind(opt.voter_count, existing.id, idx),
+        );
+      });
+    }
+
+    await this.db.batch(statements);
   }
 
   private mapPollRow(row: any): PollRecord {

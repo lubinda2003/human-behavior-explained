@@ -87,12 +87,21 @@ export class TelegramWebhookHandler {
       };
     }
 
-    // 3. Process poll_answer
+    // 3. Process poll_answer (non-anonymous / direct user votes)
     if (update.poll_answer) {
       const voteResult = await this.voteTracker.processPollAnswer(update.poll_answer, now);
       return {
         status: 200,
         body: { ok: true, update_id: update.update_id, voteResult },
+      };
+    }
+
+    // 4. Process poll updates (anonymous / channel polls)
+    if (update.poll) {
+      await this.repo.updatePollCountsFromTelegram(update.poll, now);
+      return {
+        status: 200,
+        body: { ok: true, update_id: update.update_id, pollUpdated: true },
       };
     }
 

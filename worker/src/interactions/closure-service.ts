@@ -56,10 +56,13 @@ export class InteractionClosureService {
     const poll = await this.repo.getPollByInteractionId(interaction.id);
     if (poll && poll.telegramMessageId && !poll.isClosed) {
       try {
-        await this.telegram.stopPoll({
+        const stoppedPoll = await this.telegram.stopPoll({
           chat_id: interaction.targetChatId,
           message_id: poll.telegramMessageId,
         });
+        if (stoppedPoll && stoppedPoll.options && stoppedPoll.options.length > 0) {
+          await this.repo.updatePollCountsFromTelegram(stoppedPoll, now);
+        }
       } catch (err) {
         // If poll was already stopped in Telegram, continue gracefully
         console.warn(`[ClosureService] stopPoll warning for poll ${poll.id}:`, err);

@@ -130,6 +130,9 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
       assert.equal(result.skipped, true);
       assert.match(result.skipReason || '', /already held/);
       assert.equal(result.postGenerated, undefined);
+
+      // Clean up lock
+      await kv.delete('pipeline:autonomous_lock');
     });
 
     it('falls back to deterministic procedural generation when Gemini is unavailable', async () => {
