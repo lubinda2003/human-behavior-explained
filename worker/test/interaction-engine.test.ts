@@ -579,7 +579,7 @@ describe('Pick Your Fate — Telegram Interaction Engine', () => {
       });
 
       const published = await publisher.publishInteraction({
-        post: { ...sampleDilemmaPost, id: 'anon_channel_post_01' },
+        post: { ...sampleDilemmaPost, id: 'anon_channel_post_01', title: 'High-Altitude Oxygen Crisis' },
         plan,
         formattedText: 'Emergency oxygen scenario in channel.',
       });

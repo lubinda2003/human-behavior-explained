@@ -60,7 +60,7 @@ export class InteractionClosureService {
           chat_id: interaction.targetChatId,
           message_id: poll.telegramMessageId,
         });
-        if (stoppedPoll && stoppedPoll.options && stoppedPoll.options.length > 0) {
+        if (stoppedPoll && stoppedPoll.options && (stoppedPoll.total_voter_count > 0 || stoppedPoll.options.some((o) => (o.voter_count ?? 0) > 0))) {
           await this.repo.updatePollCountsFromTelegram(stoppedPoll, now);
         }
       } catch (err) {
