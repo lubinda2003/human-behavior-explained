@@ -48,7 +48,10 @@ import {
   ContentFormat,
   InteractionMechanism,
 } from '../taxonomy';
-import { DilemmaGenerator } from '../../../src/pipeline/dilemmas/generator';
+import {
+  DilemmaGenerator,
+  type ContinuationContext,
+} from '../../../src/pipeline/dilemmas/generator';
 import { DilemmaTelegramFormatter } from '../../../src/pipeline/dilemmas/formatter';
 import { DilemmaQualityChecker } from '../../../src/pipeline/dilemmas/quality';
 import type { InteractiveDilemma } from '../../../src/pipeline/dilemmas/types';
@@ -67,6 +70,11 @@ export function generatePostId(_dilemmaId?: string): string {
   return `post_${timestamp}_${uuid}`;
 }
 
+export interface PipelineRunOptions {
+  forceContinuation?: boolean;
+  forceStandalone?: boolean;
+}
+
 export interface PipelineExecutionResult {
   success: boolean;
   skipped?: boolean;
@@ -80,6 +88,8 @@ export interface PipelineExecutionResult {
   interactionId?: string;
   telegramMessageId?: number;
   telegramPollId?: string;
+  isContinuation?: boolean;
+  parentPostId?: string;
   publishingEnabled: boolean;
   durationMs: number;
   error?: string;
@@ -159,7 +169,10 @@ export class AutonomousPipelineService {
   /**
    * Executes the complete autonomous production pipeline.
    */
-  async runPipeline(triggerSource = 'cron'): Promise<PipelineExecutionResult> {
+  async runPipeline(
+    triggerSource = 'cron',
+    options?: PipelineRunOptions,
+  ): Promise<PipelineExecutionResult> {
     const startTime = Date.now();
     const lockKey = 'pipeline:autonomous_lock';
     const { acquired, lockToken } = await this.acquireLock(lockKey, 300);
@@ -179,6 +192,33 @@ export class AutonomousPipelineService {
       // Step 1: Process due interactions for closure & results publishing
       const closedInteractions = await this.closureService.processDueInteractions();
 
+      // Step 1b: Continuation Decision Point
+      // Check for the most recently completed interaction result in D1
+      const latestCompleted = await this.repo.getLatestCompletedContinuation();
+      const hasExistingChild = latestCompleted ? await this.repo.hasChildPost(latestCompleted.postId) : false;
+
+      // Decision rule: Continue if forced, or if enabled and not already continued
+      const shouldContinue =
+        Boolean(latestCompleted) &&
+        !options?.forceStandalone &&
+        (options?.forceContinuation === true || (this.env.ENABLE_EPISODE_CONTINUATION === 'true' && !hasExistingChild));
+
+      let continuationContext: ContinuationContext | undefined;
+      if (shouldContinue && latestCompleted) {
+        continuationContext = {
+          parentPostId: latestCompleted.postId,
+          parentInteractionId: latestCompleted.interactionId,
+          previousTitle: latestCompleted.postTitle,
+          category: latestCompleted.category,
+          winningOptionText: latestCompleted.winningOptionText,
+          winningOptionIndex: latestCompleted.winningOptionIndex,
+          winningPercentage: latestCompleted.winningPercentage,
+          revealText: latestCompleted.revealText,
+          payoff: latestCompleted.payoff,
+          telegramMessageId: latestCompleted.telegramMessageId,
+        };
+      }
+
       // Step 2: Inspect recent D1 history for anti-repetition planning
       const recentPosts = await this.repo.getRecentPosts(15);
       const recentHistory: HistoryEntry[] = recentPosts.map((p) => ({
@@ -197,7 +237,9 @@ export class AutonomousPipelineService {
 
       // Step 4: Content format is directly selected by the variety planner
       const contentFormat = varietyPlan.contentType;
-      const pipelineCategory = mapWorkerCategoryToPipeline(varietyPlan.category);
+      const pipelineCategory = continuationContext?.category
+        ? (continuationContext.category as any)
+        : mapWorkerCategoryToPipeline(varietyPlan.category);
       const mechanism = resolveInteractionMechanism(contentFormat);
 
       // Exclude recent titles to avoid repetitive themes
@@ -211,6 +253,7 @@ export class AutonomousPipelineService {
           format: contentFormat,
           depth: 'standard',
           excludedTopics,
+          continuation: continuationContext,
         });
       } catch (genErr) {
         console.warn('Gemini generation failed; invoking procedural generation:', genErr);
@@ -218,6 +261,7 @@ export class AutonomousPipelineService {
           category: pipelineCategory,
           format: contentFormat,
           depth: 'standard',
+          continuation: continuationContext,
         });
       }
 
@@ -246,6 +290,7 @@ export class AutonomousPipelineService {
         title: dilemma.title,
         status: 'draft',
         payload: dilemma as any,
+        parentPostId: continuationContext?.parentPostId ?? null,
         scheduledFor: nowIso,
         createdAt: nowIso,
         updatedAt: nowIso,
@@ -278,6 +323,7 @@ export class AutonomousPipelineService {
         post: postRecord,
         plan: interactionPlan,
         formattedText: formattedTelegramText,
+        replyToMessageId: continuationContext?.telegramMessageId ?? undefined,
       });
 
       return {
@@ -291,6 +337,8 @@ export class AutonomousPipelineService {
         interactionId: published.interactionId,
         telegramMessageId: published.telegramMessageId,
         telegramPollId: published.telegramPollId,
+        isContinuation: Boolean(continuationContext),
+        parentPostId: continuationContext?.parentPostId,
         publishingEnabled: this.env.PUBLISHING_ENABLED === 'true',
         durationMs: Date.now() - startTime,
       };

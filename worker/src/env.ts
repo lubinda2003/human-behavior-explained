@@ -9,6 +9,7 @@ export interface Env {
   GEMINI_MODEL: string;
   PUBLISHING_ENABLED: string; // "true" | "false"
   DISCUSSION_GROUP_LINKED: string; // "true" | "false"
+  ENABLE_EPISODE_CONTINUATION?: string; // "true" | "false"
 
   // Secrets (set in the Cloudflare dashboard)
   GEMINI_API_KEY: string;

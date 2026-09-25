@@ -27,6 +27,7 @@ export class TelegramInteractionPublisher {
     post: PostRecord;
     plan: InteractionPlan;
     formattedText: string;
+    replyToMessageId?: number;
     nowIso?: string;
   }): Promise<PublishResult> {
     const now = params.nowIso ?? new Date().toISOString();
@@ -77,11 +78,25 @@ export class TelegramInteractionPublisher {
 
     // 3. Dispatch to Telegram based on interaction mechanism
     if (params.plan.interactionType === 'poll' || params.plan.interactionType === 'prediction_vote') {
-      return this.publishPollInteraction(params.post, params.plan, interactionId, params.formattedText, now);
+      return this.publishPollInteraction(
+        params.post,
+        params.plan,
+        interactionId,
+        params.formattedText,
+        now,
+        params.replyToMessageId,
+      );
     }
 
     if (params.plan.interactionType === 'open_discussion') {
-      return this.publishDiscussionInteraction(params.post, params.plan, interactionId, params.formattedText, now);
+      return this.publishDiscussionInteraction(
+        params.post,
+        params.plan,
+        interactionId,
+        params.formattedText,
+        now,
+        params.replyToMessageId,
+      );
     }
 
     // Default message post
@@ -89,6 +104,7 @@ export class TelegramInteractionPublisher {
       chat_id: params.plan.targetChatId,
       text: params.formattedText,
       parse_mode: 'HTML',
+      reply_to_message_id: params.replyToMessageId ?? undefined,
     });
 
     const pubMsg: PublishedMessageRecord = {
@@ -123,16 +139,18 @@ export class TelegramInteractionPublisher {
     interactionId: string,
     formattedText: string,
     now: string,
+    replyToMessageId?: number,
   ): Promise<PublishResult> {
     if (!plan.pollConfig) {
       throw new Error(`Poll configuration missing for poll interaction on post ${post.id}`);
     }
 
-    // Step A: Send main scenario / narrative message
+    // Step A: Send main scenario / narrative message (optionally replied to parent post)
     const mainMsg = await this.telegram.sendMessage({
       chat_id: plan.targetChatId,
       text: formattedText,
       parse_mode: 'HTML',
+      reply_to_message_id: replyToMessageId ?? undefined,
     });
 
     await this.repo.createPublishedMessage({
@@ -227,6 +245,7 @@ export class TelegramInteractionPublisher {
     interactionId: string,
     formattedText: string,
     now: string,
+    replyToMessageId?: number,
   ): Promise<PublishResult> {
     const textWithPrompt = plan.discussionPrompt
       ? `${formattedText}\n\n💬 <b>DISCUSSION CHALLENGE:</b>\n<i>${plan.discussionPrompt}</i>`
@@ -236,6 +255,7 @@ export class TelegramInteractionPublisher {
       chat_id: plan.targetChatId,
       text: textWithPrompt,
       parse_mode: 'HTML',
+      reply_to_message_id: replyToMessageId ?? undefined,
     });
 
     await this.repo.createPublishedMessage({

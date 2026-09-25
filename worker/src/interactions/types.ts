@@ -159,6 +159,27 @@ export interface ResultRecord {
   createdAt: string;
 }
 
+export interface CompletedContinuationContext {
+  resultId: string;
+  interactionId: string;
+  postId: string;
+  postTitle: string;
+  category: string;
+  contentType: string;
+  tone: string;
+  stakes: string;
+  winningOptionText: string | null;
+  winningOptionIndex: number | null;
+  winningPercentage: number | null;
+  revealText: string;
+  payoff: Record<string, unknown>;
+  totalParticipants: number;
+  telegramMessageId?: number | null;
+  telegramPollMessageId?: number | null;
+  parentPostId?: string | null;
+  resolvedAt?: string | null;
+}
+
 export interface WebhookEventRecord {
   updateId: number;
   eventType: string;

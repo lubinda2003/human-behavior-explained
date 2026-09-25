@@ -1,4 +1,5 @@
 import type {
+  CompletedContinuationContext,
   InteractionRecord,
   LifecycleState,
   PollOptionRecord,
@@ -817,6 +818,85 @@ export class D1InteractionRepository {
       )
       .bind(status, extra?.publishedAt ?? null, extra?.resultPostMessageId ?? null, id)
       .run();
+  }
+
+  /**
+   * Retrieves the most recently completed interaction result with its associated
+   * post and message metadata for story arc continuation.
+   */
+  async getLatestCompletedContinuation(): Promise<CompletedContinuationContext | null> {
+    const row = await this.db
+      .prepare(
+        `SELECT
+          r.id as result_id,
+          r.interaction_id,
+          r.post_id,
+          r.total_participants,
+          r.winning_option_index,
+          r.winning_option_text,
+          r.winning_percentage,
+          r.payoff_json,
+          r.reveal_text,
+          r.published_at as result_published_at,
+          r.created_at as result_created_at,
+          p.title as post_title,
+          p.category as post_category,
+          p.content_type as post_content_type,
+          p.tone as post_tone,
+          p.stakes as post_stakes,
+          p.parent_post_id,
+          p.telegram_message_id,
+          p.telegram_poll_message_id,
+          i.resolved_at
+         FROM results r
+         JOIN interactions i ON r.interaction_id = i.id
+         JOIN posts p ON r.post_id = p.id
+         WHERE i.lifecycle_state = 'COMPLETED' OR r.status = 'published'
+         ORDER BY r.created_at DESC
+         LIMIT 1`,
+      )
+      .first<any>();
+
+    if (!row) return null;
+
+    let payoff: Record<string, unknown> = {};
+    try {
+      payoff = JSON.parse(row.payoff_json || '{}');
+    } catch {
+      payoff = {};
+    }
+
+    return {
+      resultId: row.result_id,
+      interactionId: row.interaction_id,
+      postId: row.post_id,
+      postTitle: row.post_title,
+      category: row.post_category,
+      contentType: row.post_content_type,
+      tone: row.post_tone,
+      stakes: row.post_stakes,
+      winningOptionText: row.winning_option_text ?? null,
+      winningOptionIndex: row.winning_option_index ?? null,
+      winningPercentage: row.winning_percentage ?? null,
+      revealText: row.reveal_text,
+      payoff,
+      totalParticipants: row.total_participants,
+      telegramMessageId: row.telegram_message_id ?? null,
+      telegramPollMessageId: row.telegram_poll_message_id ?? null,
+      parentPostId: row.parent_post_id ?? null,
+      resolvedAt: row.resolved_at ?? null,
+    };
+  }
+
+  /**
+   * Checks whether a post already has a direct child post in D1.
+   */
+  async hasChildPost(postId: string): Promise<boolean> {
+    const row = await this.db
+      .prepare('SELECT id FROM posts WHERE parent_post_id = ? LIMIT 1')
+      .bind(postId)
+      .first<any>();
+    return Boolean(row);
   }
 
   // ---------------------------------------------------------

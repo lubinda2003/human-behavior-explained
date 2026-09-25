@@ -20,6 +20,19 @@ import {
   PressureType,
 } from './types.js';
 
+export interface ContinuationContext {
+  parentPostId: string;
+  parentInteractionId?: string;
+  previousTitle: string;
+  category: string;
+  winningOptionText?: string | null;
+  winningOptionIndex?: number | null;
+  winningPercentage?: number | null;
+  revealText?: string | null;
+  payoff?: Record<string, any> | null;
+  telegramMessageId?: number | null;
+}
+
 export interface GenerateDilemmaOptions {
   category?: DilemmaCategory;
   format?: ContentFormat;
@@ -29,6 +42,7 @@ export interface GenerateDilemmaOptions {
   excludedTopics?: string[];
   index?: number;
   interactionType?: string;
+  continuation?: ContinuationContext;
 }
 
 export class DilemmaGenerator {
@@ -189,10 +203,20 @@ Output STRICT JSON only matching this exact structure:
   }
 } `;
 
+    const continuationClause = options.continuation
+      ? `\nCONTINUATION DIRECTIVE (CONNECTED EPISODE / ARC):
+This scenario is a direct continuation and escalating aftermath of a previous episode:
+- Previous Episode Title: "${options.continuation.previousTitle}"
+- Winning Decision Decided by Audience: "${options.continuation.winningOptionText || 'Decisive Path'}" (${options.continuation.winningPercentage ?? 50}% of votes)
+- Previous Outcome / Consequence: "${options.continuation.revealText || ''}"
+Generate this new scenario as the NEXT CHAPTER or direct consequence of that choice. The previous choice has taken full effect and created a new, escalating situation with fresh impossible choices.`
+      : '';
+
     const userPrompt = `Generate a brand-new, ultra-engaging Pick Your Fate scenario for the category: "${category}".
 Format: "${format}"
 Depth level: "${depth}"
 ${options.topicHint ? `Specific angle/theme: ${options.topicHint}` : ''}
+${continuationClause}
 ${excludedClause}`;
 
     let attempts = 0;
@@ -507,6 +531,47 @@ Regenerate the scenario resolving all identified issues:
     index: number,
     options: GenerateDilemmaOptions = {}
   ): any {
+    if (options.continuation) {
+      const cont = options.continuation;
+      const winningChoice = cont.winningOptionText || 'the majority decision';
+      const pct = cont.winningPercentage ? `${cont.winningPercentage}%` : '68%';
+      return {
+        title: `Aftermath: ${cont.previousTitle.replace(/^(?:Aftermath:\s*)+/i, '')}`,
+        hook: `Following the ${pct} consensus to choose "${winningChoice}", the immediate consequences have unfolded in the control room.`,
+        setup: `In the previous situation ("${cont.previousTitle}"), the channel decided "${winningChoice}". As a direct result, ${cont.revealText || 'the immediate threat was contained, but secondary systems are now critically destabilized'}. Alarms sound across the facility as unexpected complications force an immediate follow-up decision.`,
+        pressure: 'You have exactly 90 seconds to respond to the cascading aftermath before containment breaches completely.',
+        pressureTypes: ['unexpected_consequences', 'time_pressure', 'limited_resources'],
+        twist: cont.payoff?.surprisingOutcome || 'The choice made earlier contained the primary disaster, but doubled the load on auxiliary containment.',
+        depth: options.depth || 'standard',
+        format: options.format || 'twist_reveal',
+        choices: [
+          {
+            id: 'choice_cont_a',
+            label: `Double Down on Protocol`,
+            description: `Commit all remaining emergency reserves to stabilize the outcome of ${winningChoice}.`,
+            tradeOff: 'Depletes 100% of auxiliary power grid, leaving the rest of the facility in total darkness.',
+            consequence: 'Locks the system into the current operational state.',
+          },
+          {
+            id: 'choice_cont_b',
+            label: 'Sacrificial Countermeasure',
+            description: 'Pivot immediately and enact a sacrificial counter-protocol to isolate the new fallout.',
+            tradeOff: 'Permanently destroys the primary objective achieved in the previous round.',
+            consequence: 'Triggers manual shutdown of Sector 4.',
+          },
+        ],
+        pollQuestion: `How do you handle the aftermath of "${winningChoice.slice(0, 35)}"?`,
+        discussionPrompt: `Did the previous ${pct} vote create an even harder dilemma? How would you handle this fallout?`,
+        consequence: 'Second-order effects often create more severe crises than the initial dilemma.',
+        payoff: {
+          reveal: `The fallout from ${winningChoice} was inevitable: complex systems always transfer stress to the weakest subsystem.`,
+          surprisingOutcome: 'Countermeasures created unexpected stability, while doubling down accelerated secondary failures.',
+          communityTension: 'Sunk cost fallacy vs. admitting the first choice had hidden costs.',
+          strategicAnalysis: 'Second-order decision making requires accepting short-term losses to avoid systemic collapse.',
+        },
+      };
+    }
+
     const catalog: Record<DilemmaCategory, any[]> = {
       'money/lifestyle': [
         {
