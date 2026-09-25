@@ -34,8 +34,8 @@ export interface TelegramCallHistory {
  * Never makes real HTTP calls; generates deterministic, valid Telegram responses.
  */
 export class MockTelegramClient implements TelegramClient {
-  private nextMessageId = 1000;
-  private nextPollId = 5000;
+  private static globalMessageCounter = 1000;
+  private static globalPollCounter = 5000;
   private nextFailure: Error | null = null;
   public readonly history: TelegramCallHistory = {
     messages: [],
@@ -78,7 +78,7 @@ export class MockTelegramClient implements TelegramClient {
   async sendMessage(params: SendMessageParams): Promise<TelegramMessage> {
     this.checkFailure();
     this.history.messages.push({ ...params });
-    const msgId = ++this.nextMessageId;
+    const msgId = ++MockTelegramClient.globalMessageCounter;
     return {
       message_id: msgId,
       date: Math.floor(Date.now() / 1000),
@@ -90,8 +90,8 @@ export class MockTelegramClient implements TelegramClient {
   async sendPoll(params: SendPollParams): Promise<TelegramMessage> {
     this.checkFailure();
     this.history.polls.push({ ...params });
-    const msgId = ++this.nextMessageId;
-    const pollId = `tg_poll_${++this.nextPollId}`;
+    const msgId = ++MockTelegramClient.globalMessageCounter;
+    const pollId = `tg_poll_${++MockTelegramClient.globalPollCounter}`;
 
     const poll: TelegramPoll = {
       id: pollId,

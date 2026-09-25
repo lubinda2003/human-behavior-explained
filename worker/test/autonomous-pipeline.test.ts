@@ -247,6 +247,7 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
       const offlineEnv: Env = {
         ...baseEnv,
         GEMINI_API_KEY: '', // Force procedural generator which might return recurring dilemmas
+        PUBLISHING_COOLDOWN_MINUTES: '0',
       };
 
       const pipeline = new AutonomousPipelineService(offlineEnv);

@@ -178,6 +178,7 @@ describe('Connected Multi-Stage Pick Your Fate Experience', () => {
       PUBLISHING_ENABLED: 'false',
       DRY_RUN: 'false',
       ENABLE_EPISODE_CONTINUATION: 'true',
+      PUBLISHING_COOLDOWN_MINUTES: '0',
     };
 
     // Episode 1: Standalone post

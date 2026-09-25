@@ -10,6 +10,7 @@ export interface Env {
   PUBLISHING_ENABLED: string; // "true" | "false"
   DISCUSSION_GROUP_LINKED: string; // "true" | "false"
   ENABLE_EPISODE_CONTINUATION?: string; // "true" | "false"
+  PUBLISHING_COOLDOWN_MINUTES?: string; // e.g. "180" (default: 3 hours)
 
   // Secrets (set in the Cloudflare dashboard)
   GEMINI_API_KEY: string;

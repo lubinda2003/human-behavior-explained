@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-25T18:27:12.716Z",
+  "timestamp": "2026-09-25T20:25:49.498Z",
   "dryRun": true,
   "summary": {
     "scenariosExecuted": 6,
@@ -148,7 +148,7 @@
       "workerA_outcome": {
         "interactionId": "int_post_concurrency_01",
         "processed": true,
-        "resultPostMessageId": 1013,
+        "resultPostMessageId": 1014,
         "totalParticipants": 0
       },
       "workerB_outcome": {

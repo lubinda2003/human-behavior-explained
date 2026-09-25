@@ -216,6 +216,43 @@ export class D1InteractionRepository {
     }));
   }
 
+  /**
+   * Retrieves the most recently published post from D1 to verify publishing cadence / cooldown.
+   */
+  async getLatestPublishedPost(): Promise<PostRecord | null> {
+    const row = await this.db
+      .prepare(
+        `SELECT * FROM posts
+         WHERE status = 'published' OR published_at IS NOT NULL
+         ORDER BY COALESCE(published_at, created_at) DESC
+         LIMIT 1`,
+      )
+      .first<any>();
+
+    if (!row) return null;
+    return {
+      id: row.id,
+      contentType: row.content_type,
+      category: row.category,
+      tone: row.tone,
+      stakes: row.stakes,
+      layout: row.layout,
+      hookStyle: row.hook_style,
+      title: row.title,
+      status: row.status,
+      payload: JSON.parse(row.payload_json || '{}'),
+      parentPostId: row.parent_post_id,
+      telegramMessageId: row.telegram_message_id,
+      telegramPollMessageId: row.telegram_poll_message_id,
+      rawR2Key: row.raw_r2_key,
+      scheduledFor: row.scheduled_for,
+      publishedAt: row.published_at,
+      failureReason: row.failure_reason,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
+
   // ---------------------------------------------------------
   // PUBLISHED MESSAGES
   // ---------------------------------------------------------

@@ -206,6 +206,12 @@ export const RECENCY_WINDOWS = {
   hookStyle: 4,
 } as const;
 
+/**
+ * Default cooldown between fresh content publications in minutes (180 minutes = 3 hours).
+ * Prevents channel spamming when the worker cron runs frequently (e.g. every 30 minutes).
+ */
+export const DEFAULT_PUBLISHING_COOLDOWN_MINUTES = 180;
+
 /** Stock phrases that make text read as machine-written. Quality checks reject these. */
 export const BANNED_PHRASES: readonly string[] = [
   'imagine a world',

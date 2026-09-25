@@ -70,15 +70,37 @@ export function generatePostId(_dilemmaId?: string): string {
   return `post_${timestamp}_${uuid}`;
 }
 
+/** Default minimum publishing cooldown interval: 120 minutes (2 hours). */
+export const DEFAULT_PUBLISHING_COOLDOWN_MINUTES = 120;
+
+/**
+ * Reads and parses the publishing cooldown interval in minutes from Worker environment variables.
+ * Falls back to DEFAULT_PUBLISHING_COOLDOWN_MINUTES (120 minutes / 2 hours).
+ */
+export function getPublishingCooldownMinutes(env: Env): number {
+  if (env.PUBLISHING_COOLDOWN_MINUTES !== undefined && env.PUBLISHING_COOLDOWN_MINUTES !== '') {
+    const parsed = parseInt(env.PUBLISHING_COOLDOWN_MINUTES, 10);
+    if (!isNaN(parsed) && parsed >= 0) {
+      return parsed;
+    }
+  }
+  return DEFAULT_PUBLISHING_COOLDOWN_MINUTES;
+}
+
 export interface PipelineRunOptions {
   forceContinuation?: boolean;
   forceStandalone?: boolean;
+  ignoreCooldown?: boolean;
+  nowIso?: string;
 }
 
 export interface PipelineExecutionResult {
   success: boolean;
   skipped?: boolean;
   skipReason?: string;
+  cooldownActive?: boolean;
+  cooldownMinutes?: number;
+  remainingCooldownMs?: number;
   closedInteractionsCount: number;
   postGenerated?: boolean;
   postId?: string;
@@ -189,10 +211,45 @@ export class AutonomousPipelineService {
     }
 
     try {
-      // Step 1: Process due interactions for closure & results publishing
-      const closedInteractions = await this.closureService.processDueInteractions();
+      const nowTime = options?.nowIso ? new Date(options.nowIso).getTime() : Date.now();
+      const nowIso = options?.nowIso ?? new Date(nowTime).toISOString();
 
-      // Step 1b: Continuation Decision Point
+      // Step 1: Process due interactions for closure & results publishing
+      // Note: Due interaction closure must ALWAYS run on every scheduled run regardless of fresh publishing cooldown!
+      const closedInteractions = await this.closureService.processDueInteractions(nowIso);
+
+      // Step 1b: Fresh Content Publishing Cooldown Check
+      // Decouples pipeline execution (e.g. 30-min cron) from automatic content generation/publishing.
+      const cooldownMinutes = getPublishingCooldownMinutes(this.env);
+      if (!options?.ignoreCooldown && cooldownMinutes > 0) {
+        const latestPost = await this.repo.getLatestPublishedPost();
+        if (latestPost) {
+          const publishedTimestamp = latestPost.publishedAt || latestPost.createdAt;
+          const lastPublishedMs = new Date(publishedTimestamp).getTime();
+          if (!isNaN(lastPublishedMs)) {
+            const elapsedMs = nowTime - lastPublishedMs;
+            const cooldownMs = cooldownMinutes * 60 * 1000;
+            if (elapsedMs < cooldownMs) {
+              const remainingMs = cooldownMs - elapsedMs;
+              const remainingMin = Math.ceil(remainingMs / 60000);
+              return {
+                success: true,
+                skipped: true,
+                skipReason: `Publishing cooldown active (${remainingMin}m remaining of ${cooldownMinutes}m interval)`,
+                cooldownActive: true,
+                cooldownMinutes,
+                remainingCooldownMs: remainingMs,
+                closedInteractionsCount: closedInteractions.length,
+                postGenerated: false,
+                publishingEnabled: this.env.PUBLISHING_ENABLED === 'true',
+                durationMs: Date.now() - startTime,
+              };
+            }
+          }
+        }
+      }
+
+      // Step 1c: Continuation Decision Point
       // Check for the most recently completed interaction result in D1
       const latestCompleted = await this.repo.getLatestCompletedContinuation();
       const hasExistingChild = latestCompleted ? await this.repo.hasChildPost(latestCompleted.postId) : false;
@@ -277,7 +334,6 @@ export class AutonomousPipelineService {
 
       // Step 7: Persist post as DRAFT in D1 (idempotency anchor)
       const postId = generatePostId(dilemma.id);
-      const nowIso = new Date().toISOString();
 
       const postRecord: PostRecord = {
         id: postId,
@@ -324,6 +380,7 @@ export class AutonomousPipelineService {
         plan: interactionPlan,
         formattedText: formattedTelegramText,
         replyToMessageId: continuationContext?.telegramMessageId ?? undefined,
+        nowIso,
       });
 
       return {
