@@ -165,7 +165,7 @@ export class ContentRealismEvaluator {
       setup,
       pressure,
       twist,
-      ...dilemma.choices.map((c) => `${c.label} ${c.description} ${c.tradeOff} ${c.consequence || ''}`),
+      ...(dilemma.choices || []).map((c) => `${c.label} ${c.description} ${c.tradeOff} ${c.consequence || ''}`),
       dilemma.pollQuestion || '',
       dilemma.discussionPrompt || '',
       dilemma.payoff?.reveal || '',
@@ -220,8 +220,16 @@ export class ContentRealismEvaluator {
     }
 
     // 5. Meaningful Trade-off
+    const isDiscussionFormat =
+      dilemma.format === 'mini_mystery' ||
+      dilemma.format === 'brain_logic' ||
+      dilemma.format === 'hot_take' ||
+      dilemma.format === 'future_tech';
+
     let meaningfulTradeoff = true;
-    if (!dilemma.choices || dilemma.choices.length < 2) {
+    if (isDiscussionFormat) {
+      meaningfulTradeoff = true;
+    } else if (!dilemma.choices || dilemma.choices.length < 2) {
       meaningfulTradeoff = false;
       weaknesses.push('MISSING_CHOICES: Dilemma must have at least 2 viable choices.');
     } else {
@@ -240,7 +248,7 @@ export class ContentRealismEvaluator {
 
     // 6. Both Choices Tempting (Balanced Tension)
     let bothChoicesTempting = true;
-    if (dilemma.choices && dilemma.choices.length >= 2) {
+    if (!isDiscussionFormat && dilemma.choices && dilemma.choices.length >= 2) {
       const cA = dilemma.choices[0];
       const cB = dilemma.choices[1];
       const descA = (cA.description + ' ' + cA.tradeOff).toLowerCase();

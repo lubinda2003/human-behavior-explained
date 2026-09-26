@@ -22,7 +22,7 @@ describe('Dilemma Generator', () => {
       assert.equal(dilemma.category, category);
       assert.ok(dilemma.title.length > 0);
       assert.ok(dilemma.hook.length > 0);
-      assert.ok(dilemma.choices.length >= 2);
+      assert.ok(dilemma.choices && dilemma.choices.length >= 2);
       assert.ok(dilemma.payoff);
       assert.ok(dilemma.visualSpec);
       assert.ok(dilemma.formattedTelegramText);
@@ -38,7 +38,7 @@ describe('Dilemma Generator', () => {
       });
       assert.ok(dilemma.id);
       assert.equal(dilemma.depth, depth);
-      assert.ok(dilemma.choices.length >= 2);
+      assert.ok(dilemma.choices && dilemma.choices.length >= 2);
     }
   });
 
@@ -48,8 +48,8 @@ describe('Dilemma Generator', () => {
       depth: 'standard',
     });
 
-    assert.ok(dilemma.choices.length >= 2);
-    for (const choice of dilemma.choices) {
+    assert.ok(dilemma.choices && dilemma.choices.length >= 2);
+    for (const choice of dilemma.choices!) {
       assert.ok(choice.id);
       assert.ok(choice.label);
       assert.ok(choice.description);

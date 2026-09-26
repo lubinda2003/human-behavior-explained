@@ -77,7 +77,7 @@ describe('Phase 3: Pick Your Fate Persona & Quality Gate Adaptation', () => {
       it(`repairs dilemma containing "${phrase}" and restores QC validity`, async () => {
         const dilemma = await generator.generateDilemma({ category: 'strategy' });
         dilemma.hook = `You stand before the emergency terminal: notice the ${phrase} on the screen.`;
-        dilemma.choices[0].tradeOff = `Creates a severe personal sacrifice and exposes the system to ${phrase}.`;
+        dilemma.choices![0].tradeOff = `Creates a severe personal sacrifice and exposes the system to ${phrase}.`;
         dilemma.formattedTelegramText = DilemmaTelegramFormatter.formatPost(dilemma);
 
         const preQc = DilemmaQualityChecker.validateDilemmaContent(dilemma);

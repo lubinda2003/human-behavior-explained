@@ -1,5 +1,5 @@
 {
-  "simulationTimestamp": "2026-09-26T20:49:04.474Z",
+  "simulationTimestamp": "2026-09-26T21:36:39.838Z",
   "dryRun": true,
   "summary": {
     "totalGenerated": 12,
@@ -49,9 +49,9 @@
       "bizarre hypothetical situations": 1
     },
     "interactionTypesUsed": {
-      "poll": 8,
+      "poll": 7,
       "scenario_choice": 1,
-      "open_discussion": 2,
+      "open_discussion": 3,
       "prediction_vote": 1
     }
   },
@@ -391,30 +391,30 @@
         "id": "batch-03-strategy-hostile",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>⏳ The Whistleblower's Ultimatum</b>\n<i>#PickYourFate #InteractiveDilemmas #strategy #StrategyChallenge</i>\n\n<b>You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?</b>\n\nYou find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.\n\n⚡ <b>THE PRESSURE:</b> The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.\n\n⚠️ <b>THE COMPLICATION:</b> Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Upload to Federal Regulators</b>: Send encrypted proof to journalists and federal authorities immediately.\n   ⚠️ <i>Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.</i>\n\n🅱️ <b>Scrub Local Copies &amp; Protect Household</b>: Delete your downloads, keep your salary, and ensure your partner's medical care.\n   ⚠️ <i>Cost: 100 innocent hospital patients will suffer preventable organ toxicity.</i>\n\n📊 <b>POLL:</b> Do you hit \"Upload\" or delete the files and walk out?\n\n👇 <i>Cast your vote and defend your strategy in the comments!</i>",
+        "messageText": "<b>⏳ The Hostile Takeover Bounty</b>\n<i>#PickYourFate #InteractiveDilemmas #strategy #StrategyChallenge</i>\n\n<b>A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.</b>\n\nYou and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.\n\n⚡ <b>THE PRESSURE:</b> The timer shows 28 minutes, and your co-founders are avoiding eye contact.\n\n⚠️ <b>THE COMPLICATION:</b> One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Sign First &amp; Take the $5M</b>: Grab the pen, sign the buyout, and walk away with an immediate fortune.\n   ⚠️ <i>Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.</i>\n\n🅱️ <b>Hold the Line &amp; Trust the Team</b>: Refuse the bounty, rally your partners, and fight the rival in the open marketplace.\n   ⚠️ <i>Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.</i>\n\n📊 <b>POLL:</b> Do you grab the pen first or trust your co-founders?\n\n👇 <i>Cast your vote and defend your strategy in the comments!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
           "spec": {
             "template": "thought_experiment",
-            "title": "The Whistleblower's Ultimatum",
-            "subtitle": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
+            "title": "The Hostile Takeover Bounty",
+            "subtitle": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
             "tag": "STRATEGY CHALLENGE",
             "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
             "payload": {
               "template": "thought_experiment",
               "data": {
-                "scenarioName": "The Whistleblower's Ultimatum",
-                "dilemma": "You find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.",
+                "scenarioName": "The Hostile Takeover Bounty",
+                "dilemma": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.",
                 "branchA": {
-                  "label": "Upload to Federal Regulators",
-                  "explanation": "Send encrypted proof to journalists and federal authorities immediately. (Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.)"
+                  "label": "Sign First & Take the $5M",
+                  "explanation": "Grab the pen, sign the buyout, and walk away with an immediate fortune. (Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.)"
                 },
                 "branchB": {
-                  "label": "Scrub Local Copies & Protect Household",
-                  "explanation": "Delete your downloads, keep your salary, and ensure your partner's medical care. (Cost: 100 innocent hospital patients will suffer preventable organ toxicity.)"
+                  "label": "Hold the Line & Trust the Team",
+                  "explanation": "Refuse the bounty, rally your partners, and fight the rival in the open marketplace. (Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.)"
                 },
-                "psychologicalInsight": "In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced."
+                "psychologicalInsight": "In corporate crisis tests, over 80% of leadership teams suffer a defection within 12 minutes."
               }
             }
           },
@@ -423,17 +423,17 @@
         "interaction": {
           "type": "scenario_choice",
           "scenarioChoice": {
-            "question": "Do you hit \"Upload\" or delete the files and walk out?",
+            "question": "Do you grab the pen first or trust your co-founders?",
             "options": [
               {
                 "id": "choice_a",
-                "label": "Upload to Federal Regulators",
-                "tradeOff": "Destroys your family's healthcare coverage and invites brutal corporate litigation."
+                "label": "Sign First & Take the $5M",
+                "tradeOff": "Permanently burns bridges with your team, destroys company equity, and brands you a sellout."
               },
               {
                 "id": "choice_b",
-                "label": "Scrub Local Copies & Protect Household",
-                "tradeOff": "100 innocent hospital patients will suffer preventable organ toxicity."
+                "label": "Hold the Line & Trust the Team",
+                "tradeOff": "If even ONE of your partners defects, you walk away with zero dollars while they take the $5M."
               }
             ]
           }
@@ -442,18 +442,18 @@
           "category": "strategy",
           "format": "strategy_challenge",
           "depth": "deep",
-          "title": "The Whistleblower's Ultimatum",
-          "hook": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
-          "wordCount": 199,
-          "characterCount": 1454,
+          "title": "The Hostile Takeover Bounty",
+          "hook": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
+          "wordCount": 225,
+          "characterCount": 1483,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
-            "reveal": "Whistleblowers face an average of 4 years of career blacklisting, but silence causes irreversible moral injury.",
-            "surprisingOutcome": "In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced.",
-            "communityTension": "Public duty to strangers vs. biological loyalty to your own children.",
-            "strategicAnalysis": "Personal liability is concentrated; public benefit is diffuse."
+            "reveal": "When someone waves a huge cash buyout in front of equal partners, panic takes over. The first person to break wins, and everyone in the room knows it.",
+            "surprisingOutcome": "In corporate crisis tests, over 80% of leadership teams suffer a defection within 12 minutes.",
+            "communityTension": "Looking out for yourself vs. standing by your team.",
+            "strategicAnalysis": "Trust needs everyone to hold the line. Betrayal only needs one person to crack."
           }
         },
         "publishedAt": null,
@@ -481,30 +481,22 @@
         "id": "batch-04-mystery-cryo",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>🕵️ The Stolen Cryo-Vial Mystery</b>\n<i>#PickYourFate #InteractiveDilemmas #technologyfuture #MiniMystery</i>\n\n<b>The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed.</b>\n\nYou are the lead night investigator at a high-security bio-research facility. A prototype cryo-vial containing an experimental gene therapy is missing from the sub-basement freezer. Two access cards badged in during the blackout: Dr. Aris (the chief biochemist whose research grant was terminated yesterday) and Captain Vance (the head of building security whose personal debts surfaced this morning).\n\n⚡ <b>THE PRESSURE:</b> The emergency perimeter lockdown timer unlocks external gates in 180 seconds.\n\n⚠️ <b>THE COMPLICATION:</b> The cryo-vial degrades irreversibly into harmless water if not placed in liquid nitrogen within 10 minutes.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Search Dr. Aris's Lab First</b>: Raid the biochemist's private centrifuge bench before she reaches the underground shuttle.\n   ⚠️ <i>Cost: Leaves security chief Vance completely unmonitored at the main exterior vehicle checkpoint.</i>\n\n🅱️ <b>Intercept Captain Vance at the Gate</b>: Block the security chief's patrol vehicle at the armored perimeter barrier.\n   ⚠️ <i>Cost: Gives Dr. Aris 3 uninterrupted minutes to transfer the vial to an external courier on the train line.</i>\n\n💬 <b>DISCUSSION:</b> Examine the clues: Who actually took the cryo-vial and where is it hidden?\n\n👇 <i>Spot the clue everyone else missed? Drop your deduction in the comments!</i>",
+        "messageText": "<b>🕵️ The Midnight Bio-Vault Mystery</b>\n<i>#PickYourFate #InteractiveDilemmas #technologyfuture #MiniMystery</i>\n\n<b>The alarm blares at 03:40 AM: the bio-vault freezer is unlocked, the security camera cable is severed, and Sample 9 is gone.</b>\n\nYou are the lead night investigator at a high-security bio-research facility. At 03:30 AM, during a 10-minute scheduled backup generator switch, someone bypassed the biometric vault and stole Sample 9. Three access badges were logged inside the facility: Dr. Aris (the chief biochemist whose research grant was terminated yesterday), Officer Vance (the head of security whose badge pinged at the exterior gate), and Marcus (the night janitor whose cart was parked outside the ventilation shaft). The vault door shows zero scratches or signs of forced entry. A single drop of liquid nitrogen frozen on the hallway floor leads directly toward the overhead ventilation grille.\n\n⚡ <b>THE PRESSURE:</b> The police arrive in 15 minutes. Once the perimeter gate seals, nobody enters or leaves the building.\n\n⚠️ <b>THE COMPLICATION:</b> The exterior gate access log recorded Officer Vance's badge at 03:32 AM, but the server clock at the exterior gate is offset exactly 15 minutes fast.\n\n💬 <b>DISCUSSION:</b> Examine the clues: Who actually stole Sample 9 and how did they get out of the facility? Drop your deduction in the comments!\n\n👇 <i>Spot the clue everyone else missed? Drop your deduction in the comments!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
           "spec": {
             "template": "thought_experiment",
-            "title": "The Stolen Cryo-Vial Mystery",
-            "subtitle": "The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed.",
+            "title": "The Midnight Bio-Vault Mystery",
+            "subtitle": "The alarm blares at 03:40 AM: the bio-vault freezer is unlocked, the security camera cable is severed, and Sample 9 is gone.",
             "tag": "MINI MYSTERY",
             "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
             "payload": {
               "template": "thought_experiment",
               "data": {
-                "scenarioName": "The Stolen Cryo-Vial Mystery",
-                "dilemma": "You are the lead night investigator at a high-security bio-research facility. A prototype cryo-vial containing an experimental gene therapy is missing from the sub-basement freezer. Two access cards badged in during the blackout: Dr. Aris (the chief biochemist whose research grant was terminated yesterday) and Captain Vance (the head of building security whose personal debts surfaced this morning).",
-                "branchA": {
-                  "label": "Search Dr. Aris's Lab First",
-                  "explanation": "Raid the biochemist's private centrifuge bench before she reaches the underground shuttle. (Cost: Leaves security chief Vance completely unmonitored at the main exterior vehicle checkpoint.)"
-                },
-                "branchB": {
-                  "label": "Intercept Captain Vance at the Gate",
-                  "explanation": "Block the security chief's patrol vehicle at the armored perimeter barrier. (Cost: Gives Dr. Aris 3 uninterrupted minutes to transfer the vial to an external courier on the train line.)"
-                },
-                "psychologicalInsight": "Over 70% of readers suspect the head of security, but the timeline reveals Aris had the physical cooler."
+                "scenarioName": "The Midnight Bio-Vault Mystery",
+                "dilemma": "You are the lead night investigator at a high-security bio-research facility. At 03:30 AM, during a 10-minute scheduled backup generator switch, someone bypassed the biometric vault and stole Sample 9. Three access badges were logged inside the facility: Dr. Aris (the chief biochemist whose research grant was terminated yesterday), Officer Vance (the head of security whose badge pinged at the exterior gate), and Marcus (the night janitor whose cart was parked outside the ventilation shaft). The vault door shows zero scratches or signs of forced entry. A single drop of liquid nitrogen frozen on the hallway floor leads directly toward the overhead ventilation grille.",
+                "psychologicalInsight": "Over 70% of readers suspect the indebted biochemist, but physical access to the roof vent ruled everyone else out."
               }
             }
           },
@@ -513,7 +505,7 @@
         "interaction": {
           "type": "open_discussion",
           "openDiscussion": {
-            "prompt": "Examine the clues: Who actually took the cryo-vial and where is it hidden?",
+            "prompt": "Examine the clues: Who actually stole Sample 9 and how did they get out of the facility? Drop your deduction in the comments!",
             "pinnedCallToAction": "💬 Join the debate in the discussion group."
           }
         },
@@ -521,18 +513,18 @@
           "category": "technology/future",
           "format": "mini_mystery",
           "depth": "deep",
-          "title": "The Stolen Cryo-Vial Mystery",
-          "hook": "The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed.",
-          "wordCount": 216,
-          "characterCount": 1548,
+          "title": "The Midnight Bio-Vault Mystery",
+          "hook": "The alarm blares at 03:40 AM: the bio-vault freezer is unlocked, the security camera cable is severed, and Sample 9 is gone.",
+          "wordCount": 222,
+          "characterCount": 1460,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
-            "reveal": "Captain Vance was running an audit drill; Dr. Aris used Vance's stolen keycard while Vance was distracted at the loading dock.",
-            "surprisingOutcome": "Over 70% of readers suspect the head of security, but the timeline reveals Aris had the physical cooler.",
-            "communityTension": "Apparent opportunity vs. circumstantial motive.",
-            "strategicAnalysis": "Investigating the person with direct physical access yields faster forensic resolution."
+            "reveal": "Officer Vance staged the theft. Knowing the exterior gate clock was running 15 minutes fast, he badged at the gate to create a false alibi, then returned through the maintenance vents using master keys that leave no tool marks on the vault door.",
+            "surprisingOutcome": "Over 70% of readers suspect the indebted biochemist, but physical access to the roof vent ruled everyone else out.",
+            "communityTension": "Circumstantial financial motive vs. forensic timeline discrepancies.",
+            "strategicAnalysis": "Physical constraints and timeline anomalies are far more reliable than emotional motives in forensic deduction."
           }
         },
         "publishedAt": null,
@@ -544,7 +536,7 @@
       "format": "future_tech",
       "category": "technology/future",
       "depth": "standard",
-      "interactionType": "poll",
+      "interactionType": "open_discussion",
       "attempts": 1,
       "acceptedOnFirstAttempt": true,
       "regeneratedOrRepaired": false,
@@ -560,63 +552,50 @@
         "id": "batch-05-tech-neural",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>🤖 The Neural Memory Redactor</b>\n<i>#PickYourFate #InteractiveDilemmas #technologyfuture #FutureTech</i>\n\n<b>In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are.</b>\n\nYou sit strapped into the padded surgical chair inside the sterile clinic suite, staring up at a precision quantum laser hovering inches above your temples. The Synapse Redaction Institute offers to eliminate the synaptic memory cluster of your greatest life trauma. However, brain monitors confirm that your master career skill and proudest life triumph are biologically entangled with that exact pain; deleting the suffering will permanently erase the skills you built to survive it.\n\n⚡ <b>THE PRESSURE:</b> The clinic chair is prepped and the neuro-catalyst expires in 15 minutes.\n\n⚠️ <b>THE COMPLICATION:</b> The neurosurgeon admits that 40% of patients who undergo the procedure experience a strange phantom emptiness where their drive used to be.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Erase the Pain &amp; Forfeit the Triumph</b>: Wipe the agony forever, sleep with total peace, and live unburdened by past ghosts.\n   ⚠️ <i>Cost: Lose the master skills, wisdom, and core personal achievement that define your identity.</i>\n\n🅱️ <b>Keep the Scars &amp; Keep the Mastery</b>: Stand up from the clinic chair, embrace your scars, and keep everything you fought to become.\n   ⚠️ <i>Cost: You continue carrying the emotional triggers, grief, and nocturnal flashbacks for life.</i>\n\n📊 <b>POLL:</b> Do you erase your trauma or keep your hard-earned scars?\n\n👇 <i>Would you take this deal? Argue your case in the comments!</i>",
+        "messageText": "<b>🤖 The Mandatory Dream Education Interface</b>\n<i>#PickYourFate #InteractiveDilemmas #technologyfuture #FutureTech</i>\n\n<b>By 2042, neural implants can stream a full four-year degree directly into your sleep—at the cost of mandatory corporate sponsored dreams.</b>\n\nA neurotech conglomerate unveils the \"Neuro-Diploma\": a consumer neural link that compresses four years of medical, engineering, or legal training into 180 nights of deep sleep learning. But to keep the service free for working-class families, the system injects 30 minutes of subconscious targeted advertising directly into your dream state every night. The ads feel completely real, altering your brand affinity and waking preferences without your conscious control.\n\n⚡ <b>THE PRESSURE:</b> College tuition has reached $300,000, making this the only viable economic ladder for 90% of young workers.\n\n⚠️ <b>THE COMPLICATION:</b> Independent neurologists warn that subconscious dream marketing permanently alters emotional attachment patterns and personal opinions.\n\n💬 <b>DISCUSSION:</b> Would you surrender control of your dream life to escape generational poverty, or is subconscious autonomy non-negotiable? Defend your position in the comments!\n\n👇 <i>Would you take this deal? Argue your case in the comments!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
           "spec": {
             "template": "thought_experiment",
-            "title": "The Neural Memory Redactor",
-            "subtitle": "In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are.",
+            "title": "The Mandatory Dream Education Interface",
+            "subtitle": "By 2042, neural implants can stream a full four-year degree directly into your sleep—at the cost of mandatory corporate sponsored dreams.",
             "tag": "FUTURE TECH",
             "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
             "payload": {
               "template": "thought_experiment",
               "data": {
-                "scenarioName": "The Neural Memory Redactor",
-                "dilemma": "You sit strapped into the padded surgical chair inside the sterile clinic suite, staring up at a precision quantum laser hovering inches above your temples. The Synapse Redaction Institute offers to eliminate the synaptic memory cluster of your greatest life trauma. However, brain monitors confirm that your master career skill and proudest life triumph are biologically entangled with that exact pain; deleting the suffering will permanently erase the skills you built to survive it.",
-                "branchA": {
-                  "label": "Erase the Pain & Forfeit the Triumph",
-                  "explanation": "Wipe the agony forever, sleep with total peace, and live unburdened by past ghosts. (Cost: Lose the master skills, wisdom, and core personal achievement that define your identity.)"
-                },
-                "branchB": {
-                  "label": "Keep the Scars & Keep the Mastery",
-                  "explanation": "Stand up from the clinic chair, embrace your scars, and keep everything you fought to become. (Cost: You continue carrying the emotional triggers, grief, and nocturnal flashbacks for life.)"
-                },
-                "psychologicalInsight": "Over 75% of people initially want the eraser, but reverse their vote when they realize mastery vanishes with it."
+                "scenarioName": "The Mandatory Dream Education Interface",
+                "dilemma": "A neurotech conglomerate unveils the \"Neuro-Diploma\": a consumer neural link that compresses four years of medical, engineering, or legal training into 180 nights of deep sleep learning. But to keep the service free for working-class families, the system injects 30 minutes of subconscious targeted advertising directly into your dream state every night. The ads feel completely real, altering your brand affinity and waking preferences without your conscious control.",
+                "psychologicalInsight": "Surveys show young workers overwhelmingly accept neurological invasive trade-offs when economic mobility is on the line."
               }
             }
           },
           "attachAsPhoto": true
         },
         "interaction": {
-          "type": "poll",
-          "poll": {
-            "question": "Do you erase your trauma or keep your hard-earned scars?",
-            "options": [
-              "Erase the Pain & Forfeit the Triumph",
-              "Keep the Scars & Keep the Mastery"
-            ],
-            "isAnonymous": true,
-            "allowsMultipleAnswers": false
+          "type": "open_discussion",
+          "openDiscussion": {
+            "prompt": "Would you surrender control of your dream life to escape generational poverty, or is subconscious autonomy non-negotiable? Defend your position in the comments!",
+            "pinnedCallToAction": "💬 Join the debate in the discussion group."
           }
         },
         "metadata": {
           "category": "technology/future",
           "format": "future_tech",
           "depth": "standard",
-          "title": "The Neural Memory Redactor",
-          "hook": "In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are.",
-          "wordCount": 247,
-          "characterCount": 1676,
+          "title": "The Mandatory Dream Education Interface",
+          "hook": "By 2042, neural implants can stream a full four-year degree directly into your sleep—at the cost of mandatory corporate sponsored dreams.",
+          "wordCount": 174,
+          "characterCount": 1288,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
-            "reveal": "Identity is not built on comfort, but on the scar tissue of survival; deleting struggles leaves patients feeling unmoored.",
-            "surprisingOutcome": "Over 75% of people initially want the eraser, but reverse their vote when they realize mastery vanishes with it.",
-            "communityTension": "Emotional anesthesia vs. authentic hard-won strength.",
-            "strategicAnalysis": "Suffering and skill share the exact same neural pathways of adaptation."
+            "reveal": "Whenever a vital human necessity is offered for free in exchange for subconscious attention, the consumer ceases to be the customer and becomes the product.",
+            "surprisingOutcome": "Surveys show young workers overwhelmingly accept neurological invasive trade-offs when economic mobility is on the line.",
+            "communityTension": "Financial survival and rapid upward mobility vs. mental sovereignty and free will.",
+            "strategicAnalysis": "Economic desperation reliably forces populations to accept terms that previous generations considered dystopia."
           }
         },
         "publishedAt": null,
@@ -979,30 +958,30 @@
         "id": "batch-10-moral-whistleblower-fallback",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>⏳ The Whistleblower's Ultimatum</b>\n<i>#PickYourFate #InteractiveDilemmas #moral #StrategyChallenge</i>\n\n<b>You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?</b>\n\nYou find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.\n\n⚡ <b>THE PRESSURE:</b> The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.\n\n⚠️ <b>THE COMPLICATION:</b> Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Upload to Federal Regulators</b>: Send encrypted proof to journalists and federal authorities immediately.\n   ⚠️ <i>Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.</i>\n\n🅱️ <b>Scrub Local Copies &amp; Protect Household</b>: Delete your downloads, keep your salary, and ensure your partner's medical care.\n   ⚠️ <i>Cost: 100 innocent hospital patients will suffer preventable organ toxicity.</i>\n\n📊 <b>POLL:</b> Do you hit \"Upload\" or delete the files and walk out?\n\n👇 <i>Cast your vote and defend your strategy in the comments!</i>",
+        "messageText": "<b>⏳ The Hostile Takeover Bounty</b>\n<i>#PickYourFate #InteractiveDilemmas #moral #StrategyChallenge</i>\n\n<b>A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.</b>\n\nYou and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.\n\n⚡ <b>THE PRESSURE:</b> The timer shows 28 minutes, and your co-founders are avoiding eye contact.\n\n⚠️ <b>THE COMPLICATION:</b> One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Sign First &amp; Take the $5M</b>: Grab the pen, sign the buyout, and walk away with an immediate fortune.\n   ⚠️ <i>Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.</i>\n\n🅱️ <b>Hold the Line &amp; Trust the Team</b>: Refuse the bounty, rally your partners, and fight the rival in the open marketplace.\n   ⚠️ <i>Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.</i>\n\n📊 <b>POLL:</b> Do you grab the pen first or trust your co-founders?\n\n👇 <i>Cast your vote and defend your strategy in the comments!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
           "spec": {
             "template": "thought_experiment",
-            "title": "The Whistleblower's Ultimatum",
-            "subtitle": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
+            "title": "The Hostile Takeover Bounty",
+            "subtitle": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
             "tag": "STRATEGY CHALLENGE",
             "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
             "payload": {
               "template": "thought_experiment",
               "data": {
-                "scenarioName": "The Whistleblower's Ultimatum",
-                "dilemma": "You find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.",
+                "scenarioName": "The Hostile Takeover Bounty",
+                "dilemma": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.",
                 "branchA": {
-                  "label": "Upload to Federal Regulators",
-                  "explanation": "Send encrypted proof to journalists and federal authorities immediately. (Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.)"
+                  "label": "Sign First & Take the $5M",
+                  "explanation": "Grab the pen, sign the buyout, and walk away with an immediate fortune. (Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.)"
                 },
                 "branchB": {
-                  "label": "Scrub Local Copies & Protect Household",
-                  "explanation": "Delete your downloads, keep your salary, and ensure your partner's medical care. (Cost: 100 innocent hospital patients will suffer preventable organ toxicity.)"
+                  "label": "Hold the Line & Trust the Team",
+                  "explanation": "Refuse the bounty, rally your partners, and fight the rival in the open marketplace. (Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.)"
                 },
-                "psychologicalInsight": "In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced."
+                "psychologicalInsight": "In corporate crisis tests, over 80% of leadership teams suffer a defection within 12 minutes."
               }
             }
           },
@@ -1019,18 +998,18 @@
           "category": "moral",
           "format": "strategy_challenge",
           "depth": "deep",
-          "title": "The Whistleblower's Ultimatum",
-          "hook": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
-          "wordCount": 199,
-          "characterCount": 1451,
+          "title": "The Hostile Takeover Bounty",
+          "hook": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
+          "wordCount": 225,
+          "characterCount": 1480,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
-            "reveal": "Whistleblowers face an average of 4 years of career blacklisting, but silence causes irreversible moral injury.",
-            "surprisingOutcome": "In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced.",
-            "communityTension": "Public duty to strangers vs. biological loyalty to your own children.",
-            "strategicAnalysis": "Personal liability is concentrated; public benefit is diffuse."
+            "reveal": "When someone waves a huge cash buyout in front of equal partners, panic takes over. The first person to break wins, and everyone in the room knows it.",
+            "surprisingOutcome": "In corporate crisis tests, over 80% of leadership teams suffer a defection within 12 minutes.",
+            "communityTension": "Looking out for yourself vs. standing by your team.",
+            "strategicAnalysis": "Trust needs everyone to hold the line. Betrayal only needs one person to crack."
           }
         },
         "publishedAt": null,

@@ -215,12 +215,13 @@ export class E2ESimulationRunner {
       id: dilemma.id,
       title: dilemma.title,
       contentType: dilemma.format,
-      choices: dilemma.choices.map((c) => ({
+      choices: dilemma.choices ? dilemma.choices.map((c) => ({
         label: c.label,
         tradeOff: c.tradeOff,
         description: c.description,
-      })),
+      })) : undefined,
       pollQuestion: dilemma.pollQuestion,
+      discussionPrompt: dilemma.discussionPrompt,
       payoff: dilemma.payoff,
     }, { customDurationSeconds: 7200 });
 

@@ -53,7 +53,7 @@ describe('Connected Multi-Stage Pick Your Fate Experience', () => {
 
     assert.ok(dilemma.title);
     assert.ok(dilemma.scenario);
-    assert.ok(dilemma.choices.length >= 2);
+    assert.ok(dilemma.choices && dilemma.choices.length >= 2);
     assert.equal(dilemma.title.startsWith('Aftermath:'), false);
     assert.equal(dilemma.qc?.isValid, true);
   });
@@ -152,7 +152,7 @@ describe('Connected Multi-Stage Pick Your Fate Experience', () => {
     assert.ok(nextDilemma.hook.includes('Purge Auxiliary Tanks'));
     assert.ok(nextDilemma.hook.includes('80%'));
     assert.ok(nextDilemma.scenario.includes('Purge Auxiliary Tanks'));
-    assert.equal(nextDilemma.choices.length, 2);
+    assert.equal(nextDilemma.choices?.length, 2);
     assert.equal(nextDilemma.qc?.isValid, true);
   });
 

@@ -129,12 +129,12 @@ export class DilemmaQualityChecker {
       dilemma.scenario || '',
       dilemma.pressure || '',
       dilemma.twist || '',
-      ...dilemma.choices.map((c) => `${c.label} ${c.description} ${c.tradeOff} ${c.consequence || ''}`),
+      ...(dilemma.choices || []).map((c) => `${c.label} ${c.description} ${c.tradeOff} ${c.consequence || ''}`),
       dilemma.pollQuestion || '',
       dilemma.discussionPrompt || '',
-      dilemma.payoff.reveal || '',
-      dilemma.payoff.surprisingOutcome || '',
-      dilemma.payoff.communityTension || '',
+      dilemma.payoff?.reveal || '',
+      dilemma.payoff?.surprisingOutcome || '',
+      dilemma.payoff?.communityTension || '',
       dilemma.formattedTelegramText,
     ].join(' ');
 
@@ -166,16 +166,32 @@ export class DilemmaQualityChecker {
       schemaFieldsValid = false;
     }
 
+    // Format discrimination: Discussion-first vs Poll-based vs Derived
+    const isDiscussionFormat =
+      dilemma.format === 'mini_mystery' ||
+      dilemma.format === 'brain_logic' ||
+      dilemma.format === 'hot_take' ||
+      dilemma.format === 'future_tech';
+
     // Interaction mechanism & configuration check
     let interactionConfigValid = true;
-    const hasInteraction =
-      (dilemma.pollQuestion && dilemma.pollQuestion.trim().length >= 5) ||
-      (dilemma.discussionPrompt && dilemma.discussionPrompt.trim().length >= 5) ||
-      (Array.isArray(dilemma.choices) && dilemma.choices.length >= 2);
+    if (isDiscussionFormat) {
+      if (!dilemma.discussionPrompt || dilemma.discussionPrompt.trim().length < 5) {
+        errors.push(`Discussion format "${dilemma.format}" requires a substantive discussionPrompt.`);
+        interactionConfigValid = false;
+      }
+    } else if (dilemma.format === 'result_reveal') {
+      // result_reveal is derived/event-driven
+    } else {
+      const hasInteraction =
+        (dilemma.pollQuestion && dilemma.pollQuestion.trim().length >= 5) ||
+        (dilemma.discussionPrompt && dilemma.discussionPrompt.trim().length >= 5) ||
+        (Array.isArray(dilemma.choices) && dilemma.choices.length >= 2);
 
-    if (!hasInteraction) {
-      errors.push('Dilemma must have an interaction mechanism (pollQuestion, discussionPrompt, or interactive choices).');
-      interactionConfigValid = false;
+      if (!hasInteraction) {
+        errors.push('Dilemma must have an interaction mechanism (pollQuestion, discussionPrompt, or interactive choices).');
+        interactionConfigValid = false;
+      }
     }
 
     // Validate specific interaction types and Telegram poll constraints
@@ -195,7 +211,7 @@ export class DilemmaQualityChecker {
       }
     }
 
-    if (dilemma.interactionType === 'poll' || dilemma.pollQuestion) {
+    if (dilemma.interactionType === 'poll' || (!isDiscussionFormat && dilemma.pollQuestion)) {
       if (dilemma.pollQuestion && dilemma.pollQuestion.length > 300) {
         errors.push(`Telegram poll question exceeds the 300 character limit (received ${dilemma.pollQuestion.length} chars).`);
         interactionConfigValid = false;
@@ -225,77 +241,86 @@ export class DilemmaQualityChecker {
       }
     }
 
-    // 2. Choice Verification (2-4 meaningful choices with explicit trade-offs)
+    // 2. Choice Verification (Conditional on format: discussion-first formats can legitimately contain 0 choices)
     let choiceCountValid = true;
     let tradeOffsExplicit = true;
     let noCostFreeChoice = true;
     let noDominantChoice = true;
 
-    if (!Array.isArray(dilemma.choices) || dilemma.choices.length < 2 || dilemma.choices.length > 4) {
-      errors.push(`Dilemma must have between 2 and 4 choices (received ${dilemma.choices?.length || 0}).`);
-      choiceCountValid = false;
-    } else {
-      const choiceIds = new Set<string>();
-      const choiceLabels = new Set<string>();
-
-      for (let i = 0; i < dilemma.choices.length; i++) {
-        const choice = dilemma.choices[i];
-        if (!choice.id || choice.id.trim().length === 0) {
-          errors.push(`Choice at index ${i} is missing an id.`);
+    if (isDiscussionFormat || dilemma.format === 'result_reveal') {
+      // Discussion formats can legitimately contain zero choices
+      if (Array.isArray(dilemma.choices) && dilemma.choices.length > 0) {
+        if (dilemma.choices.length < 2 || dilemma.choices.length > 4) {
+          errors.push(`If choices are provided, there must be between 2 and 4 choices (received ${dilemma.choices.length}).`);
+          choiceCountValid = false;
         } else {
-          if (choiceIds.has(choice.id)) {
-            errors.push(`Duplicate choice id "${choice.id}" at index ${i}.`);
-          }
-          choiceIds.add(choice.id);
+          this.validateChoicesContent(dilemma.choices, errors, (t, c, d) => {
+            tradeOffsExplicit = t;
+            noCostFreeChoice = c;
+            noDominantChoice = d;
+          });
         }
-
-        if (!choice.label || choice.label.trim().length === 0) {
-          errors.push(`Choice at index ${i} is missing a label.`);
-        } else {
-          const normLabel = choice.label.toLowerCase().trim();
-          if (choiceLabels.has(normLabel)) {
-            errors.push(`Duplicate choice label "${choice.label}" at index ${i}.`);
-          }
-          choiceLabels.add(normLabel);
-        }
-
-        if (!choice.tradeOff || choice.tradeOff.trim().length < 8) {
-          errors.push(`Choice at index ${i} (${choice.label || 'unnamed'}) is missing an explicit trade-off.`);
-          tradeOffsExplicit = false;
-          noCostFreeChoice = false;
-        } else {
-          const lowerTradeOff = choice.tradeOff.toLowerCase().trim();
-          if (
-            ['none', 'nothing', 'no downside', 'no cost', 'free'].includes(lowerTradeOff) ||
-            /\b(?:none|nothing|no\s+(?:downside|cost|risk|consequence|sacrifice|penalty|harm|drawback)|zero\s+(?:cost|downside|risk|penalty)|free|trivial|minor\s+(?:inconvenience|delay|calorie)|slight\s+delay|no\s+harm\s+done|all\s+upside|cost-?free)\b/i.test(lowerTradeOff)
-          ) {
-            errors.push(`Choice at index ${i} has a trivial trade-off ("${choice.tradeOff}"). All choices must have real stakes.`);
-            tradeOffsExplicit = false;
-            noCostFreeChoice = false;
-          }
-        }
+      } else {
+        choiceCountValid = true;
+        tradeOffsExplicit = true;
+        noCostFreeChoice = true;
+        noDominantChoice = true;
       }
+    } else {
+      // Poll formats MUST have between 2 and 4 choices with explicit trade-offs
+      if (!Array.isArray(dilemma.choices) || dilemma.choices.length < 2 || dilemma.choices.length > 4) {
+        errors.push(`Dilemma must have between 2 and 4 choices (received ${dilemma.choices?.length || 0}).`);
+        choiceCountValid = false;
+      } else {
+        this.validateChoicesContent(dilemma.choices, errors, (t, c, d) => {
+          tradeOffsExplicit = t;
+          noCostFreeChoice = c;
+          noDominantChoice = d;
+        });
+      }
+    }
 
-      // Dominant Choice Verification: Reject situations where a rational reader immediately knows which option is superior
-      if (dilemma.choices.length >= 2) {
-        const cA = dilemma.choices[0];
-        const cB = dilemma.choices[1];
-        const descA = `${cA.description || ''} ${cA.tradeOff || ''}`.toLowerCase();
-        const descB = `${cB.description || ''} ${cB.tradeOff || ''}`.toLowerCase();
-
-        const isLethalA = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descA);
-        const isLethalB = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descB);
-        const isSeriousA = isLethalA || /\b(?:burnout|sacrifice|forfeit|ruin|agony|chasm|hypothermia|blacklisted|concussion|prison|bankrupt|fatal)\b/i.test(descA);
-        const isSeriousB = isLethalB || /\b(?:burnout|sacrifice|forfeit|ruin|agony|chasm|hypothermia|blacklisted|concussion|prison|bankrupt|fatal)\b/i.test(descB);
-
-        if ((isLethalA && !isSeriousB) || (isLethalB && !isSeriousA)) {
-          errors.push('One choice carries catastrophic/lethal ruin while the other has only trivial downsides, creating an obvious dominant choice.');
-          noDominantChoice = false;
-        }
-        if (cA.label.toLowerCase().trim() === cB.label.toLowerCase().trim()) {
-          errors.push('Choices have identical labels.');
-          noDominantChoice = false;
-        }
+    // Additional format-specific checks
+    let formatRequirementsMet = true;
+    if (dilemma.format === 'mini_mystery') {
+      const fullScenario = `${dilemma.setup || ''} ${dilemma.scenario || ''} ${dilemma.pressure || ''} ${dilemma.twist || ''}`;
+      if (fullScenario.trim().length < 40) {
+        errors.push('mini_mystery scenario must provide enough clues and evidence for deduction.');
+        formatRequirementsMet = false;
+      }
+      if (!dilemma.payoff?.reveal || dilemma.payoff.reveal.trim().length < 20) {
+        errors.push('mini_mystery must contain a usable solution/reveal in payoff.reveal (minimum 20 characters).');
+        formatRequirementsMet = false;
+      }
+    } else if (dilemma.format === 'brain_logic') {
+      const fullScenario = `${dilemma.setup || ''} ${dilemma.scenario || ''} ${dilemma.pressure || ''} ${dilemma.twist || ''}`;
+      if (fullScenario.trim().length < 40) {
+        errors.push('brain_logic scenario must provide enough information and constraints to solve the problem.');
+        formatRequirementsMet = false;
+      }
+      if (!dilemma.payoff?.reveal || dilemma.payoff.reveal.trim().length < 20) {
+        errors.push('brain_logic must contain a valid solution/reasoning in payoff.reveal (minimum 20 characters).');
+        formatRequirementsMet = false;
+      }
+    } else if (dilemma.format === 'hot_take') {
+      const premise = `${dilemma.hook || ''} ${dilemma.setup || ''} ${dilemma.scenario || ''}`;
+      if (premise.trim().length < 40) {
+        errors.push('hot_take must contain a concrete, debatable premise.');
+        formatRequirementsMet = false;
+      }
+      if (!dilemma.discussionPrompt || dilemma.discussionPrompt.trim().length < 10) {
+        errors.push('hot_take requires a provocative discussionPrompt to drive debate.');
+        formatRequirementsMet = false;
+      }
+    } else if (dilemma.format === 'future_tech') {
+      const scenario = `${dilemma.setup || ''} ${dilemma.scenario || ''}`;
+      if (scenario.trim().length < 40) {
+        errors.push('future_tech must contain a concrete hypothetical future scenario suitable for discussion.');
+        formatRequirementsMet = false;
+      }
+      if (!dilemma.discussionPrompt || dilemma.discussionPrompt.trim().length < 10) {
+        errors.push('future_tech requires an engaging discussionPrompt for comments.');
+        formatRequirementsMet = false;
       }
     }
 
@@ -481,6 +506,7 @@ export class DilemmaQualityChecker {
       telegramLengthValid,
       interactionConfigValid,
       schemaFieldsValid,
+      formatRequirementsMet,
     };
 
     return {
@@ -490,6 +516,84 @@ export class DilemmaQualityChecker {
       warnings,
       checks,
     };
+  }
+
+  /**
+   * Helper to validate choice attributes: IDs, labels, explicit non-trivial trade-offs, and dominant options.
+   */
+  private static validateChoicesContent(
+    choices: any[],
+    errors: string[],
+    setFlags: (tradeOffsExplicit: boolean, noCostFreeChoice: boolean, noDominantChoice: boolean) => void
+  ): void {
+    let tradeOffsExplicit = true;
+    let noCostFreeChoice = true;
+    let noDominantChoice = true;
+
+    const choiceIds = new Set<string>();
+    const choiceLabels = new Set<string>();
+
+    for (let i = 0; i < choices.length; i++) {
+      const choice = choices[i];
+      if (!choice.id || choice.id.trim().length === 0) {
+        errors.push(`Choice at index ${i} is missing an id.`);
+      } else {
+        if (choiceIds.has(choice.id)) {
+          errors.push(`Duplicate choice id "${choice.id}" at index ${i}.`);
+        }
+        choiceIds.add(choice.id);
+      }
+
+      if (!choice.label || choice.label.trim().length === 0) {
+        errors.push(`Choice at index ${i} is missing a label.`);
+      } else {
+        const normLabel = choice.label.toLowerCase().trim();
+        if (choiceLabels.has(normLabel)) {
+          errors.push(`Duplicate choice label "${choice.label}" at index ${i}.`);
+        }
+        choiceLabels.add(normLabel);
+      }
+
+      if (!choice.tradeOff || choice.tradeOff.trim().length < 8) {
+        errors.push(`Choice at index ${i} (${choice.label || 'unnamed'}) is missing an explicit trade-off.`);
+        tradeOffsExplicit = false;
+        noCostFreeChoice = false;
+      } else {
+        const lowerTradeOff = choice.tradeOff.toLowerCase().trim();
+        if (
+          ['none', 'nothing', 'no downside', 'no cost', 'free'].includes(lowerTradeOff) ||
+          /\b(?:none|nothing|no\s+(?:downside|cost|risk|consequence|sacrifice|penalty|harm|drawback)|zero\s+(?:cost|downside|risk|penalty)|free|trivial|minor\s+(?:inconvenience|delay|calorie)|slight\s+delay|no\s+harm\s+done|all\s+upside|cost-?free)\b/i.test(lowerTradeOff)
+        ) {
+          errors.push(`Choice at index ${i} has a trivial trade-off ("${choice.tradeOff}"). All choices must have real stakes.`);
+          tradeOffsExplicit = false;
+          noCostFreeChoice = false;
+        }
+      }
+    }
+
+    // Dominant Choice Verification: Reject situations where a rational reader immediately knows which option is superior
+    if (choices.length >= 2) {
+      const cA = choices[0];
+      const cB = choices[1];
+      const descA = `${cA.description || ''} ${cA.tradeOff || ''}`.toLowerCase();
+      const descB = `${cB.description || ''} ${cB.tradeOff || ''}`.toLowerCase();
+
+      const isLethalA = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descA);
+      const isLethalB = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descB);
+      const isSeriousA = isLethalA || /\b(?:burnout|sacrifice|forfeit|ruin|agony|chasm|hypothermia|blacklisted|concussion|prison|bankrupt|fatal)\b/i.test(descA);
+      const isSeriousB = isLethalB || /\b(?:burnout|sacrifice|forfeit|ruin|agony|chasm|hypothermia|blacklisted|concussion|prison|bankrupt|fatal)\b/i.test(descB);
+
+      if ((isLethalA && !isSeriousB) || (isLethalB && !isSeriousA)) {
+        errors.push('One choice carries catastrophic/lethal ruin while the other has only trivial downsides, creating an obvious dominant choice.');
+        noDominantChoice = false;
+      }
+      if (cA.label && cB.label && cA.label.toLowerCase().trim() === cB.label.toLowerCase().trim()) {
+        errors.push('Choices have identical labels.');
+        noDominantChoice = false;
+      }
+    }
+
+    setFlags(tradeOffsExplicit, noCostFreeChoice, noDominantChoice);
   }
 
   /**

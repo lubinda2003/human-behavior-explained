@@ -48,7 +48,7 @@ describe('Dilemma Quality Control & Anti-Slop Checker', () => {
 
   it('rejects trivial or missing trade-offs in choices', async () => {
     const dilemma = await generator.generateDilemma({ category: 'strategy' });
-    dilemma.choices[0].tradeOff = 'no downside';
+    dilemma.choices![0].tradeOff = 'no downside';
 
     const qc = DilemmaQualityChecker.validateDilemmaContent(dilemma);
     assert.equal(qc.isValid, false);
@@ -95,10 +95,10 @@ describe('Dilemma Quality Control & Anti-Slop Checker', () => {
 
   it('rejects dominant choices where one option is lethal while the other is trivial', async () => {
     const dilemma = await generator.generateDilemma({ category: 'survival' });
-    dilemma.choices[0].description = 'Eat the hot steak dinner.';
-    dilemma.choices[0].tradeOff = 'Minor calorie surplus.';
-    dilemma.choices[1].description = 'Jump into the pit of vipers.';
-    dilemma.choices[1].tradeOff = 'Instant lethal death from viper venom.';
+    dilemma.choices![0].description = 'Eat the hot steak dinner.';
+    dilemma.choices![0].tradeOff = 'Minor calorie surplus.';
+    dilemma.choices![1].description = 'Jump into the pit of vipers.';
+    dilemma.choices![1].tradeOff = 'Instant lethal death from viper venom.';
     dilemma.formattedTelegramText = `<b>${dilemma.title}</b>\n\nChoose.`;
 
     const qc = DilemmaQualityChecker.validateDilemmaContent(dilemma);
@@ -109,8 +109,8 @@ describe('Dilemma Quality Control & Anti-Slop Checker', () => {
 
   it('proactively repairs flawed choices and restores quality compliance', async () => {
     const dilemma = await generator.generateDilemma({ category: 'strategy' });
-    dilemma.choices[0].tradeOff = 'no cost';
-    dilemma.choices[1].tradeOff = 'free';
+    dilemma.choices![0].tradeOff = 'no cost';
+    dilemma.choices![1].tradeOff = 'free';
     dilemma.hook = 'This scenario explores cognitive dissonance under pressure.';
 
     const initialQc = DilemmaQualityChecker.validateDilemmaContent(dilemma);

@@ -365,11 +365,13 @@ export class AutonomousPipelineService {
           id: postId,
           title: dilemma.title,
           contentType: contentFormat,
-          choices: dilemma.choices.map((c: any) => ({
-            label: c.label,
-            tradeOff: c.tradeOff,
-            description: c.description,
-          })),
+          choices: dilemma.choices
+            ? dilemma.choices.map((c: any) => ({
+                label: c.label,
+                tradeOff: c.tradeOff,
+                description: c.description,
+              }))
+            : undefined,
           pollQuestion: dilemma.pollQuestion,
           discussionPrompt: dilemma.discussionPrompt,
           payoff: dilemma.payoff,

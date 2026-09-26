@@ -1,5 +1,5 @@
 # Pick Your Fate — End-to-End Production Simulation Report
-**Generated:** 2026-09-26T20:49:04.474Z
+**Generated:** 2026-09-26T21:36:39.838Z
 **Mode:** Dry-Run Only (Zero live Telegram API calls / No real publishing)
 
 ---
@@ -34,9 +34,9 @@ The simulation executed a mixed batch across 8 archetypes, avoiding exclusive di
 - **QUICK:** 1 post(s)
 
 ### Interaction Types Used
-- **poll:** 8 post(s) (Non-poll formats supported)
+- **poll:** 7 post(s) (Non-poll formats supported)
 - **scenario_choice:** 1 post(s) (Non-poll formats supported)
-- **open_discussion:** 2 post(s) (Non-poll formats supported)
+- **open_discussion:** 3 post(s) (Non-poll formats supported)
 - **prediction_vote:** 1 post(s) (Non-poll formats supported)
 
 ---

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T20:48:59.189Z",
+  "generatedAt": "2026-09-26T21:36:34.093Z",
   "channelContext": "Pick Your Fate · Interactive Dilemmas & Impossible Choices",
   "totalSamples": 16,
   "classifications": {
@@ -54,13 +54,16 @@
       ]
     },
     "overuseMoneyLifeDeath": {
-      "count": 6,
-      "percentage": "37.5%",
+      "count": 9,
+      "percentage": "56.3%",
       "examples": [
+        "eval-sample-02: The Hostile Takeover Bounty",
         "eval-sample-03: The Golden Vault vs. Daily Sovereignty",
         "eval-sample-04: The Golden Vault vs. Daily Sovereignty",
         "eval-sample-05: The Golden Vault vs. Daily Sovereignty",
+        "eval-sample-07: The Hostile Takeover Bounty",
         "eval-sample-11: The Golden Vault vs. Daily Sovereignty",
+        "eval-sample-12: The Hostile Takeover Bounty",
         "eval-sample-13-control-wyr: The Million Dollar Vault Riddle",
         "eval-sample-16-control-obvious: The Trivial Snack vs. Pit of Vipers"
       ]
@@ -119,28 +122,28 @@
     },
     {
       "sampleId": "eval-sample-02",
-      "title": "The Whistleblower's Ultimatum",
+      "title": "The Hostile Takeover Bounty",
       "format": "strategy_challenge",
       "depth": "quick",
       "archetype": "Countdown",
       "category": "strategy",
       "generatedScenario": {
-        "hook": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
-        "setup": "You find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.",
-        "pressure": "The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.",
-        "twist": "Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.",
+        "hook": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
+        "setup": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.",
+        "pressure": "The timer shows 28 minutes, and your co-founders are avoiding eye contact.",
+        "twist": "One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.",
         "choices": [
           {
-            "label": "Upload to Federal Regulators",
-            "tradeOff": "Destroys your family's healthcare coverage and invites brutal corporate litigation."
+            "label": "Sign First & Take the $5M",
+            "tradeOff": "Permanently burns bridges with your team, destroys company equity, and brands you a sellout."
           },
           {
-            "label": "Scrub Local Copies & Protect Household",
-            "tradeOff": "100 innocent hospital patients will suffer preventable organ toxicity."
+            "label": "Hold the Line & Trust the Team",
+            "tradeOff": "If even ONE of your partners defects, you walk away with zero dollars while they take the $5M."
           }
         ],
-        "question": "Do you hit \"Upload\" or delete the files and walk out?",
-        "wordCount": 206
+        "question": "Do you grab the pen first or trust your co-founders?",
+        "wordCount": 243
       },
       "qualityChecks": {
         "immediateCuriosity": true,
@@ -334,28 +337,28 @@
     },
     {
       "sampleId": "eval-sample-07",
-      "title": "The Whistleblower's Ultimatum",
+      "title": "The Hostile Takeover Bounty",
       "format": "strategy_challenge",
       "depth": "standard",
       "archetype": "Strategy",
       "category": "strategy",
       "generatedScenario": {
-        "hook": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
-        "setup": "You find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.",
-        "pressure": "The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.",
-        "twist": "Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.",
+        "hook": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
+        "setup": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.",
+        "pressure": "The timer shows 28 minutes, and your co-founders are avoiding eye contact.",
+        "twist": "One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.",
         "choices": [
           {
-            "label": "Upload to Federal Regulators",
-            "tradeOff": "Destroys your family's healthcare coverage and invites brutal corporate litigation."
+            "label": "Sign First & Take the $5M",
+            "tradeOff": "Permanently burns bridges with your team, destroys company equity, and brands you a sellout."
           },
           {
-            "label": "Scrub Local Copies & Protect Household",
-            "tradeOff": "100 innocent hospital patients will suffer preventable organ toxicity."
+            "label": "Hold the Line & Trust the Team",
+            "tradeOff": "If even ONE of your partners defects, you walk away with zero dollars while they take the $5M."
           }
         ],
-        "question": "Do you hit \"Upload\" or delete the files and walk out?",
-        "wordCount": 206
+        "question": "Do you grab the pen first or trust your co-founders?",
+        "wordCount": 243
       },
       "qualityChecks": {
         "immediateCuriosity": true,
@@ -377,28 +380,19 @@
     },
     {
       "sampleId": "eval-sample-08",
-      "title": "The Neural Memory Redactor",
+      "title": "The Mandatory Dream Education Interface",
       "format": "future_tech",
       "depth": "deep",
       "archetype": "Future/technology",
       "category": "technology/future",
       "generatedScenario": {
-        "hook": "In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are.",
-        "setup": "You sit strapped into the padded surgical chair inside the sterile clinic suite, staring up at a precision quantum laser hovering inches above your temples. The Synapse Redaction Institute offers to eliminate the synaptic memory cluster of your greatest life trauma. However, brain monitors confirm that your master career skill and proudest life triumph are biologically entangled with that exact pain; deleting the suffering will permanently erase the skills you built to survive it.",
-        "pressure": "The clinic chair is prepped and the neuro-catalyst expires in 15 minutes.",
-        "twist": "The neurosurgeon admits that 40% of patients who undergo the procedure experience a strange phantom emptiness where their drive used to be.",
-        "choices": [
-          {
-            "label": "Erase the Pain & Forfeit the Triumph",
-            "tradeOff": "Lose the master skills, wisdom, and core personal achievement that define your identity."
-          },
-          {
-            "label": "Keep the Scars & Keep the Mastery",
-            "tradeOff": "You continue carrying the emotional triggers, grief, and nocturnal flashbacks for life."
-          }
-        ],
-        "question": "Do you erase your trauma or keep your hard-earned scars?",
-        "wordCount": 255
+        "hook": "By 2042, neural implants can stream a full four-year degree directly into your sleep—at the cost of mandatory corporate sponsored dreams.",
+        "setup": "A neurotech conglomerate unveils the \"Neuro-Diploma\": a consumer neural link that compresses four years of medical, engineering, or legal training into 180 nights of deep sleep learning. But to keep the service free for working-class families, the system injects 30 minutes of subconscious targeted advertising directly into your dream state every night. The ads feel completely real, altering your brand affinity and waking preferences without your conscious control.",
+        "pressure": "College tuition has reached $300,000, making this the only viable economic ladder for 90% of young workers.",
+        "twist": "Independent neurologists warn that subconscious dream marketing permanently alters emotional attachment patterns and personal opinions.",
+        "choices": [],
+        "question": "Would you surrender control of your dream life to escape generational poverty, or is subconscious autonomy non-negotiable? Defend your position in the comments!",
+        "wordCount": 174
       },
       "qualityChecks": {
         "immediateCuriosity": true,
@@ -420,27 +414,18 @@
     },
     {
       "sampleId": "eval-sample-09",
-      "title": "The Stolen Cryo-Vial Mystery",
+      "title": "The Midnight Bio-Vault Mystery",
       "format": "mini_mystery",
       "depth": "deep",
       "archetype": "Mystery/challenge",
       "category": "bizarre hypothetical situations",
       "generatedScenario": {
-        "hook": "The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed.",
-        "setup": "You are the lead night investigator at a high-security bio-research facility. A prototype cryo-vial containing an experimental gene therapy is missing from the sub-basement freezer. Two access cards badged in during the blackout: Dr. Aris (the chief biochemist whose research grant was terminated yesterday) and Captain Vance (the head of building security whose personal debts surfaced this morning).",
-        "pressure": "The emergency perimeter lockdown timer unlocks external gates in 180 seconds.",
-        "twist": "The cryo-vial degrades irreversibly into harmless water if not placed in liquid nitrogen within 10 minutes.",
-        "choices": [
-          {
-            "label": "Search Dr. Aris's Lab First",
-            "tradeOff": "Leaves security chief Vance completely unmonitored at the main exterior vehicle checkpoint."
-          },
-          {
-            "label": "Intercept Captain Vance at the Gate",
-            "tradeOff": "Gives Dr. Aris 3 uninterrupted minutes to transfer the vial to an external courier on the train line."
-          }
-        ],
-        "question": "Which suspect do you intercept before the gate timer expires?",
+        "hook": "The alarm blares at 03:40 AM: the bio-vault freezer is unlocked, the security camera cable is severed, and Sample 9 is gone.",
+        "setup": "You are the lead night investigator at a high-security bio-research facility. At 03:30 AM, during a 10-minute scheduled backup generator switch, someone bypassed the biometric vault and stole Sample 9. Three access badges were logged inside the facility: Dr. Aris (the chief biochemist whose research grant was terminated yesterday), Officer Vance (the head of security whose badge pinged at the exterior gate), and Marcus (the night janitor whose cart was parked outside the ventilation shaft). The vault door shows zero scratches or signs of forced entry. A single drop of liquid nitrogen frozen on the hallway floor leads directly toward the overhead ventilation grille.",
+        "pressure": "The police arrive in 15 minutes. Once the perimeter gate seals, nobody enters or leaves the building.",
+        "twist": "The exterior gate access log recorded Officer Vance's badge at 03:32 AM, but the server clock at the exterior gate is offset exactly 15 minutes fast.",
+        "choices": [],
+        "question": "Examine the clues: Who actually stole Sample 9 and how did they get out of the facility? Drop your deduction in the comments!",
         "wordCount": 239
       },
       "qualityChecks": {
@@ -549,28 +534,28 @@
     },
     {
       "sampleId": "eval-sample-12",
-      "title": "The Whistleblower's Ultimatum",
+      "title": "The Hostile Takeover Bounty",
       "format": "strategy_challenge",
       "depth": "deep",
       "archetype": "Social dilemma",
       "category": "moral",
       "generatedScenario": {
-        "hook": "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?",
-        "setup": "You find undeniable proof that your company's new medical filtration units leak dangerous toxic micro-contaminants that will sicken 100 hospital patients over the next decade. If you leak the files, the company collapses, destroying your pension, your partner's ongoing cancer treatment insurance, and your household savings.",
-        "pressure": "The internal IT security team is currently wiping all local drives; the upload window closes in 600 seconds.",
-        "twist": "Your direct supervisor—who approved the cover-up—personally loaned you the down payment for your house last year.",
+        "hook": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
+        "setup": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.",
+        "pressure": "The timer shows 28 minutes, and your co-founders are avoiding eye contact.",
+        "twist": "One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.",
         "choices": [
           {
-            "label": "Upload to Federal Regulators",
-            "tradeOff": "Destroys your family's healthcare coverage and invites brutal corporate litigation."
+            "label": "Sign First & Take the $5M",
+            "tradeOff": "Permanently burns bridges with your team, destroys company equity, and brands you a sellout."
           },
           {
-            "label": "Scrub Local Copies & Protect Household",
-            "tradeOff": "100 innocent hospital patients will suffer preventable organ toxicity."
+            "label": "Hold the Line & Trust the Team",
+            "tradeOff": "If even ONE of your partners defects, you walk away with zero dollars while they take the $5M."
           }
         ],
-        "question": "Do you hit \"Upload\" or delete the files and walk out?",
-        "wordCount": 206
+        "question": "Do you grab the pen first or trust your co-founders?",
+        "wordCount": 243
       },
       "qualityChecks": {
         "immediateCuriosity": true,

@@ -167,7 +167,7 @@ export class ProductionSimulator {
         format: 'future_tech',
         category: 'technology/future',
         depth: 'standard',
-        interactionType: 'poll',
+        interactionType: 'open_discussion',
       },
       {
         slotId: 'batch-06-social-secret',
@@ -374,7 +374,7 @@ export class ProductionSimulator {
     if (isPoll) {
       payload.interaction.poll = {
         question: dilemma.pollQuestion || `Which do you choose? (${dilemma.title})`,
-        options: dilemma.choices.map((c) => c.label),
+        options: (dilemma.choices || []).map((c) => c.label),
         isAnonymous: true,
         allowsMultipleAnswers: false,
       };
@@ -386,13 +386,13 @@ export class ProductionSimulator {
     } else if (slot.interactionType === 'prediction_vote') {
       payload.interaction.prediction = {
         question: dilemma.pollQuestion || `Prediction: Which outcome occurs?`,
-        options: dilemma.choices.map((c) => c.label),
-        resolutionCriteria: dilemma.payoff.reveal || '',
+        options: (dilemma.choices || []).map((c) => c.label),
+        resolutionCriteria: dilemma.payoff?.reveal || '',
       };
     } else if (slot.interactionType === 'scenario_choice') {
       payload.interaction.scenarioChoice = {
         question: dilemma.pollQuestion || 'Select your strategic path:',
-        options: dilemma.choices.map((c) => ({
+        options: (dilemma.choices || []).map((c) => ({
           id: c.id,
           label: c.label,
           tradeOff: c.tradeOff,

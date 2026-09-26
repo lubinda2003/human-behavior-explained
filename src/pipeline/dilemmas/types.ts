@@ -150,6 +150,7 @@ export interface DilemmaQualityMetadata {
   telegramLengthValid?: boolean;
   interactionConfigValid?: boolean;
   schemaFieldsValid?: boolean;
+  formatRequirementsMet?: boolean;
 }
 
 export interface DilemmaQCResult {
@@ -174,7 +175,7 @@ export interface InteractiveDilemma {
   depth?: ContentDepth; // 'quick' | 'standard' | 'deep'
   format?: ContentFormat; // 'impossible_dilemma' | 'survival_scenario' | ...
   interactionType?: InteractionType;
-  choices: DilemmaChoice[];
+  choices?: DilemmaChoice[];
   pollQuestion?: string;
   discussionPrompt?: string;
   consequence?: string; // Direct immediate consequence or preview

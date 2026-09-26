@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-26T20:49:02.099Z",
+  "timestamp": "2026-09-26T21:36:36.985Z",
   "dryRun": true,
   "summary": {
     "scenariosExecuted": 6,
@@ -96,7 +96,7 @@
     "scenario2_nonPollContent": {
       "status": "passed",
       "generatedContentId": "dilemma-102",
-      "title": "The Stolen Cryo-Vial Mystery",
+      "title": "The Midnight Bio-Vault Mystery",
       "format": "mini_mystery",
       "qualityPassed": true,
       "interactionType": "open_discussion",

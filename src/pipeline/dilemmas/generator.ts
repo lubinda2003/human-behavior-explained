@@ -178,9 +178,45 @@ QUALITY MANDATES & REALISM GATES (STRICT):
 6. Give the user a reason to care immediately.
 7. Create genuine tension, curiosity, or uncertainty.
 8. Make the user feel like they are actually in the room/situation.
-9. Must be 100% STANDALONE.
+9. Must be 100% STANDALONE.`;
+
+    const isDiscussionFormat =
+      format === 'mini_mystery' ||
+      format === 'brain_logic' ||
+      format === 'hot_take' ||
+      format === 'future_tech';
+
+    const formatSpecificInstructions = isDiscussionFormat
+      ? `\nCRITICAL FORMAT DIRECTIVE FOR DISCUSSION-FIRST CONTENT ("${format}"):
+This format is DISCUSSION-FIRST and does NOT use Telegram polls.
+- Do NOT generate poll choices or a pollQuestion.
+- You MUST provide an engaging, substantive discussionPrompt (at least 10 words).
+- Specific format requirements:
+  * For "mini_mystery": Provide sufficient scene clues, suspect details, and physical evidence in setup/pressure/twist for subscribers to deduce who did it. Keep the true culprit/solution hidden in payoff.reveal (do NOT spoil it in setup or hook).
+  * For "brain_logic": Present an actual solvable logic or resource-optimization problem with clear numbers and constraints in setup. Keep the step-by-step solution/reasoning in payoff.reveal.
+  * For "hot_take": Present a concrete, highly debatable premise with serious stakes and trade-offs on both sides. discussionPrompt must ask readers to pick a side and defend it.
+  * For "future_tech": Present an interesting hypothetical emerging tech dilemma focused on human cost and personal choice. discussionPrompt must challenge readers to argue their position.
 
 Output STRICT JSON only matching this exact structure:
+{
+  "title": "Punchy Catchy Title (Max 60 chars)",
+  "hook": "Compelling single-sentence situation hook putting the user in the moment",
+  "setup": "Concrete, immersive scenario setup placing user in the situation with all necessary clues or details",
+  "pressure": "Specific complication, ticking clock, or conflict",
+  "pressureTypes": ["time_pressure", "limited_resources"],
+  "twist": "Hidden information, complication, or unexpected factor",
+  "depth": "${depth}",
+  "format": "${format}",
+  "discussionPrompt": "Question for comments/discussion",
+  "consequence": "Direct consequence or stakes teaser",
+  "payoff": {
+    "reveal": "The actual deduction answer, logic solution, or hidden resolution (must NOT be spoiled in setup/hook)",
+    "surprisingOutcome": "The unexpected trap or surprising outcome",
+    "communityTension": "Why this creates a lively discussion debate",
+    "strategicAnalysis": "Tactical or logic analysis of the situation"
+  }
+}`
+      : `\nOutput STRICT JSON only matching this exact structure:
 {
   "title": "Punchy Catchy Title (Max 60 chars)",
   "hook": "Compelling single-sentence situation hook putting the user in the moment",
@@ -215,7 +251,9 @@ Output STRICT JSON only matching this exact structure:
     "communityTension": "Why this creates a 50/50 community debate",
     "strategicAnalysis": "Tactical analysis of the situation"
   }
-} `;
+}`;
+
+    const fullSystemPrompt = `${systemPrompt}\n${formatSpecificInstructions}`;
 
     const continuationClause = options.continuation
       ? `\nCONTINUATION DIRECTIVE (CONNECTED EPISODE / ARC):
@@ -235,7 +273,7 @@ ${excludedClause}`;
 
     let attempts = 0;
     const maxAttempts = 3;
-    let promptText = `${systemPrompt}\n\n${userPrompt}`;
+    let promptText = `${fullSystemPrompt}\n\n${userPrompt}`;
 
     while (attempts < maxAttempts) {
       attempts++;
@@ -268,7 +306,7 @@ ${excludedClause}`;
       console.warn(`[DilemmaGenerator] Attempt ${attempts} failed quality checks: ${errors.join('; ')}`);
 
       if (attempts < maxAttempts) {
-        promptText = `${systemPrompt}\n\n${userPrompt}\n\nCRITICAL FIX NEEDED FOR NEXT ATTEMPT:
+        promptText = `${fullSystemPrompt}\n\n${userPrompt}\n\nCRITICAL FIX NEEDED FOR NEXT ATTEMPT:
 Your previous draft was rejected by the content realism gate because of the following issues:
 ${errors.map((e) => `- ${e}`).join('\n')}
 
@@ -276,7 +314,8 @@ Regenerate the scenario resolving all identified issues:
 - If a trade-off was generic/formulaic, embed it inside a physical room with concrete props and stakes.
 - If it was an ungrounded hypothetical, anchor it in an immediate tangible crisis.
 - If a choice was cost-free or dominant, balance the costs so both sides carry painful sacrifices.
-- If academic jargon or lecturing was detected, rewrite in punchy, entertaining narrative prose.`;
+- If academic jargon or lecturing was detected, rewrite in punchy, entertaining narrative prose.
+- For discussion formats (${isDiscussionFormat ? format : 'none'}), ensure a substantive discussionPrompt and NO choices/pollQuestion.`;
       } else {
         console.warn(`[DilemmaGenerator] All ${maxAttempts} Gemini attempts failed quality verification. Using procedural fallback.`);
         return this.generateProceduralDilemma(category, id, index, options);
@@ -296,48 +335,57 @@ Regenerate the scenario resolving all identified issues:
    * 5. Academic/lecture content
    */
   public repairDilemma(dilemma: InteractiveDilemma): InteractiveDilemma {
-    // 1. Repair cost-free choices
-    if (Array.isArray(dilemma.choices)) {
-      for (let i = 0; i < dilemma.choices.length; i++) {
-        const choice = dilemma.choices[i];
-        const lowerTradeOff = (choice.tradeOff || '').toLowerCase().trim();
-        if (
-          !choice.tradeOff ||
-          choice.tradeOff.length < 8 ||
-          ['none', 'nothing', 'no downside', 'no cost', 'free'].includes(lowerTradeOff) ||
-          /\b(?:none|nothing|no\s+(?:downside|cost|risk|consequence|sacrifice|penalty|harm|drawback)|zero\s+(?:cost|downside|risk|penalty)|free|trivial|minor\s+(?:inconvenience|delay|calorie)|slight\s+delay|no\s+harm\s+done|all\s+upside|cost-?free)\b/i.test(lowerTradeOff)
-        ) {
-          choice.tradeOff = 'Permanently forfeits strategic control and requires a painful personal sacrifice.';
-        }
+    const isDiscussion =
+      dilemma.format === 'mini_mystery' ||
+      dilemma.format === 'brain_logic' ||
+      dilemma.format === 'hot_take' ||
+      dilemma.format === 'future_tech';
 
-        // Repair overlong choice labels (> 100 chars) for Telegram poll compliance
-        if (choice.label && choice.label.length > 100) {
-          choice.label = choice.label.substring(0, 97) + '...';
+    // 1. Repair interaction elements according to format
+    if (isDiscussion) {
+      // Discussion formats do NOT require choices or poll question
+      if (!dilemma.discussionPrompt || dilemma.discussionPrompt.trim().length < 10) {
+        if (dilemma.format === 'mini_mystery') {
+          dilemma.discussionPrompt = 'Examine the clues: Who actually took the item and what evidence gives them away?';
+        } else if (dilemma.format === 'brain_logic') {
+          dilemma.discussionPrompt = 'How do you solve this puzzle under the given constraints? Post your step-by-step logic in the comments!';
+        } else if (dilemma.format === 'hot_take') {
+          dilemma.discussionPrompt = 'Pick a side and defend your position with a concrete argument in the comments below!';
+        } else if (dilemma.format === 'future_tech') {
+          dilemma.discussionPrompt = 'Would you take this deal? Argue your case in the comments below!';
+        } else {
+          dilemma.discussionPrompt = 'What is your take on this dilemma? Share your reasoning in the comments!';
         }
       }
+      // If discussion format happens to have choices, repair them; otherwise leave absent/empty
+      if (Array.isArray(dilemma.choices) && dilemma.choices.length > 0) {
+        this.repairChoicesList(dilemma.choices);
+      }
+    } else if (dilemma.format !== 'result_reveal') {
+      // Poll formats MUST have 2 to 4 choices
+      if (!Array.isArray(dilemma.choices) || dilemma.choices.length < 2) {
+        dilemma.choices = [
+          {
+            id: 'choice_a',
+            label: 'The Decisive Move',
+            description: 'Commit all resources immediately to secure the primary objective.',
+            tradeOff: 'Permanently forfeits strategic control and requires a painful personal sacrifice.',
+            consequence: 'Triggers immediate operational lockdown.',
+          },
+          {
+            id: 'choice_b',
+            label: 'The Controlled Risk',
+            description: 'Hold ground and conserve assets while managing the fallout.',
+            tradeOff: 'Suffers severe equipment loss and risks catastrophic failure if delayed.',
+            consequence: 'System enters defensive holding mode.',
+          },
+        ];
+      }
+      this.repairChoicesList(dilemma.choices);
 
       // Repair overlong poll questions (> 300 chars) for Telegram poll compliance
       if (dilemma.pollQuestion && dilemma.pollQuestion.length > 300) {
         dilemma.pollQuestion = dilemma.pollQuestion.substring(0, 297) + '...';
-      }
-
-      // 2. Repair dominant choices (e.g. lethal vs trivial)
-      if (dilemma.choices.length >= 2) {
-        const cA = dilemma.choices[0];
-        const cB = dilemma.choices[1];
-        const descA = `${cA.description || ''} ${cA.tradeOff || ''}`.toLowerCase();
-        const descB = `${cB.description || ''} ${cB.tradeOff || ''}`.toLowerCase();
-
-        const isLethalA = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descA);
-        const isLethalB = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descB);
-
-        if (isLethalA && !isLethalB) {
-          cA.tradeOff = 'Suffers severe physical concussion and equipment loss with an 80% casualty risk.';
-          cB.tradeOff = 'Forfeits career credentials permanently and faces 5 years in minimum security custody.';
-        } else if (isLethalB && !isLethalA) {
-          cB.tradeOff = 'Suffers severe physical concussion and equipment loss with an 80% casualty risk.';
-          cA.tradeOff = 'Forfeits career credentials permanently and faces 5 years in minimum security custody.';
-        }
       }
     }
 
@@ -428,6 +476,48 @@ Regenerate the scenario resolving all identified issues:
   }
 
   /**
+   * Repairs trade-offs, overlong labels, and dominant choices in a choices list.
+   */
+  private repairChoicesList(choices: any[]): void {
+    for (let i = 0; i < choices.length; i++) {
+      const choice = choices[i];
+      const lowerTradeOff = (choice.tradeOff || '').toLowerCase().trim();
+      if (
+        !choice.tradeOff ||
+        choice.tradeOff.length < 8 ||
+        ['none', 'nothing', 'no downside', 'no cost', 'free'].includes(lowerTradeOff) ||
+        /\b(?:none|nothing|no\s+(?:downside|cost|risk|consequence|sacrifice|penalty|harm|drawback)|zero\s+(?:cost|downside|risk|penalty)|free|trivial|minor\s+(?:inconvenience|delay|calorie)|slight\s+delay|no\s+harm\s+done|all\s+upside|cost-?free)\b/i.test(lowerTradeOff)
+      ) {
+        choice.tradeOff = 'Permanently forfeits strategic control and requires a painful personal sacrifice.';
+      }
+
+      // Repair overlong choice labels (> 100 chars) for Telegram poll compliance
+      if (choice.label && choice.label.length > 100) {
+        choice.label = choice.label.substring(0, 97) + '...';
+      }
+    }
+
+    // Repair dominant choices (e.g. lethal vs trivial)
+    if (choices.length >= 2) {
+      const cA = choices[0];
+      const cB = choices[1];
+      const descA = `${cA.description || ''} ${cA.tradeOff || ''}`.toLowerCase();
+      const descB = `${cB.description || ''} ${cB.tradeOff || ''}`.toLowerCase();
+
+      const isLethalA = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descA);
+      const isLethalB = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descB);
+
+      if (isLethalA && !isLethalB) {
+        cA.tradeOff = 'Suffers severe physical concussion and equipment loss with an 80% casualty risk.';
+        cB.tradeOff = 'Forfeits career credentials permanently and faces 5 years in minimum security custody.';
+      } else if (isLethalB && !isLethalA) {
+        cB.tradeOff = 'Suffers severe physical concussion and equipment loss with an 80% casualty risk.';
+        cA.tradeOff = 'Forfeits career credentials permanently and faces 5 years in minimum security custody.';
+      }
+    }
+  }
+
+  /**
    * Generates dynamic, high-quality entertainment dilemmas across all categories,
    * formats, and depth levels without requiring live network/API calls.
    */
@@ -465,9 +555,9 @@ Regenerate the scenario resolving all identified issues:
     index: number,
     options: GenerateDilemmaOptions = {}
   ): InteractiveDilemma {
-    const choices = data.choices || [];
-    const branchA = choices[0] || { label: 'Option A', description: '', tradeOff: '' };
-    const branchB = choices[1] || { label: 'Option B', description: '', tradeOff: '' };
+    const rawChoices = Array.isArray(data.choices) && data.choices.length > 0 ? data.choices : undefined;
+    const branchA = rawChoices?.[0] || { label: 'Option A', description: '', tradeOff: '' };
+    const branchB = rawChoices?.[1] || { label: 'Option B', description: '', tradeOff: '' };
 
     const depth: ContentDepth = options.depth || data.depth || 'standard';
     const format: ContentFormat = options.format || data.format || 'impossible_dilemma';
@@ -476,6 +566,8 @@ Regenerate the scenario resolving all identified issues:
     const pressureTypes: PressureType[] = data.pressureTypes || options.pressureTypes || [];
     const twist = data.twist || '';
     const consequence = data.consequence || data.payoff?.reveal || '';
+    const pollQuestion = data.pollQuestion?.trim() || undefined;
+    const discussionPrompt = data.discussionPrompt?.trim() || undefined;
 
     const visualSpec: VisualSpec = {
       template: 'thought_experiment',
@@ -488,14 +580,16 @@ Regenerate the scenario resolving all identified issues:
         data: {
           scenarioName: data.title,
           dilemma: setupText,
-          branchA: {
-            label: branchA.label,
-            explanation: `${branchA.description} (Cost: ${branchA.tradeOff})`,
-          },
-          branchB: {
-            label: branchB.label,
-            explanation: `${branchB.description} (Cost: ${branchB.tradeOff})`,
-          },
+          ...(rawChoices && rawChoices.length >= 2 ? {
+            branchA: {
+              label: branchA.label,
+              explanation: `${branchA.description} (Cost: ${branchA.tradeOff})`,
+            },
+            branchB: {
+              label: branchB.label,
+              explanation: `${branchB.description} (Cost: ${branchB.tradeOff})`,
+            },
+          } : {}),
           psychologicalInsight: `${data.payoff?.surprisingOutcome || data.payoff?.reveal || ''}`,
         },
       },
@@ -514,9 +608,9 @@ Regenerate the scenario resolving all identified issues:
       twist,
       depth,
       format,
-      choices: data.choices,
-      pollQuestion: data.pollQuestion,
-      discussionPrompt: data.discussionPrompt,
+      choices: rawChoices,
+      pollQuestion,
+      discussionPrompt,
       consequence,
       payoff: data.payoff,
       visualSpec,
@@ -537,9 +631,9 @@ Regenerate the scenario resolving all identified issues:
       twist,
       depth,
       format,
-      choices: data.choices,
-      pollQuestion: data.pollQuestion,
-      discussionPrompt: data.discussionPrompt,
+      choices: rawChoices,
+      pollQuestion,
+      discussionPrompt,
       consequence,
       payoff: data.payoff,
       visualSpec,
@@ -551,14 +645,15 @@ Regenerate the scenario resolving all identified issues:
         bodyParagraphs: [
           setupText,
           ...(pressure ? [`Complication: ${pressure}`] : []),
-          ...choices.map((c: any) => `${c.label}: ${c.description}. Cost: ${c.tradeOff}`),
+          ...(rawChoices && rawChoices.length > 0 ? rawChoices.map((c: any) => `${c.label}: ${c.description}. Cost: ${c.tradeOff}`) : []),
+          ...(discussionPrompt ? [`Discussion: ${discussionPrompt}`] : []),
         ],
-        coreTakeaway: data.payoff.reveal,
-        caveatNote: data.payoff.surprisingOutcome,
+        coreTakeaway: data.payoff?.reveal || '',
+        caveatNote: data.payoff?.surprisingOutcome || '',
         sourcesCited: ['Pick Your Fate · Interactive Scenarios'],
         cta: {
           type: 'reflection',
-          text: 'Which path would you take when the consequences are irreversible?',
+          text: discussionPrompt || 'Which path would you take when the consequences are irreversible?',
         },
       },
     };
@@ -850,7 +945,7 @@ Regenerate the scenario resolving all identified issues:
           pressureTypes: ['technology', 'unexpected_consequences', 'impossible_tradeoffs'],
           twist: 'The neurosurgeon admits that 40% of patients who undergo the procedure experience a strange phantom emptiness where their drive used to be.',
           depth: 'deep',
-          format: 'future_tech',
+          format: 'impossible_dilemma',
           choices: [
             {
               id: 'choice_a',
@@ -990,100 +1085,316 @@ Regenerate the scenario resolving all identified issues:
       ],
     };
 
-    // If options specify a format, look for an entry matching that format
+    // Dedicated fallbacks for requested format
     if (options?.format) {
+      if (options.format === 'mini_mystery') {
+        return this.getProceduralMiniMystery(options);
+      }
+      if (options.format === 'brain_logic') {
+        return this.getProceduralBrainLogic(options);
+      }
+      if (options.format === 'hot_take') {
+        return this.getProceduralHotTake(options);
+      }
+      if (options.format === 'future_tech') {
+        return this.getProceduralFutureTech(options);
+      }
+      if (options.format === 'versus_battle') {
+        return this.getProceduralVersusBattle(options);
+      }
+      if (options.format === 'interactive_minigame') {
+        return this.getProceduralMinigame(options);
+      }
+      if (options.format === 'prediction') {
+        return this.getProceduralPrediction(options);
+      }
+      if (options.format === 'strategy_challenge') {
+        return catalog.strategy[0];
+      }
+      if (options.format === 'survival_scenario') {
+        return catalog.survival[0];
+      }
+      if (options.format === 'chaotic_funny') {
+        return catalog['funny/chaotic'][0];
+      }
+      if (options.format === 'impossible_dilemma') {
+        return catalog['money/lifestyle'][0];
+      }
+
       const allEntries = Object.values(catalog).flat();
       const formatMatch = allEntries.find((entry) => entry.format === options.format);
       if (formatMatch) {
         return formatMatch;
-      }
-
-      // Dedicated fallback templates for formats like mini_mystery or prediction if not in category array
-      if (options.format === 'mini_mystery') {
-        return {
-          title: 'The Stolen Cryo-Vial Mystery',
-          hook: 'The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed.',
-          setup:
-            'You are the lead night investigator at a high-security bio-research facility. A prototype cryo-vial containing an experimental gene therapy is missing from the sub-basement freezer. Two access cards badged in during the blackout: Dr. Aris (the chief biochemist whose research grant was terminated yesterday) and Captain Vance (the head of building security whose personal debts surfaced this morning).',
-          scenario:
-            'You are the lead night investigator at a high-security bio-research facility. A prototype cryo-vial containing an experimental gene therapy is missing from the sub-basement freezer. Two access cards badged in during the blackout: Dr. Aris (the chief biochemist whose research grant was terminated yesterday) and Captain Vance (the head of building security whose personal debts surfaced this morning).',
-          pressure: 'The emergency perimeter lockdown timer unlocks external gates in 180 seconds.',
-          pressureTypes: ['clock_deadline', 'risk_vs_reward'],
-          twist: 'The cryo-vial degrades irreversibly into harmless water if not placed in liquid nitrogen within 10 minutes.',
-          depth: options.depth || 'deep',
-          format: 'mini_mystery',
-          choices: [
-            {
-              id: 'choice_a',
-              label: 'Search Dr. Aris\'s Lab First',
-              description: 'Raid the biochemist\'s private centrifuge bench before she reaches the underground shuttle.',
-              tradeOff: 'Leaves security chief Vance completely unmonitored at the main exterior vehicle checkpoint.',
-              consequence: 'You sprint toward the laboratory wing, listening for footsteps down the tiled corridor.',
-            },
-            {
-              id: 'choice_b',
-              label: 'Intercept Captain Vance at the Gate',
-              description: 'Block the security chief\'s patrol vehicle at the armored perimeter barrier.',
-              tradeOff: 'Gives Dr. Aris 3 uninterrupted minutes to transfer the vial to an external courier on the train line.',
-              consequence: 'You deploy the steel spike strips across the perimeter exit, cornering Vance\'s patrol truck.',
-            },
-          ],
-          pollQuestion: 'Which suspect do you intercept before the gate timer expires?',
-          discussionPrompt: 'Examine the clues: Who actually took the cryo-vial and where is it hidden?',
-          consequence: 'Splitting your team risks losing both the suspect and the temperature-sensitive sample.',
-          payoff: {
-            reveal: 'Captain Vance was running an audit drill; Dr. Aris used Vance\'s stolen keycard while Vance was distracted at the loading dock.',
-            surprisingOutcome: 'Over 70% of readers suspect the head of security, but the timeline reveals Aris had the physical cooler.',
-            communityTension: 'Apparent opportunity vs. circumstantial motive.',
-            strategicAnalysis: 'Investigating the person with direct physical access yields faster forensic resolution.',
-          },
-        };
-      }
-
-      if (options.format === 'prediction') {
-        return {
-          title: 'The Autonomous Fleet Flash-Crash',
-          hook: 'You watch your emergency dispatch screen in disbelief as 10,000 autonomous electric freight haulers drop to 15 MPH simultaneously across Interstate 80.',
-          setup:
-            'You sit at the regional emergency transportation console as a rogue firmware patch triggers an emergency sensor lock on 10,000 self-driving 18-wheelers carrying critical perishable freight. Highway traffic behind your fleet is backing up for 75 miles in freezing sleet, and warehouse supply chains will grind to an absolute halt in 4 hours.',
-          scenario:
-            'You sit at the regional emergency transportation console as a rogue firmware patch triggers an emergency sensor lock on 10,000 self-driving 18-wheelers carrying critical perishable freight. Highway traffic behind your fleet is backing up for 75 miles in freezing sleet, and warehouse supply chains will grind to an absolute halt in 4 hours.',
-          pressure: 'Perishable refrigerated cargo batteries begin dying within 90 minutes.',
-          pressureTypes: ['clock_deadline', 'physical_hazard'],
-          twist: 'Transmitting an over-the-air hard reboot shuts down truck hazard lights and braking telemetry for 6 minutes.',
-          depth: options.depth || 'standard',
-          format: 'prediction',
-          choices: [
-            {
-              id: 'choice_a',
-              label: 'Emergency Global Broadcast Reboot',
-              description: 'Send an immediate force-reboot to all 10,000 trucks simultaneously over satellite telemetry.',
-              tradeOff: 'Shuts down all truck hazard beacons and lights on dark, icy interstate lanes for 6 minutes.',
-              consequence: 'The broadcast ping transmits to all 10,000 onboard telemetry computers.',
-            },
-            {
-              id: 'choice_b',
-              label: 'Manual Dispatch Escort Protocol',
-              description: 'Keep trucks creeping at 15 MPH and dispatch 500 regional police cruisers to guide them off exits.',
-              tradeOff: 'Guarantees 100% spoilage of $450M in perishable insulin and fresh food cargo in sub-zero traffic.',
-              consequence: 'State highway patrols receive emergency coordination orders to shepherd the convoy.',
-            },
-          ],
-          pollQuestion: 'Lock in your prediction: Which command protocol minimizes catastrophic loss?',
-          discussionPrompt: 'What happens next when 10,000 trucks reboot simultaneously on an icy highway?',
-          consequence: 'A software failure at scale forces human operators to choose between physical collision risk and economic paralysis.',
-          payoff: {
-            reveal: 'In stress tests, staggering rolling reboots in batches of 500 prevented total highway blackouts.',
-            surprisingOutcome: 'Most engineers choose the manual slow-crawl to avoid immediate collision liability.',
-            communityTension: 'Immediate physical safety risk vs. massive systemic supply chain collapse.',
-            strategicAnalysis: 'Distributed systems require graduated fail-safes rather than binary all-or-nothing resets.',
-          },
-        };
       }
     }
 
     const categoryList = catalog[category] || catalog['money/lifestyle'];
     const selected = categoryList[(index - 1) % categoryList.length] || categoryList[0];
     return selected;
+  }
+
+  /**
+   * Dedicated discussion-first procedural fallback for mini_mystery.
+   * Real deduction content with clues, no choices, and true reveal stored in payoff.reveal.
+   */
+  private getProceduralMiniMystery(options: GenerateDilemmaOptions): any {
+    return {
+      title: 'The Midnight Bio-Vault Mystery',
+      hook: 'The alarm blares at 03:40 AM: the bio-vault freezer is unlocked, the security camera cable is severed, and Sample 9 is gone.',
+      setup:
+        'You are the lead night investigator at a high-security bio-research facility. At 03:30 AM, during a 10-minute scheduled backup generator switch, someone bypassed the biometric vault and stole Sample 9. Three access badges were logged inside the facility: Dr. Aris (the chief biochemist whose research grant was terminated yesterday), Officer Vance (the head of security whose badge pinged at the exterior gate), and Marcus (the night janitor whose cart was parked outside the ventilation shaft). The vault door shows zero scratches or signs of forced entry. A single drop of liquid nitrogen frozen on the hallway floor leads directly toward the overhead ventilation grille.',
+      scenario:
+        'You are the lead night investigator at a high-security bio-research facility. At 03:30 AM, during a 10-minute scheduled backup generator switch, someone bypassed the biometric vault and stole Sample 9. Three access badges were logged inside the facility: Dr. Aris (the chief biochemist whose research grant was terminated yesterday), Officer Vance (the head of security whose badge pinged at the exterior gate), and Marcus (the night janitor whose cart was parked outside the ventilation shaft). The vault door shows zero scratches or signs of forced entry. A single drop of liquid nitrogen frozen on the hallway floor leads directly toward the overhead ventilation grille.',
+      pressure: 'The police arrive in 15 minutes. Once the perimeter gate seals, nobody enters or leaves the building.',
+      pressureTypes: ['clock_deadline', 'hidden_information', 'betrayal'],
+      twist: "The exterior gate access log recorded Officer Vance's badge at 03:32 AM, but the server clock at the exterior gate is offset exactly 15 minutes fast.",
+      depth: options.depth || 'standard',
+      format: 'mini_mystery',
+      interactionType: 'open_discussion',
+      choices: undefined,
+      pollQuestion: undefined,
+      discussionPrompt: 'Examine the clues: Who actually stole Sample 9 and how did they get out of the facility? Drop your deduction in the comments!',
+      consequence: 'Review the timeline and physical evidence carefully before jumping to conclusions.',
+      payoff: {
+        reveal: 'Officer Vance staged the theft. Knowing the exterior gate clock was running 15 minutes fast, he badged at the gate to create a false alibi, then returned through the maintenance vents using master keys that leave no tool marks on the vault door.',
+        surprisingOutcome: 'Over 70% of readers suspect the indebted biochemist, but physical access to the roof vent ruled everyone else out.',
+        communityTension: 'Circumstantial financial motive vs. forensic timeline discrepancies.',
+        strategicAnalysis: 'Physical constraints and timeline anomalies are far more reliable than emotional motives in forensic deduction.',
+      },
+    };
+  }
+
+  /**
+   * Dedicated discussion-first procedural fallback for brain_logic.
+   * Real solvable logic puzzle with all constraints in setup, no choices, and step-by-step solution in payoff.reveal.
+   */
+  private getProceduralBrainLogic(options: GenerateDilemmaOptions): any {
+    return {
+      title: 'The Rickety Rope Bridge Dilemma',
+      hook: 'Four injured scouts must cross a crumbling suspension bridge in pitch darkness with one dying lantern and only 15 minutes.',
+      setup:
+        'Four hikers are trapped on a collapsing mountain ledge. To reach safety, they must cross a fragile rope bridge spanning a bottomless gorge. The bridge only holds two people at a time, and any crossing party must hold the single lantern. Scout A crosses in 1 minute, Scout B takes 2 minutes, Scout C takes 5 minutes, and Scout D takes 8 minutes. When two cross together, they move at the slower person\'s pace. The lantern cannot be thrown across.',
+      scenario:
+        'Four hikers are trapped on a collapsing mountain ledge. To reach safety, they must cross a fragile rope bridge spanning a bottomless gorge. The bridge only holds two people at a time, and any crossing party must hold the single lantern. Scout A crosses in 1 minute, Scout B takes 2 minutes, Scout C takes 5 minutes, and Scout D takes 8 minutes. When two cross together, they move at the slower person\'s pace. The lantern cannot be thrown across.',
+      pressure: 'The lantern fuel burns out completely in 15 minutes. Anyone caught on the bridge after 15 minutes falls into the abyss.',
+      pressureTypes: ['time_pressure', 'limited_resources', 'strategic_decisions'],
+      twist: 'If the two slowest scouts (C and D) cross in separate trips, the total crossing time will inevitably exceed 15 minutes.',
+      depth: options.depth || 'standard',
+      format: 'brain_logic',
+      interactionType: 'open_discussion',
+      choices: undefined,
+      pollQuestion: undefined,
+      discussionPrompt: 'How do all four scouts cross in exactly 15 minutes? Post your step-by-step crossing sequence in the comments!',
+      consequence: 'One miscalculated crossing leaves two scouts trapped on the collapsing ledge.',
+      payoff: {
+        reveal: 'Send A and B across (2 min). A returns with the lantern (1 min, total 3). Then C and D cross together (8 min, total 11). B returns with the lantern (2 min, total 13). Finally, A and B cross together (2 min, total 15 min).',
+        surprisingOutcome: 'Pairing the two slowest people together eliminates one slow trip, saving 3 vital minutes.',
+        communityTension: 'Intuitive greedy routing vs. counter-intuitive paired bottleneck routing.',
+        strategicAnalysis: 'In resource-constrained logistics, grouping major bottlenecks minimizes total delay.',
+      },
+    };
+  }
+
+  /**
+   * Dedicated discussion-first procedural fallback for hot_take.
+   * Concrete, highly debatable premise with meaningful stakes, no choices, and provocative discussion prompt.
+   */
+  private getProceduralHotTake(options: GenerateDilemmaOptions): any {
+    return {
+      title: 'The Human Artwork Copyright Freeze',
+      hook: 'Should tech companies be legally barred from training AI models on public human artwork without paying direct cash royalties to each creator?',
+      setup:
+        'A controversial new bill proposes an absolute ban on AI models using publicly accessible human art, code, and writing for training data unless every single creator is compensated per scrape. Proponents argue this protects human livelihood and prevents industrial theft. Opponents argue this kills open-source innovation, creates monopoly moats for trillion-dollar incumbents who can afford licensing, and misunderstands that human brains also learn by studying public art.',
+      scenario:
+        'A controversial new bill proposes an absolute ban on AI models using publicly accessible human art, code, and writing for training data unless every single creator is compensated per scrape. Proponents argue this protects human livelihood and prevents industrial theft. Opponents argue this kills open-source innovation, creates monopoly moats for trillion-dollar incumbents who can afford licensing, and misunderstands that human brains also learn by studying public art.',
+      pressure: 'The parliamentary vote happens tomorrow morning, and both sides claim the other will permanently destroy human culture.',
+      pressureTypes: ['social_pressure', 'conflicting_goals'],
+      twist: 'If passed, small open-source developers will be sued out of existence while tech giants continue via private licensing deals.',
+      depth: options.depth || 'standard',
+      format: 'hot_take',
+      interactionType: 'open_discussion',
+      choices: undefined,
+      pollQuestion: undefined,
+      discussionPrompt: 'Is learning from public data theft, or is banning it just handing the future to corporate monopolies? Pick a side and defend your reasoning!',
+      consequence: 'Every policy position carries severe tradeoffs for the future of human creative work.',
+      payoff: {
+        reveal: 'History shows copyright expansions almost always consolidate market power in massive publishers rather than individual creators, but unregulated automated extraction rapidly hollows out entry-level creative work.',
+        surprisingOutcome: 'Over 80% of creators support the ban until they discover it gives big tech companies an exclusive legal monopoly on AI development.',
+        communityTension: 'Protecting individual creator property vs. maintaining permissionless open knowledge.',
+        strategicAnalysis: 'Policy interventions often produce the exact opposite of their intended economic protection.',
+      },
+    };
+  }
+
+  /**
+   * Dedicated discussion-first procedural fallback for future_tech.
+   * Real hypothetical future scenario focusing on human cost and personal choice, no choices, and challenging discussion prompt.
+   */
+  private getProceduralFutureTech(options: GenerateDilemmaOptions): any {
+    return {
+      title: 'The Mandatory Dream Education Interface',
+      hook: 'By 2042, neural implants can stream a full four-year degree directly into your sleep—at the cost of mandatory corporate sponsored dreams.',
+      setup:
+        'A neurotech conglomerate unveils the "Neuro-Diploma": a consumer neural link that compresses four years of medical, engineering, or legal training into 180 nights of deep sleep learning. But to keep the service free for working-class families, the system injects 30 minutes of subconscious targeted advertising directly into your dream state every night. The ads feel completely real, altering your brand affinity and waking preferences without your conscious control.',
+      scenario:
+        'A neurotech conglomerate unveils the "Neuro-Diploma": a consumer neural link that compresses four years of medical, engineering, or legal training into 180 nights of deep sleep learning. But to keep the service free for working-class families, the system injects 30 minutes of subconscious targeted advertising directly into your dream state every night. The ads feel completely real, altering your brand affinity and waking preferences without your conscious control.',
+      pressure: 'College tuition has reached $300,000, making this the only viable economic ladder for 90% of young workers.',
+      pressureTypes: ['technology', 'social_pressure', 'impossible_tradeoffs'],
+      twist: 'Independent neurologists warn that subconscious dream marketing permanently alters emotional attachment patterns and personal opinions.',
+      depth: options.depth || 'standard',
+      format: 'future_tech',
+      interactionType: 'open_discussion',
+      choices: undefined,
+      pollQuestion: undefined,
+      discussionPrompt: 'Would you surrender control of your dream life to escape generational poverty, or is subconscious autonomy non-negotiable? Defend your position in the comments!',
+      consequence: 'Convenience is the greatest Trojan horse against personal autonomy.',
+      payoff: {
+        reveal: 'Whenever a vital human necessity is offered for free in exchange for subconscious attention, the consumer ceases to be the customer and becomes the product.',
+        surprisingOutcome: 'Surveys show young workers overwhelmingly accept neurological invasive trade-offs when economic mobility is on the line.',
+        communityTension: 'Financial survival and rapid upward mobility vs. mental sovereignty and free will.',
+        strategicAnalysis: 'Economic desperation reliably forces populations to accept terms that previous generations considered dystopia.',
+      },
+    };
+  }
+
+  /**
+   * Dedicated poll fallback for versus_battle.
+   */
+  private getProceduralVersusBattle(options: GenerateDilemmaOptions): any {
+    return {
+      title: 'The Veteran Detective vs. The Predictive AI',
+      hook: 'A serial arsonist strikes tonight: do you dispatch based on thirty years of detective intuition or 99.4% algorithmic certainty?',
+      setup:
+        'You are the city emergency dispatch director. A three-alarm fire is spreading in the warehouse district. Detective Miller, a 30-year veteran who caught the arsonist\'s mentor, insists the suspect will strike the old grain elevator on 4th Street. Meanwhile, your newly installed predictive AI predicts with 99.4% statistical confidence that the suspect is en route to the chemical harbor two miles south. You only have enough squad units to secure one location.',
+      scenario:
+        'You are the city emergency dispatch director. A three-alarm fire is spreading in the warehouse district. Detective Miller, a 30-year veteran who caught the arsonist\'s mentor, insists the suspect will strike the old grain elevator on 4th Street. Meanwhile, your newly installed predictive AI predicts with 99.4% statistical confidence that the suspect is en route to the chemical harbor two miles south. You only have enough squad units to secure one location.',
+      pressure: 'Units must be dispatched in 45 seconds before the perimeter bridges close.',
+      pressureTypes: ['time_pressure', 'conflicting_goals'],
+      twist: 'Detective Miller was disciplined last year for insubordination, but the AI model hasn\'t been recalibrated since last month\'s flood.',
+      depth: options.depth || 'standard',
+      format: 'versus_battle',
+      interactionType: 'versus_vote',
+      choices: [
+        {
+          id: 'choice_a',
+          label: 'Back Detective Miller',
+          description: 'Dispatch all units to the 4th Street grain elevator.',
+          tradeOff: 'If the veteran is wrong, the chemical harbor burns with zero police response.',
+          consequence: 'Squad cars scream toward 4th Street.',
+        },
+        {
+          id: 'choice_b',
+          label: 'Trust the Predictive AI',
+          description: 'Dispatch all units to the chemical harbor.',
+          tradeOff: 'If the algorithm is flawed, Miller will retire in protest while the arsonist escapes.',
+          consequence: 'Tactical teams converge on the harbor.',
+        },
+      ],
+      pollQuestion: 'Who walks away with the win tonight: Detective Miller or the AI?',
+      discussionPrompt: 'Vote for the winner: would you trust human intuition or mathematical certainty?',
+      consequence: 'Algorithmic models excel at historical patterns, but human outliers exploit the blind spots.',
+      payoff: {
+        reveal: 'The arsonist intentionally baited the algorithm by triggering false sensor pings near the harbor, leaving the grain elevator vulnerable.',
+        surprisingOutcome: 'Seasoned humans detect deliberate deception faster than models trained on historical regularities.',
+        communityTension: 'Lived experience vs. big data confidence.',
+        strategicAnalysis: 'Adversarial actors specifically optimize their tactics against automated prediction models.',
+      },
+    };
+  }
+
+  /**
+   * Dedicated poll fallback for interactive_minigame.
+   */
+  private getProceduralMinigame(options: GenerateDilemmaOptions): any {
+    return {
+      title: 'The Grid Overload Lockdown',
+      hook: 'Three power sub-stations are overloading simultaneously: you can only stabilize two before the city grid collapses.',
+      setup:
+        'You sit at the municipal energy dispatch console during an extreme heatwave. Grid frequency is dropping past critical thresholds. Three vital sectors are redlining: Sub-Station 1 (powers the regional trauma hospital), Sub-Station 2 (powers the municipal water pumps), and Sub-Station 3 (powers the financial server vault). You have emergency capacitors to save exactly two stations; the third will burn out its transformers and go dark for 48 hours.',
+      scenario:
+        'You sit at the municipal energy dispatch console during an extreme heatwave. Grid frequency is dropping past critical thresholds. Three vital sectors are redlining: Sub-Station 1 (powers the regional trauma hospital), Sub-Station 2 (powers the municipal water pumps), and Sub-Station 3 (powers the financial server vault). You have emergency capacitors to save exactly two stations; the third will burn out its transformers and go dark for 48 hours.',
+      pressure: 'Transformers melt in 90 seconds if power is not diverted.',
+      pressureTypes: ['time_pressure', 'limited_resources', 'strategic_decisions'],
+      twist: 'The hospital has backup generators with 4 hours of diesel, but the water pumps feed the firefighting grid.',
+      depth: options.depth || 'standard',
+      format: 'interactive_minigame',
+      interactionType: 'mini_game',
+      choices: [
+        {
+          id: 'choice_a',
+          label: 'Save Hospital & Water Pumps',
+          description: 'Sacrifice the financial server vault to protect physical human lives.',
+          tradeOff: 'Erases billions in transactions and triggers market chaos.',
+          consequence: 'Power locks onto sectors 1 and 2.',
+        },
+        {
+          id: 'choice_b',
+          label: 'Save Hospital & Financial Vault',
+          description: 'Sacrifice municipal water pumps and pray no major fires break out.',
+          tradeOff: 'Leaves 500,000 residents without running water and cuts firefighting pressure.',
+          consequence: 'Power locks onto sectors 1 and 3.',
+        },
+        {
+          id: 'choice_c',
+          label: 'Save Water Pumps & Financial Vault',
+          description: 'Force the hospital onto emergency diesel generators.',
+          tradeOff: 'If hospital generator relays fail, intensive care patients are in immediate peril.',
+          consequence: 'Power locks onto sectors 2 and 3.',
+        },
+      ],
+      pollQuestion: 'Which two sub-stations do you save before the transformers melt?',
+      discussionPrompt: 'Rank your priorities: how do you manage emergency triage under total resource scarcity?',
+      consequence: 'Every triage choice forces you to price different kinds of catastrophic loss.',
+      payoff: {
+        reveal: 'Hospitals have mandatory diesel fail-safes by design; water infrastructure has zero secondary redundancy.',
+        surprisingOutcome: 'Over 80% reflexively save the hospital first, unaware that the hospital diesel generators are 99.9% reliable.',
+        communityTension: 'Direct human compassion vs. hidden systemic dependencies.',
+        strategicAnalysis: 'In complex systems, protect the asset with zero fallback capacity first.',
+      },
+    };
+  }
+
+  /**
+   * Dedicated poll fallback for prediction.
+   */
+  private getProceduralPrediction(options: GenerateDilemmaOptions): any {
+    return {
+      title: 'The Autonomous Fleet Flash-Crash',
+      hook: 'You watch your emergency dispatch screen in disbelief as 10,000 autonomous electric freight haulers drop to 15 MPH simultaneously across Interstate 80.',
+      setup:
+        'You sit at the regional emergency transportation console as a rogue firmware patch triggers an emergency sensor lock on 10,000 self-driving 18-wheelers carrying critical perishable freight. Highway traffic behind your fleet is backing up for 75 miles in freezing sleet, and warehouse supply chains will grind to an absolute halt in 4 hours.',
+      scenario:
+        'You sit at the regional emergency transportation console as a rogue firmware patch triggers an emergency sensor lock on 10,000 self-driving 18-wheelers carrying critical perishable freight. Highway traffic behind your fleet is backing up for 75 miles in freezing sleet, and warehouse supply chains will grind to an absolute halt in 4 hours.',
+      pressure: 'Perishable refrigerated cargo batteries begin dying within 90 minutes.',
+      pressureTypes: ['clock_deadline', 'physical_hazard'],
+      twist: 'Transmitting an over-the-air hard reboot shuts down truck hazard lights and braking telemetry for 6 minutes.',
+      depth: options.depth || 'standard',
+      format: 'prediction',
+      choices: [
+        {
+          id: 'choice_a',
+          label: 'Emergency Global Broadcast Reboot',
+          description: 'Send an immediate force-reboot to all 10,000 trucks simultaneously over satellite telemetry.',
+          tradeOff: 'Shuts down all truck hazard beacons and lights on dark, icy interstate lanes for 6 minutes.',
+          consequence: 'The broadcast ping transmits to all 10,000 onboard telemetry computers.',
+        },
+        {
+          id: 'choice_b',
+          label: 'Manual Dispatch Escort Protocol',
+          description: 'Keep trucks creeping at 15 MPH and dispatch 500 regional police cruisers to guide them off exits.',
+          tradeOff: 'Guarantees 100% spoilage of $450M in perishable insulin and fresh food cargo in sub-zero traffic.',
+          consequence: 'State highway patrols receive emergency coordination orders to shepherd the convoy.',
+        },
+      ],
+      pollQuestion: 'Lock in your prediction: Which command protocol minimizes catastrophic loss?',
+      discussionPrompt: 'What happens next when 10,000 trucks reboot simultaneously on an icy highway?',
+      consequence: 'A software failure at scale forces human operators to choose between physical collision risk and economic paralysis.',
+      payoff: {
+        reveal: 'In stress tests, staggering rolling reboots in batches of 500 prevented total highway blackouts.',
+        surprisingOutcome: 'Most engineers choose the manual slow-crawl to avoid immediate collision liability.',
+        communityTension: 'Immediate physical safety risk vs. massive systemic supply chain collapse.',
+        strategicAnalysis: 'Distributed systems require graduated fail-safes rather than binary all-or-nothing resets.',
+      },
+    };
   }
 }

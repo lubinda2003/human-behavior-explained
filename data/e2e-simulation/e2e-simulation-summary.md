@@ -1,7 +1,7 @@
 # Pick Your Fate — End-to-End Interaction Engine Simulation Report
 
 **Execution Mode:** Dry-Run Only (Zero Real Telegram API Calls)  
-**Timestamp:** `2026-09-26T20:49:02.099Z`  
+**Timestamp:** `2026-09-26T21:36:36.985Z`  
 **Overall Status:** **6/6 SCENARIOS PASSED** (0 Failures)  
 **Data Integrity:** Complete referential integrity (0 orphan records)  
 **Publication Safety:** 100% duplicate prevention across concurrency & retries  
@@ -49,7 +49,7 @@ Content Engine
 - **Payoff Reveal:** `Most people severely underestimate the mental toll of 1,825 days without sunlight, while stipend recipients report consistently higher baseline peace of mind.`
 
 ### Scenario 2: Non-Poll Interaction (Mini Mystery / Strategy Challenge)
-- **Title:** "The Stolen Cryo-Vial Mystery" (`dilemma-102`)
+- **Title:** "The Midnight Bio-Vault Mystery" (`dilemma-102`)
 - **Interaction Mechanism:** `open_discussion` (Open Discussion Challenge)
 - **Native Poll Created:** **NO (CORRECT)**
 - **Lifecycle Sequence:** `DRAFT → VALIDATED → PUBLISHED → OPEN → CLOSED → RESOLVING → RESULT_POSTED → COMPLETED`

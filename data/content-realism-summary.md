@@ -1,6 +1,6 @@
 # Pick Your Fate · Content Realism & Entertainment Evaluation Report
 
-**Generated At:** 2026-09-26T20:48:59.189Z
+**Generated At:** 2026-09-26T21:36:34.093Z
 **Total Samples Evaluated:** 16
 
 ## 1. Classification Summary
@@ -18,7 +18,7 @@
 | **Weak Stakes / Trivial Downsides** | 3 | Flagged in control samples where costs were zero or non-binding |
 | **Artificial / Shallow Scenarios** | 1 | Catching shallow hypothetical riddles ($1M unspendable) |
 | **Academic Psychology Jargon** | 1 | Strict zero-tolerance gate rejects clinical jargon |
-| **Money/Life/Death Theme Saturation** | 6 (37.5%) | Varied across 9 archetypes: survival, social, technology, countdown, strategy |
+| **Money/Life/Death Theme Saturation** | 9 (56.3%) | Varied across 9 archetypes: survival, social, technology, countdown, strategy |
 
 ## 3. Sample Breakdown & Quality Diagnostics
 
@@ -33,14 +33,14 @@
 - **Detected Weaknesses:** None (Passed all 12 realism checks)
 - **Rationale:** Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes.
 
-### Sample 2: The Whistleblower's Ultimatum (Countdown)
+### Sample 2: The Hostile Takeover Bounty (Countdown)
 - **Status:** ✅ [STRONG]
 - **Format:** `strategy_challenge` | **Depth:** `quick` | **Category:** `strategy`
-- **Hook:** "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?"
+- **Hook:** "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes."
 - **Choices:**
-  - **Option A:** Upload to Federal Regulators *(Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.)*
-  - **Option B:** Scrub Local Copies & Protect Household *(Cost: 100 innocent hospital patients will suffer preventable organ toxicity.)*
-- **Question:** "Do you hit "Upload" or delete the files and walk out?"
+  - **Option A:** Sign First & Take the $5M *(Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.)*
+  - **Option B:** Hold the Line & Trust the Team *(Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.)*
+- **Question:** "Do you grab the pen first or trust your co-founders?"
 - **Detected Weaknesses:** None (Passed all 12 realism checks)
 - **Rationale:** Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes.
 
@@ -88,36 +88,32 @@
 - **Detected Weaknesses:** None (Passed all 12 realism checks)
 - **Rationale:** Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes.
 
-### Sample 7: The Whistleblower's Ultimatum (Strategy)
+### Sample 7: The Hostile Takeover Bounty (Strategy)
 - **Status:** ✅ [STRONG]
 - **Format:** `strategy_challenge` | **Depth:** `standard` | **Category:** `strategy`
-- **Hook:** "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?"
+- **Hook:** "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes."
 - **Choices:**
-  - **Option A:** Upload to Federal Regulators *(Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.)*
-  - **Option B:** Scrub Local Copies & Protect Household *(Cost: 100 innocent hospital patients will suffer preventable organ toxicity.)*
-- **Question:** "Do you hit "Upload" or delete the files and walk out?"
+  - **Option A:** Sign First & Take the $5M *(Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.)*
+  - **Option B:** Hold the Line & Trust the Team *(Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.)*
+- **Question:** "Do you grab the pen first or trust your co-founders?"
 - **Detected Weaknesses:** None (Passed all 12 realism checks)
 - **Rationale:** Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes.
 
-### Sample 8: The Neural Memory Redactor (Future/technology)
+### Sample 8: The Mandatory Dream Education Interface (Future/technology)
 - **Status:** ✅ [STRONG]
 - **Format:** `future_tech` | **Depth:** `deep` | **Category:** `technology/future`
-- **Hook:** "In 2048, a clinical neuro-interface can delete your greatest trauma—but it will also erase the defining breakthrough that made who you are."
+- **Hook:** "By 2042, neural implants can stream a full four-year degree directly into your sleep—at the cost of mandatory corporate sponsored dreams."
 - **Choices:**
-  - **Option A:** Erase the Pain & Forfeit the Triumph *(Cost: Lose the master skills, wisdom, and core personal achievement that define your identity.)*
-  - **Option B:** Keep the Scars & Keep the Mastery *(Cost: You continue carrying the emotional triggers, grief, and nocturnal flashbacks for life.)*
-- **Question:** "Do you erase your trauma or keep your hard-earned scars?"
+- **Question:** "Would you surrender control of your dream life to escape generational poverty, or is subconscious autonomy non-negotiable? Defend your position in the comments!"
 - **Detected Weaknesses:** None (Passed all 12 realism checks)
 - **Rationale:** Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes.
 
-### Sample 9: The Stolen Cryo-Vial Mystery (Mystery/challenge)
+### Sample 9: The Midnight Bio-Vault Mystery (Mystery/challenge)
 - **Status:** ✅ [STRONG]
 - **Format:** `mini_mystery` | **Depth:** `deep` | **Category:** `bizarre hypothetical situations`
-- **Hook:** "The cryo-freezer door stands wide open at 03:40 AM with the security camera cable severed."
+- **Hook:** "The alarm blares at 03:40 AM: the bio-vault freezer is unlocked, the security camera cable is severed, and Sample 9 is gone."
 - **Choices:**
-  - **Option A:** Search Dr. Aris's Lab First *(Cost: Leaves security chief Vance completely unmonitored at the main exterior vehicle checkpoint.)*
-  - **Option B:** Intercept Captain Vance at the Gate *(Cost: Gives Dr. Aris 3 uninterrupted minutes to transfer the vial to an external courier on the train line.)*
-- **Question:** "Which suspect do you intercept before the gate timer expires?"
+- **Question:** "Examine the clues: Who actually stole Sample 9 and how did they get out of the facility? Drop your deduction in the comments!"
 - **Detected Weaknesses:** None (Passed all 12 realism checks)
 - **Rationale:** Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes.
 
@@ -143,14 +139,14 @@
 - **Detected Weaknesses:** None (Passed all 12 realism checks)
 - **Rationale:** Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes.
 
-### Sample 12: The Whistleblower's Ultimatum (Social dilemma)
+### Sample 12: The Hostile Takeover Bounty (Social dilemma)
 - **Status:** ✅ [STRONG]
 - **Format:** `strategy_challenge` | **Depth:** `deep` | **Category:** `moral`
-- **Hook:** "You have 10 minutes to upload the files before security scrubs the servers: do you save 100 strangers or protect your family?"
+- **Hook:** "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes."
 - **Choices:**
-  - **Option A:** Upload to Federal Regulators *(Cost: Destroys your family's healthcare coverage and invites brutal corporate litigation.)*
-  - **Option B:** Scrub Local Copies & Protect Household *(Cost: 100 innocent hospital patients will suffer preventable organ toxicity.)*
-- **Question:** "Do you hit "Upload" or delete the files and walk out?"
+  - **Option A:** Sign First & Take the $5M *(Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.)*
+  - **Option B:** Hold the Line & Trust the Team *(Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.)*
+- **Question:** "Do you grab the pen first or trust your co-founders?"
 - **Detected Weaknesses:** None (Passed all 12 realism checks)
 - **Rationale:** Exemplary situational realism: concrete environment, palpable ticking clock, balanced high-stakes dilemma, and zero generic tropes.
 
