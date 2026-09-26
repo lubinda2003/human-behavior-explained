@@ -15,7 +15,7 @@
   "vars": {
     "GEMINI_MODEL": "gemini-2.5-flash",
     "PUBLISHING_ENABLED": "true",
-    "DISCUSSION_GROUP_LINKED": "false",
+    "DISCUSSION_GROUP_LINKED": "true",
     "PUBLISHING_COOLDOWN_MINUTES": "180"
   },
 

@@ -63,7 +63,7 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
       assert.equal(CONTENT_TAXONOMY.impossible_dilemma.defaultMechanism, 'poll');
       assert.equal(CONTENT_TAXONOMY.mini_mystery.defaultMechanism, 'open_discussion');
       assert.equal(CONTENT_TAXONOMY.prediction.defaultMechanism, 'prediction_vote');
-      assert.equal(CONTENT_TAXONOMY.survival_scenario.defaultMechanism, 'scenario_choice');
+      assert.equal(CONTENT_TAXONOMY.survival_scenario.defaultMechanism, 'poll');
       assert.equal(CONTENT_TAXONOMY.versus_battle.defaultMechanism, 'poll');
     });
 
@@ -78,7 +78,7 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
     it('reconciles allowed interaction mechanisms without forcing all into polls', () => {
       assert.equal(resolveInteractionMechanism('mini_mystery'), 'open_discussion');
       assert.equal(resolveInteractionMechanism('impossible_dilemma'), 'poll');
-      assert.equal(resolveInteractionMechanism('strategy_challenge'), 'scenario_choice');
+      assert.equal(resolveInteractionMechanism('strategy_challenge'), 'poll');
       assert.equal(resolveInteractionMechanism('prediction'), 'prediction_vote');
     });
   });

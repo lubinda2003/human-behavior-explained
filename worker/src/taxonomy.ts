@@ -44,9 +44,9 @@ export const CONTENT_TAXONOMY: Record<ContentFormat, ContentTaxonomyDefinition> 
   survival_scenario: {
     format: 'survival_scenario',
     origin: 'fresh',
-    defaultMechanism: 'scenario_choice',
+    defaultMechanism: 'poll',
     description: 'Urgent physical or situational survival dilemma requiring quick tactical decision.',
-    allowedMechanisms: ['scenario_choice', 'poll', 'open_discussion'],
+    allowedMechanisms: ['poll', 'scenario_choice', 'open_discussion'],
   },
   mini_mystery: {
     format: 'mini_mystery',
@@ -58,9 +58,9 @@ export const CONTENT_TAXONOMY: Record<ContentFormat, ContentTaxonomyDefinition> 
   strategy_challenge: {
     format: 'strategy_challenge',
     origin: 'fresh',
-    defaultMechanism: 'scenario_choice',
+    defaultMechanism: 'poll',
     description: 'Resource allocation or high-stakes strategy dilemma under extreme constraints.',
-    allowedMechanisms: ['scenario_choice', 'poll', 'open_discussion'],
+    allowedMechanisms: ['poll', 'scenario_choice', 'open_discussion'],
   },
   prediction: {
     format: 'prediction',
@@ -86,16 +86,16 @@ export const CONTENT_TAXONOMY: Record<ContentFormat, ContentTaxonomyDefinition> 
   future_tech: {
     format: 'future_tech',
     origin: 'fresh',
-    defaultMechanism: 'prediction_vote',
+    defaultMechanism: 'open_discussion',
     description: 'AI, biotechnology, or futuristic crisis with societal or moral implications.',
-    allowedMechanisms: ['prediction_vote', 'poll', 'open_discussion'],
+    allowedMechanisms: ['open_discussion', 'prediction_vote', 'poll'],
   },
   brain_logic: {
     format: 'brain_logic',
     origin: 'fresh',
-    defaultMechanism: 'poll',
+    defaultMechanism: 'open_discussion',
     description: 'Paradox or lateral thinking dilemma testing audience logic and wits.',
-    allowedMechanisms: ['poll', 'open_discussion'],
+    allowedMechanisms: ['open_discussion', 'poll'],
   },
   hot_take: {
     format: 'hot_take',

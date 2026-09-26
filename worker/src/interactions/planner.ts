@@ -55,23 +55,51 @@ export class InteractionPlanner {
     }
 
     // Choose interaction mechanism according to content format & archetype:
-    if (
-      format === 'open_discussion' ||
-      format === 'mini_mystery' ||
-      format === 'hot_take'
-    ) {
+    if (format === 'result_reveal') {
       return {
-        interactionType: 'open_discussion',
-        closeStrategy: 'scheduled',
-        durationSeconds: options?.customDurationSeconds ?? 43200, // 12 hours default for open debate
-        discussionPrompt:
-          content.discussionPrompt ||
-          'Drop your reasoning and defense below. Can your strategy withstand peer scrutiny?',
+        interactionType: 'result_reveal',
+        closeStrategy: 'never',
         targetChatId,
       };
     }
 
-    if (format === 'prediction' || format === 'prediction_vote' || format === 'future_tech') {
+    if (format === 'open_discussion' || format === 'hot_take') {
+      return {
+        interactionType: 'open_discussion',
+        closeStrategy: 'scheduled',
+        durationSeconds: options?.customDurationSeconds ?? 43200, // 12 hours
+        discussionPrompt:
+          content.discussionPrompt ||
+          'Defend your perspective in the discussion thread below. Can your reasoning withstand scrutiny?',
+        targetChatId,
+      };
+    }
+
+    if (format === 'mini_mystery' || format === 'brain_logic') {
+      return {
+        interactionType: 'open_discussion',
+        closeStrategy: 'scheduled',
+        durationSeconds: options?.customDurationSeconds ?? 28800, // 8 hours
+        discussionPrompt:
+          content.discussionPrompt ||
+          'What did everyone else overlook? Drop your deduction below before the spoiler reveal.',
+        targetChatId,
+      };
+    }
+
+    if (format === 'future_tech') {
+      return {
+        interactionType: 'open_discussion',
+        closeStrategy: 'scheduled',
+        durationSeconds: options?.customDurationSeconds ?? 21600, // 6 hours
+        discussionPrompt:
+          content.discussionPrompt ||
+          'What are the societal and moral trade-offs of this technology? Join the debate below.',
+        targetChatId,
+      };
+    }
+
+    if (format === 'prediction' || format === 'prediction_vote') {
       const choices = (content.choices && content.choices.length >= 2)
         ? content.choices
         : [
@@ -82,10 +110,10 @@ export class InteractionPlanner {
       return {
         interactionType: 'prediction_vote',
         closeStrategy: 'scheduled',
-        durationSeconds: options?.customDurationSeconds ?? 14400, // 4 hours for prediction locks
+        durationSeconds: options?.customDurationSeconds ?? 14400, // 4 hours
         pollConfig: {
           question: content.pollQuestion || content.question || `PREDICTION: ${content.title}`,
-          options: choices.map((c) => ({
+          options: choices.slice(0, 2).map((c) => ({
             text: c.label.length > 100 ? c.label.slice(0, 97) + '...' : c.label,
             tradeOff: c.tradeOff,
           })),
@@ -96,37 +124,111 @@ export class InteractionPlanner {
       };
     }
 
-    if (format === 'result_reveal') {
+    if (format === 'interactive_minigame') {
+      const choices = (content.choices && content.choices.length >= 2)
+        ? content.choices
+        : [
+            { label: 'Option 1', tradeOff: 'Tradeoff 1' },
+            { label: 'Option 2', tradeOff: 'Tradeoff 2' },
+          ];
+
       return {
-        interactionType: 'result_reveal',
-        closeStrategy: 'never',
+        interactionType: 'poll',
+        closeStrategy: 'scheduled',
+        durationSeconds: options?.customDurationSeconds ?? 21600, // 6 hours
+        pollConfig: {
+          question: (content.pollQuestion || content.question || content.title).slice(0, 300),
+          options: choices.slice(0, 10).map((c) => ({
+            text: c.label.length > 100 ? c.label.slice(0, 97) + '...' : c.label,
+            tradeOff: c.tradeOff,
+          })),
+          isAnonymous: true,
+          allowsMultipleAnswers: true,
+        },
         targetChatId,
       };
     }
 
-    // Standard dilemma / survival / versus / ranking -> Native Poll
+    if (format === 'versus_battle') {
+      const choices = (content.choices && content.choices.length >= 2)
+        ? content.choices
+        : [
+            { label: 'Side A', tradeOff: 'Cost A' },
+            { label: 'Side B', tradeOff: 'Cost B' },
+          ];
+
+      return {
+        interactionType: 'poll',
+        closeStrategy: 'scheduled',
+        durationSeconds: options?.customDurationSeconds ?? 14400, // 4 hours
+        pollConfig: {
+          question: (content.pollQuestion || content.question || content.title).slice(0, 300),
+          options: choices.slice(0, 2).map((c) => ({
+            text: c.label.length > 100 ? c.label.slice(0, 97) + '...' : c.label,
+            tradeOff: c.tradeOff,
+          })),
+          isAnonymous: true,
+          allowsMultipleAnswers: false,
+        },
+        targetChatId,
+      };
+    }
+
+    if (format === 'strategy_challenge') {
+      const choices = (content.choices && content.choices.length >= 2)
+        ? content.choices
+        : [
+            { label: 'Strategy A', tradeOff: 'Cost A' },
+            { label: 'Strategy B', tradeOff: 'Cost B' },
+            { label: 'Strategy C', tradeOff: 'Cost C' },
+          ];
+
+      return {
+        interactionType: 'poll',
+        closeStrategy: 'scheduled',
+        durationSeconds: options?.customDurationSeconds ?? 14400, // 4 hours
+        pollConfig: {
+          question: (content.pollQuestion || content.question || content.title).slice(0, 300),
+          options: choices.slice(0, 4).map((c) => ({
+            text: c.label.length > 100 ? c.label.slice(0, 97) + '...' : c.label,
+            tradeOff: c.tradeOff,
+          })),
+          isAnonymous: true,
+          allowsMultipleAnswers: false,
+        },
+        targetChatId,
+      };
+    }
+
+    // impossible_dilemma (3h), survival_scenario (3h), chaotic_funny (2h) -> Poll
+    let defaultDuration = 10800; // 3 hours
+    let maxOpts = 3;
+    if (format === 'chaotic_funny') {
+      defaultDuration = 7200; // 2 hours
+    } else if (format === 'survival_scenario') {
+      defaultDuration = 10800; // 3 hours
+      maxOpts = 2;
+    }
+
     const choices = (content.choices && content.choices.length >= 2)
       ? content.choices
       : [
-          { label: 'Option A', tradeOff: 'Heavy trade-off A' },
-          { label: 'Option B', tradeOff: 'Heavy trade-off B' },
+          { label: 'Option A', tradeOff: 'Trade-off A' },
+          { label: 'Option B', tradeOff: 'Trade-off B' },
         ];
-
-    const isInteractiveRanking = format === 'interactive_minigame';
 
     return {
       interactionType: 'poll',
       closeStrategy: 'scheduled',
-      durationSeconds: options?.customDurationSeconds ?? 7200, // 2 hours default poll lifecycle
+      durationSeconds: options?.customDurationSeconds ?? defaultDuration,
       pollConfig: {
-        question:
-          (content.pollQuestion || content.question || content.title).slice(0, 300),
-        options: choices.slice(0, 10).map((c) => ({
+        question: (content.pollQuestion || content.question || content.title).slice(0, 300),
+        options: choices.slice(0, maxOpts).map((c) => ({
           text: c.label.length > 100 ? c.label.slice(0, 97) + '...' : c.label,
           tradeOff: c.tradeOff,
         })),
-        isAnonymous: true, // Anonymous for channel chats per Telegram requirements
-        allowsMultipleAnswers: isInteractiveRanking,
+        isAnonymous: true,
+        allowsMultipleAnswers: false,
       },
       targetChatId,
     };
