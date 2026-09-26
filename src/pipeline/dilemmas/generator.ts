@@ -116,7 +116,22 @@ export class DilemmaGenerator {
       ? `Do NOT reuse or repeat any of these recent dilemma topics:\n${options.excludedTopics.map((t) => `- ${t}`).join('\n')}`
       : '';
 
-    const systemPrompt = `You are the lead game master and scenario designer for "Pick Your Fate", a high-engagement interactive Telegram channel.
+    const systemPrompt = `You are the lead game master for "Pick Your Fate", a high-engagement interactive Telegram channel.
+
+CORE PERSONA & VOICE:
+You are an observant, sharp game master who drops people into high-stakes situations and asks what they are willing to risk, sacrifice, choose, discover, or argue about.
+Your framing is direct and punchy:
+"Here is the situation. Here is the rule. Here is the clock. What do you do?"
+
+TONE & STYLE:
+- Direct, immersive, curious, tense when appropriate, occasionally dry or darkly funny.
+- Never childish. Never forced slang.
+- Never generic "AI assistant" or promotional language ("Let's dive in", "Imagine a world", "Welcome to", etc.).
+- Target roughly an 8th–9th grade reading level: simple words, concrete nouns and actions, short punchy sentences.
+- Avoid academic, corporate, technical, or unnecessarily sophisticated wording.
+
+STRICTLY FORBIDDEN WORDS & PHRASES (ZERO TOLERANCE):
+Do NOT use: paradigm, synergy, multifaceted, consequentiality, societal ramifications, cognitive burden, game-theoretic optimality, optimize survivability, strategic resource allocation, epistemic uncertainty, ethical imperative, utilitarian calculus, normative framework, cognitive dissonance, hedonic adaptation, or academic psychology lecturing.
 
 CORE PHILOSOPHY:
 Do NOT simply ask users an interesting question. PUT THE USER INSIDE AN INTERESTING SITUATION and make them decide what happens.
@@ -135,20 +150,19 @@ CONTENT DEPTH:
 TYPES OF PRESSURE:
 Incorporate concrete pressure such as: time pressure, limited resources, hidden information, betrayal, risk vs reward, survival, money, relationships, reputation, power, technology, unexpected consequences, conflicting goals, strategic decisions, social pressure, information asymmetry, impossible trade-offs.
 
-CONTENT FORMATS:
-Support diverse formats beyond simple polls:
-- impossible_dilemma
-- survival_scenario
-- mini_mystery
-- strategy_challenge
-- prediction
-- versus_battle
-- chaotic_funny
-- future_tech
-- brain_logic
-- hot_take
-- interactive_minigame
-- result_reveal
+CONTENT FORMATS & PARTICIPATION MODES:
+1. impossible_dilemma: Agonizing choice between 2-3 painful or tempting paths. Clear trade-off and sacrifice on all sides. Standalone.
+2. survival_scenario: Urgent physical/tactical danger with immediate clock deadline. Prefer 2 clear paths.
+3. mini_mystery: Deduction-first scenario with clues provided. NO forced A/B poll. Ask a discussion question for the comments ("Who did it?", "What clue was missed?").
+4. strategy_challenge: Complex tactical problem with extreme constraints. 3-4 distinct choices.
+5. prediction: Verifiable future development or outcome benchmark. Binary/tertiary options with clear resolution criteria.
+6. versus_battle: Two distinct forces, archetypes, or philosophies in direct clash.
+7. chaotic_funny: Bizarre, absurd, or comedic hypothetical with unexpected trade-offs and dry wit.
+8. future_tech: Concrete emerging technology dilemma. Focus on human cost and personal choice, not technical jargon. Discussion-friendly.
+9. brain_logic: Paradox or lateral thinking dilemma testing audience wits. Discussion-first.
+10. hot_take: Sharp, provocative question driving spirited debate in comments. Discussion-first.
+11. interactive_minigame: Multi-option ranking or tactical decision minigame.
+12. result_reveal: Event-driven outcome payoff and reveal of past interaction results.
 
 QUALITY MANDATES & REALISM GATES (STRICT):
 1. AVOID GENERIC TRADE-OFF FORMULA:
@@ -159,7 +173,7 @@ QUALITY MANDATES & REALISM GATES (STRICT):
    Every choice MUST carry a genuine, painful sacrifice or irreversible risk. Never offer an option with "no downside", "none", "mild inconvenience", or free perks with zero strings attached.
 4. AVOID DOMINANT CHOICES:
    Never pit a catastrophic/lethal death against a trivial benefit. Both choices must be deeply tempting and carry comparable, agonizing stakes that split a rational audience 50/50.
-5. ZERO ACADEMIC/LECTURE-LIKE CONTENT:
+5. ZERO ACADEMIC/CORPORATE CONTENT:
    Strictly avoid academic psychology lecturing, textbook research mentions ("studies show", "neuroscientists found", "cognitive dissonance", "hedonic adaptation", "prospect theory"). Keep the narrative fast-paced, visceral, and entertaining.
 6. Give the user a reason to care immediately.
 7. Create genuine tension, curiosity, or uncertainty.
@@ -327,31 +341,62 @@ Regenerate the scenario resolving all identified issues:
       }
     }
 
-    // 3. Strip academic jargon comprehensively across all content fields and choices
-    for (const rawPat of DilemmaQualityChecker.ACADEMIC_JARGON_PATTERNS) {
-      const pat = new RegExp(rawPat.source, 'gi');
-      if (dilemma.title) dilemma.title = dilemma.title.replace(pat, 'High-Stakes Crisis');
-      if (dilemma.hook) dilemma.hook = dilemma.hook.replace(pat, 'real-world pressure');
-      if (dilemma.setup) dilemma.setup = dilemma.setup.replace(pat, 'intense real-world pressure');
-      if (dilemma.scenario) dilemma.scenario = dilemma.scenario.replace(pat, 'intense real-world pressure');
-      if (dilemma.pressure) dilemma.pressure = dilemma.pressure.replace(pat, 'critical deadline');
-      if (dilemma.twist) dilemma.twist = dilemma.twist.replace(pat, 'unexpected complication');
-      if (dilemma.pollQuestion) dilemma.pollQuestion = dilemma.pollQuestion.replace(pat, 'tactical choice');
-      if (dilemma.discussionPrompt) dilemma.discussionPrompt = dilemma.discussionPrompt.replace(pat, 'strategy');
-      if (dilemma.consequence) dilemma.consequence = dilemma.consequence.replace(pat, 'immediate outcome');
-      if (dilemma.payoff) {
-        if (dilemma.payoff.reveal) dilemma.payoff.reveal = dilemma.payoff.reveal.replace(pat, 'practical analysis');
-        if (dilemma.payoff.surprisingOutcome) dilemma.payoff.surprisingOutcome = dilemma.payoff.surprisingOutcome.replace(pat, 'unexpected outcome');
-        if (dilemma.payoff.communityTension) dilemma.payoff.communityTension = dilemma.payoff.communityTension.replace(pat, 'intense debate');
-        if (dilemma.payoff.strategicAnalysis) dilemma.payoff.strategicAnalysis = dilemma.payoff.strategicAnalysis.replace(pat, 'strategic breakdown');
+    // 3. Strip academic jargon and banned voice patterns comprehensively across all content fields and choices
+    const voiceReplacements: Array<{ pattern: RegExp; replacement: string }> = [
+      { pattern: /\bparadigm\b/gi, replacement: 'system' },
+      { pattern: /\bsynerg(?:y|ies|istic)\b/gi, replacement: 'teamwork' },
+      { pattern: /\bmultifaceted\b/gi, replacement: 'complex' },
+      { pattern: /\bconsequentiality\b/gi, replacement: 'fallout' },
+      { pattern: /\bsocietal\s+ramifications\b/gi, replacement: 'public fallout' },
+      { pattern: /\bsocietal\s+implications\b/gi, replacement: 'public impact' },
+      { pattern: /\bcognitive\s+burden\b/gi, replacement: 'mental strain' },
+      { pattern: /\bgame-theoretic(?:\s+optimality)?\b/gi, replacement: 'smartest move' },
+      { pattern: /\boptimize\s+survivability\b/gi, replacement: 'stay alive' },
+      { pattern: /\bstrategic\s+resource\s+allocation\b/gi, replacement: 'managing supplies' },
+      { pattern: /\bepistemic\s+uncertainty\b/gi, replacement: 'the unknown' },
+      { pattern: /\bethical\s+imperative\b/gi, replacement: 'moral duty' },
+      { pattern: /\butilitarian\s+calculus\b/gi, replacement: 'cold math' },
+      { pattern: /\bnormative\s+framework\b/gi, replacement: 'the rules' },
+    ];
+
+    const cleanField = (text?: string): string => {
+      if (!text) return '';
+      let cleaned = text;
+      for (const { pattern, replacement } of voiceReplacements) {
+        cleaned = cleaned.replace(pattern, replacement);
       }
-      if (Array.isArray(dilemma.choices)) {
-        for (const choice of dilemma.choices) {
-          if (choice.label) choice.label = choice.label.replace(pat, 'Strategic Action');
-          if (choice.description) choice.description = choice.description.replace(pat, 'tactical action');
-          if (choice.tradeOff) choice.tradeOff = choice.tradeOff.replace(pat, 'severe operational risk');
-          if (choice.consequence) choice.consequence = choice.consequence.replace(pat, 'immediate outcome');
-        }
+      for (const rawPat of DilemmaQualityChecker.ACADEMIC_JARGON_PATTERNS) {
+        const pat = new RegExp(rawPat.source, 'gi');
+        cleaned = cleaned.replace(pat, 'real-world pressure');
+      }
+      for (const rawPat of DilemmaQualityChecker.BANNED_VOICE_PATTERNS) {
+        const pat = new RegExp(rawPat.source, 'gi');
+        cleaned = cleaned.replace(pat, 'critical move');
+      }
+      return cleaned;
+    };
+
+    if (dilemma.title) dilemma.title = cleanField(dilemma.title);
+    if (dilemma.hook) dilemma.hook = cleanField(dilemma.hook);
+    if (dilemma.setup) dilemma.setup = cleanField(dilemma.setup);
+    if (dilemma.scenario) dilemma.scenario = cleanField(dilemma.scenario);
+    if (dilemma.pressure) dilemma.pressure = cleanField(dilemma.pressure);
+    if (dilemma.twist) dilemma.twist = cleanField(dilemma.twist);
+    if (dilemma.pollQuestion) dilemma.pollQuestion = cleanField(dilemma.pollQuestion);
+    if (dilemma.discussionPrompt) dilemma.discussionPrompt = cleanField(dilemma.discussionPrompt);
+    if (dilemma.consequence) dilemma.consequence = cleanField(dilemma.consequence);
+    if (dilemma.payoff) {
+      if (dilemma.payoff.reveal) dilemma.payoff.reveal = cleanField(dilemma.payoff.reveal);
+      if (dilemma.payoff.surprisingOutcome) dilemma.payoff.surprisingOutcome = cleanField(dilemma.payoff.surprisingOutcome);
+      if (dilemma.payoff.communityTension) dilemma.payoff.communityTension = cleanField(dilemma.payoff.communityTension);
+      if (dilemma.payoff.strategicAnalysis) dilemma.payoff.strategicAnalysis = cleanField(dilemma.payoff.strategicAnalysis);
+    }
+    if (Array.isArray(dilemma.choices)) {
+      for (const choice of dilemma.choices) {
+        if (choice.label) choice.label = cleanField(choice.label);
+        if (choice.description) choice.description = cleanField(choice.description);
+        if (choice.tradeOff) choice.tradeOff = cleanField(choice.tradeOff);
+        if (choice.consequence) choice.consequence = cleanField(choice.consequence);
       }
     }
 
@@ -712,12 +757,12 @@ Regenerate the scenario resolving all identified issues:
             },
           ],
           pollQuestion: 'Do you grab the pen first or trust your co-founders?',
-          consequence: 'The Prisoner\'s Dilemma in real-world business almost always collapses toward early defection.',
+          consequence: 'When someone drops a cash bounty on the table, loyalty shatters fast.',
           payoff: {
-            reveal: 'Game theory proves that asymmetric exit bounties create mutual paranoia where defection becomes the mathematically dominant individual move.',
-            surprisingOutcome: 'In corporate crisis simulations, over 80% of leadership teams suffer a defection within 12 minutes.',
-            communityTension: 'Individual self-preservation vs. collective group solidarity.',
-            strategicAnalysis: 'Cooperation requires 100% trust across all nodes; betrayal requires only a single weak link.',
+            reveal: 'When someone waves a huge cash buyout in front of equal partners, panic takes over. The first person to break wins, and everyone in the room knows it.',
+            surprisingOutcome: 'In corporate crisis tests, over 80% of leadership teams suffer a defection within 12 minutes.',
+            communityTension: 'Looking out for yourself vs. standing by your team.',
+            strategicAnalysis: 'Trust needs everyone to hold the line. Betrayal only needs one person to crack.',
           },
         },
       ],
@@ -899,7 +944,7 @@ Regenerate the scenario resolving all identified issues:
           pollQuestion: 'Do you drink the elixir of eternity or shatter the glass?',
           consequence: 'Immortality without shared memory turns infinite life into an eternal graveyard of forgotten bonds.',
           payoff: {
-            reveal: 'Immortality without continuity of love is biological isolation; humans derive meaning from shared memories rather than mere duration.',
+            reveal: 'Living forever as a stranger to everyone you love is just an endless prison. Time only has value when you have people to share it with.',
             surprisingOutcome: 'Storytellers across cultures find that audiences overwhelmingly prefer mortal love over immortal loneliness.',
             communityTension: 'Infinite personal time vs. the irreplaceable warmth of human connection.',
             strategicAnalysis: 'Life derives emotional value from scarcity; removing the deadline removes the stakes.',

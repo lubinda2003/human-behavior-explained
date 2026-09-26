@@ -111,23 +111,45 @@ export class DilemmaTelegramFormatter {
     }
 
     // 6. Interaction Mechanism (Poll, Prediction, or Open Discussion)
-    if (dilemma.pollQuestion && dilemma.pollQuestion.trim().length > 0) {
+    const isDiscussionFirst =
+      format === 'mini_mystery' ||
+      format === 'hot_take' ||
+      format === 'brain_logic' ||
+      format === 'future_tech';
+
+    if (isDiscussionFirst && dilemma.discussionPrompt && dilemma.discussionPrompt.trim().length > 0) {
+      const safePrompt = this.escapeHtml(dilemma.discussionPrompt);
+      lines.push(`💬 <b>DISCUSSION:</b> ${safePrompt}`);
+      lines.push('');
+    } else if (dilemma.pollQuestion && dilemma.pollQuestion.trim().length > 0) {
       const safePoll = this.escapeHtml(dilemma.pollQuestion);
       lines.push(`📊 <b>POLL:</b> ${safePoll}`);
       lines.push('');
     } else if (dilemma.discussionPrompt && dilemma.discussionPrompt.trim().length > 0) {
       const safePrompt = this.escapeHtml(dilemma.discussionPrompt);
-      lines.push(`💬 <b>INTERACTION:</b> ${safePrompt}`);
+      lines.push(`💬 <b>DISCUSSION:</b> ${safePrompt}`);
       lines.push('');
     }
 
-    // 7. Interactive Call to Action
+    // 7. Interactive Call to Action (Pick Your Fate Voice)
     if (format === 'prediction') {
-      lines.push('👇 <i>Lock in your prediction below and see if your instincts hold up!</i>');
+      lines.push('👇 <i>Lock in your prediction below before the clock runs out!</i>');
     } else if (format === 'versus_battle') {
-      lines.push('👇 <i>Vote for the victor and explain who survives the fallout!</i>');
-    } else if (format === 'mini_mystery' || format === 'brain_logic') {
-      lines.push('👇 <i>What did everyone else overlook? Drop your solution below!</i>');
+      lines.push('👇 <i>Vote for the winner. Who walks away and who falls?</i>');
+    } else if (format === 'mini_mystery') {
+      lines.push('👇 <i>Spot the clue everyone else missed? Drop your deduction in the comments!</i>');
+    } else if (format === 'brain_logic') {
+      lines.push('👇 <i>Think you found the flaw? Prove your logic in the comments!</i>');
+    } else if (format === 'hot_take') {
+      lines.push('👇 <i>Pick a side and defend it in the comments below!</i>');
+    } else if (format === 'future_tech') {
+      lines.push('👇 <i>Would you take this deal? Argue your case in the comments!</i>');
+    } else if (format === 'strategy_challenge') {
+      lines.push('👇 <i>Cast your vote and defend your strategy in the comments!</i>');
+    } else if (format === 'survival_scenario') {
+      lines.push('👇 <i>Make your call before time runs out. Vote below!</i>');
+    } else if (format === 'chaotic_funny') {
+      lines.push('👇 <i>Pick your poison below and see how chaotic the channel gets!</i>');
     } else {
       lines.push('👇 <i>Vote in the poll and defend your choice in the comments!</i>');
     }

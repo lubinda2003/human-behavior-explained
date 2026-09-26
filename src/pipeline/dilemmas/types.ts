@@ -143,6 +143,7 @@ export interface DilemmaQualityMetadata {
   depthRequirementsMet: boolean;
   telegramHtmlValid: boolean;
   visualAssetValid: boolean;
+  plainLanguageVoiceValid?: boolean;
   noDominantChoice?: boolean;
   noCostFreeChoices?: boolean;
   noUngroundedHypothetical?: boolean;

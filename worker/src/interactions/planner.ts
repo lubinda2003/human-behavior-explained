@@ -94,7 +94,7 @@ export class InteractionPlanner {
         durationSeconds: options?.customDurationSeconds ?? 21600, // 6 hours
         discussionPrompt:
           content.discussionPrompt ||
-          'What are the societal and moral trade-offs of this technology? Join the debate below.',
+          'Would you accept this technology in your everyday life? Defend your position below.',
         targetChatId,
       };
     }

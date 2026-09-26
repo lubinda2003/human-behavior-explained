@@ -52,6 +52,24 @@ export class DilemmaQualityChecker {
     /\b(?:utilitarianism|deontology|kantian|trolley\s+problem\s+philosophy)\b/i,
   ];
 
+  // Banned corporate, academic, and non-plain-language voice patterns (Pick Your Fate Voice)
+  public static readonly BANNED_VOICE_PATTERNS: RegExp[] = [
+    /\bparadigm\b/i,
+    /\bsynerg(?:y|ies|istic)\b/i,
+    /\bmultifaceted\b/i,
+    /\bconsequentiality\b/i,
+    /\bsocietal\s+ramifications\b/i,
+    /\bsocietal\s+implications\b/i,
+    /\bcognitive\s+burden\b/i,
+    /\bgame-theoretic(?:\s+optimality)?\b/i,
+    /\boptimize\s+survivability\b/i,
+    /\bstrategic\s+resource\s+allocation\b/i,
+    /\bepistemic\s+uncertainty\b/i,
+    /\bethical\s+imperative\b/i,
+    /\butilitarian\s+calculus\b/i,
+    /\bnormative\s+framework\b/i,
+  ];
+
   // Serialized story or cross-post dependency phrases
   private static readonly SERIALIZED_PATTERNS: RegExp[] = [
     /\bpart\s+[0-9IVX]+\b/i,
@@ -304,6 +322,18 @@ export class DilemmaQualityChecker {
       }
     }
 
+    // 4b. Reject Non-Plain Language & Corporate Buzzwords (Pick Your Fate Voice)
+    let plainLanguageVoiceValid = true;
+    for (const pattern of this.BANNED_VOICE_PATTERNS) {
+      if (pattern.test(fullText)) {
+        const match = fullText.match(pattern)?.[0];
+        errors.push(`Contains banned corporate/academic jargon: "${match}". Content must adhere to the Pick Your Fate plain-language voice.`);
+        plainLanguageVoiceValid = false;
+        noAcademicJargon = false;
+        break;
+      }
+    }
+
     // 5. Reject Serialized / Continuing Story Dependencies
     let noSerializedStory = true;
     for (const pattern of this.SERIALIZED_PATTERNS) {
@@ -437,6 +467,7 @@ export class DilemmaQualityChecker {
       choiceCountValid,
       tradeOffsExplicit,
       noAcademicJargon,
+      plainLanguageVoiceValid,
       noSerializedStory,
       noGenericWYR,
       noFormulaicTradeoff,
