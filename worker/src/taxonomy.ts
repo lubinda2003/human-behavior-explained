@@ -23,8 +23,11 @@ export type InteractionMechanism =
   | 'reaction'
   | 'result_reveal';
 
+export type ContentOrigin = 'fresh' | 'derived';
+
 export interface ContentTaxonomyDefinition {
   format: ContentFormat;
+  origin: ContentOrigin;
   defaultMechanism: InteractionMechanism;
   description: string;
   allowedMechanisms: InteractionMechanism[];
@@ -33,77 +36,123 @@ export interface ContentTaxonomyDefinition {
 export const CONTENT_TAXONOMY: Record<ContentFormat, ContentTaxonomyDefinition> = {
   impossible_dilemma: {
     format: 'impossible_dilemma',
+    origin: 'fresh',
     defaultMechanism: 'poll',
     description: 'High-stakes impossible choice between painful or agonizing alternatives.',
     allowedMechanisms: ['poll', 'reaction', 'scenario_choice'],
   },
   survival_scenario: {
     format: 'survival_scenario',
+    origin: 'fresh',
     defaultMechanism: 'scenario_choice',
     description: 'Urgent physical or situational survival dilemma requiring quick tactical decision.',
     allowedMechanisms: ['scenario_choice', 'poll', 'open_discussion'],
   },
   mini_mystery: {
     format: 'mini_mystery',
+    origin: 'fresh',
     defaultMechanism: 'open_discussion',
     description: 'Hidden information/deduction scenario where readers uncover the trap in comments.',
     allowedMechanisms: ['open_discussion', 'poll'],
   },
   strategy_challenge: {
     format: 'strategy_challenge',
+    origin: 'fresh',
     defaultMechanism: 'scenario_choice',
     description: 'Resource allocation or high-stakes strategy dilemma under extreme constraints.',
     allowedMechanisms: ['scenario_choice', 'poll', 'open_discussion'],
   },
   prediction: {
     format: 'prediction',
+    origin: 'fresh',
     defaultMechanism: 'prediction_vote',
     description: 'Forecasting future development or outcome with verifiable resolution criteria.',
     allowedMechanisms: ['prediction_vote', 'poll'],
   },
   versus_battle: {
     format: 'versus_battle',
+    origin: 'fresh',
     defaultMechanism: 'poll',
     description: 'Two iconic or contrasting forces/philosophies in direct clash.',
     allowedMechanisms: ['poll', 'reaction'],
   },
   chaotic_funny: {
     format: 'chaotic_funny',
+    origin: 'fresh',
     defaultMechanism: 'poll',
     description: 'Bizarre, absurd, comedic hypothetical choice with unexpected trade-offs.',
     allowedMechanisms: ['poll', 'open_discussion'],
   },
   future_tech: {
     format: 'future_tech',
+    origin: 'fresh',
     defaultMechanism: 'prediction_vote',
     description: 'AI, biotechnology, or futuristic crisis with societal or moral implications.',
     allowedMechanisms: ['prediction_vote', 'poll', 'open_discussion'],
   },
   brain_logic: {
     format: 'brain_logic',
+    origin: 'fresh',
     defaultMechanism: 'poll',
     description: 'Paradox or lateral thinking dilemma testing audience logic and wits.',
     allowedMechanisms: ['poll', 'open_discussion'],
   },
   hot_take: {
     format: 'hot_take',
+    origin: 'fresh',
     defaultMechanism: 'open_discussion',
     description: 'Provocative question or divisive position driving debate in discussion group.',
     allowedMechanisms: ['open_discussion', 'poll', 'reaction'],
   },
   interactive_minigame: {
     format: 'interactive_minigame',
+    origin: 'fresh',
     defaultMechanism: 'poll',
     description: 'Multi-option ranking or mini-game mechanic.',
     allowedMechanisms: ['poll', 'scenario_choice'],
   },
   result_reveal: {
     format: 'result_reveal',
+    origin: 'derived',
     defaultMechanism: 'result_reveal',
     description: 'Outcome payoff and reveal of past interaction results.',
     allowedMechanisms: ['result_reveal'],
   },
 };
+
+/**
+ * Checks whether a given format represents autonomous fresh content.
+ */
+export function isFreshContentFormat(format: ContentFormat | string): boolean {
+  const def = CONTENT_TAXONOMY[format as ContentFormat];
+  return def ? def.origin === 'fresh' : false;
+}
+
+/**
+ * Checks whether a given format represents derived / event-driven outcome content.
+ */
+export function isDerivedContentFormat(format: ContentFormat | string): boolean {
+  const def = CONTENT_TAXONOMY[format as ContentFormat];
+  return def ? def.origin === 'derived' : false;
+}
+
+/**
+ * Retrieves all registered fresh content formats eligible for autonomous selection.
+ */
+export function getFreshContentFormats(): ContentFormat[] {
+  return (Object.keys(CONTENT_TAXONOMY) as ContentFormat[]).filter(
+    (f) => CONTENT_TAXONOMY[f].origin === 'fresh',
+  );
+}
+
+/**
+ * Retrieves all registered derived / outcome content formats.
+ */
+export function getDerivedContentFormats(): ContentFormat[] {
+  return (Object.keys(CONTENT_TAXONOMY) as ContentFormat[]).filter(
+    (f) => CONTENT_TAXONOMY[f].origin === 'derived',
+  );
+}
 
 /**
  * Maps a variety planner ContentTypeId to a concrete ContentFormat.

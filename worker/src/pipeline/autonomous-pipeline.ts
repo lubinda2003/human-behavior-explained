@@ -45,6 +45,7 @@ import {
   mapContentTypeToFormat,
   mapWorkerCategoryToPipeline,
   resolveInteractionMechanism,
+  isFreshContentFormat,
   ContentFormat,
   InteractionMechanism,
 } from '../taxonomy';
@@ -293,7 +294,10 @@ export class AutonomousPipelineService {
       const varietyPlan = planVariety(recentHistory, { discussionGroup: hasDiscussionGroup });
 
       // Step 4: Content format is directly selected by the variety planner
-      const contentFormat = varietyPlan.contentType;
+      // Safeguard: Ensure derived formats (like result_reveal) are never generated as fresh posts
+      const contentFormat = isFreshContentFormat(varietyPlan.contentType)
+        ? varietyPlan.contentType
+        : 'impossible_dilemma';
       const pipelineCategory = continuationContext?.category
         ? (continuationContext.category as any)
         : mapWorkerCategoryToPipeline(varietyPlan.category);
