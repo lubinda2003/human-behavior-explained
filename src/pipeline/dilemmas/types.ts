@@ -151,6 +151,18 @@ export interface DilemmaQualityMetadata {
   interactionConfigValid?: boolean;
   schemaFieldsValid?: boolean;
   formatRequirementsMet?: boolean;
+  noRepetitiveTheme?: boolean;
+  noRepetitiveOpening?: boolean;
+}
+
+export interface RecentPostSummary {
+  id?: string;
+  title: string;
+  hook?: string;
+  setup?: string;
+  category?: string;
+  format?: string;
+  contentType?: string;
 }
 
 export interface DilemmaQCResult {

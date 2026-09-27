@@ -10,7 +10,9 @@ import {
   DilemmaQualityMetadata,
   ALL_DILEMMA_CATEGORIES,
   ALL_CONTENT_FORMATS,
+  RecentPostSummary,
 } from './types.js';
+import { RepetitionDetector } from './repetitionDetector.js';
 
 export interface DilemmaVisualAssetQC {
   isValid: boolean;
@@ -115,7 +117,10 @@ export class DilemmaQualityChecker {
   /**
    * Validate an InteractiveDilemma's textual and structural content.
    */
-  public static validateDilemmaContent(dilemma: InteractiveDilemma): DilemmaQCResult {
+  public static validateDilemmaContent(
+    dilemma: InteractiveDilemma,
+    options?: { recentPosts?: RecentPostSummary[] },
+  ): DilemmaQCResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -488,6 +493,33 @@ export class DilemmaQualityChecker {
       }
     }
 
+    // 11. Anti-Repetition & Variety Verification
+    let noRepetitiveOpening = true;
+    let noRepetitiveTheme = true;
+
+    if (dilemma.hook && RepetitionDetector.hasRepetitiveOpening(dilemma.hook)) {
+      errors.push(`Opening hook begins with formulaic cliché ("${dilemma.hook.slice(0, 30)}..."). Hook must drop the reader straight into the active situation without passive filler.`);
+      noRepetitiveOpening = false;
+    }
+
+    if (options?.recentPosts && options.recentPosts.length > 0) {
+      const repCheck = RepetitionDetector.checkSimilarity(
+        {
+          title: dilemma.title,
+          hook: dilemma.hook,
+          setup: dilemma.setup || dilemma.scenario,
+        },
+        options.recentPosts,
+      );
+
+      if (repCheck.isRepetitive) {
+        noRepetitiveTheme = false;
+        for (const reason of repCheck.reasons) {
+          errors.push(`Repetition check failed: ${reason}`);
+        }
+      }
+    }
+
     const checks: DilemmaQualityMetadata = {
       choiceCountValid,
       tradeOffsExplicit,
@@ -507,6 +539,8 @@ export class DilemmaQualityChecker {
       interactionConfigValid,
       schemaFieldsValid,
       formatRequirementsMet,
+      noRepetitiveOpening,
+      noRepetitiveTheme,
     };
 
     return {

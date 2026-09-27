@@ -9,6 +9,7 @@ import { GoogleGenAI } from '@google/genai';
 import { VisualSpec } from '../types.js';
 import { DilemmaTelegramFormatter } from './formatter.js';
 import { DilemmaQualityChecker } from './quality.js';
+import { RepetitionDetector } from './repetitionDetector.js';
 import {
   ALL_CONTENT_FORMATS,
   ALL_DILEMMA_CATEGORIES,
@@ -18,6 +19,7 @@ import {
   DilemmaCategory,
   InteractiveDilemma,
   PressureType,
+  RecentPostSummary,
 } from './types.js';
 
 export interface ContinuationContext {
@@ -40,6 +42,7 @@ export interface GenerateDilemmaOptions {
   pressureTypes?: PressureType[];
   topicHint?: string;
   excludedTopics?: string[];
+  recentPosts?: RecentPostSummary[];
   index?: number;
   interactionType?: string;
   continuation?: ContinuationContext;
@@ -112,9 +115,18 @@ export class DilemmaGenerator {
     const depth = options.depth || 'standard';
     const format = options.format || 'impossible_dilemma';
 
-    const excludedClause = options.excludedTopics?.length
-      ? `Do NOT reuse or repeat any of these recent dilemma topics:\n${options.excludedTopics.map((t) => `- ${t}`).join('\n')}`
+    const recentPostsClause = options.recentPosts?.length
+      ? `\nRECENT CONTENT TO AVOID REPEATING (ANTI-REPETITION MANDATE):
+Do NOT reuse the same core premise, theme combination, title pattern, or hook opening as any of these recent posts:
+${options.recentPosts.slice(0, 10).map((p) => `- "${p.title}" [${p.category || 'general'} / ${p.format || 'standard'}]: "${p.hook || ''}"`).join('\n')}`
       : '';
+
+    const excludedClause = [
+      options.excludedTopics?.length
+        ? `Do NOT reuse or repeat any of these recent dilemma topics:\n${options.excludedTopics.map((t) => `- ${t}`).join('\n')}`
+        : '',
+      recentPostsClause,
+    ].filter(Boolean).join('\n\n');
 
     const systemPrompt = `You are the lead game master for "Pick Your Fate", a high-engagement interactive Telegram channel.
 
@@ -138,6 +150,50 @@ Do NOT simply ask users an interesting question. PUT THE USER INSIDE AN INTEREST
 First design an interesting EXPERIENCE, then determine the best interaction format.
 Start with: "What situation would make someone stop scrolling and genuinely want to decide what happens?"
 
+THEME DIVERSITY & ROTATION (PHASE 4 MANDATE):
+Rotate dynamically across diverse theme families. Do NOT default repeatedly to generic money, death, survival, or moral dilemmas:
+- social situations & dynamic reputation
+- relationships, loyalty & betrayal
+- technology, algorithms, automation & cybernetics
+- money, markets, career & economic trade-offs
+- work, career ambition & whistleblower conflicts
+- survival & extreme physical/maritime/arctic environments
+- crime, mystery, forensic deduction & hidden truths
+- science, frontier research & experimental protocols
+- future society, social credit & novel governance rules
+- travel, wilderness adventure & isolation
+- friendship, family ties & generational tension
+- reputation, status, viral fame & public exposure
+- everyday life situations with sudden shocking complications
+- strange human behavior, odd subcultures & unusual agreements
+- dark humor, eccentric billionaires & bizarre contracts
+- absurd & comedic situations with real physical consequences
+- ethical conflicts & impossible trade-offs
+- games, competitions, tournaments & prize dynamics
+- unexpected consequences & cascading second-order effects
+
+SCENARIO STRUCTURE VARIETY:
+Vary HOW the situation unfolds — do not repeat the same narrative shape:
+- sudden discovery of hidden evidence or secrets
+- impossible choice with agonizing sacrifice on both sides
+- hidden information or asymmetric knowledge
+- escalating consequence or ticking clock deadline
+- intense social pressure or public scrutiny
+- unexpected rule, caveat, or fine print
+- conflicting incentives between allies or team members
+- forensic deduction and clue evaluation
+- outcome prediction of real-world experiments
+- tactical reversal where the obvious solution fails
+- severe resource constraint under pressure
+- once-in-a-lifetime opportunity with strange strings attached
+- ordinary situation interrupted by a shocking twist
+
+HOOKS & TITLES ANTI-REPETITION MANDATE:
+- NEVER start with passive cliché openings like "Imagine...", "You find yourself...", "You wake up...", "What if...", "Would you rather...".
+- Drop the user directly into an active, concrete situation with motion, stakes, and immediate physical reality.
+- Avoid repeating title structures (e.g. "The X Dilemma", "X vs Y"). Keep titles natural, punchy, and compelling (Max 60 chars).
+- Avoid simply swapping nouns into an old premise.
+
 NARRATIVE STRUCTURE:
 HOOK → SETUP → PRESSURE/TWIST → CHOICE → CONSEQUENCE/REVEAL
 Substantial dilemmas should feel like a miniature interactive experience.
@@ -152,15 +208,15 @@ Incorporate concrete pressure such as: time pressure, limited resources, hidden 
 
 CONTENT FORMATS & PARTICIPATION MODES:
 1. impossible_dilemma: Agonizing choice between 2-3 painful or tempting paths. Clear trade-off and sacrifice on all sides. Standalone.
-2. survival_scenario: Urgent physical/tactical danger with immediate clock deadline. Prefer 2 clear paths.
-3. mini_mystery: Deduction-first scenario with clues provided. NO forced A/B poll. Ask a discussion question for the comments ("Who did it?", "What clue was missed?").
+2. survival_scenario: Urgent physical/tactical danger with immediate clock deadline. Rotate environments (arctic, deep sea, desert, station).
+3. mini_mystery: Deduction-first scenario with clues provided. Rotate mystery settings (locked office, express train, gallery, lodge). NO forced A/B poll. Ask a discussion question for the comments ("Who did it?", "What clue was missed?").
 4. strategy_challenge: Complex tactical problem with extreme constraints. 3-4 distinct choices.
-5. prediction: Verifiable future development or outcome benchmark. Binary/tertiary options with clear resolution criteria.
+5. prediction: Verifiable future development or outcome benchmark. Rotate prediction domains (urban transit, tech policies, economics). Binary/tertiary options with clear resolution criteria.
 6. versus_battle: Two distinct forces, archetypes, or philosophies in direct clash.
-7. chaotic_funny: Bizarre, absurd, or comedic hypothetical with unexpected trade-offs and dry wit.
-8. future_tech: Concrete emerging technology dilemma. Focus on human cost and personal choice, not technical jargon. Discussion-friendly.
-9. brain_logic: Paradox or lateral thinking dilemma testing audience wits. Discussion-first.
-10. hot_take: Sharp, provocative question driving spirited debate in comments. Discussion-first.
+7. chaotic_funny: Bizarre, absurd, or comedic hypothetical with unexpected trade-offs and dry wit. Keep genuinely comedic/bizarre.
+8. future_tech: Concrete emerging technology dilemma (neural interfaces, memory edits, automated justice). Focus on human cost and personal choice, not technical jargon. Discussion-friendly.
+9. brain_logic: Paradox or lateral thinking dilemma testing audience wits. Rotate puzzle styles (weighing, truth-tellers, resource limits). Discussion-first.
+10. hot_take: Sharp, provocative question driving spirited debate in comments. Rotate debate domains (workplace, creative tech, etiquette). Discussion-first.
 11. interactive_minigame: Multi-option ranking or tactical decision minigame.
 12. result_reveal: Event-driven outcome payoff and reveal of past interaction results.
 
@@ -178,7 +234,7 @@ QUALITY MANDATES & REALISM GATES (STRICT):
 6. Give the user a reason to care immediately.
 7. Create genuine tension, curiosity, or uncertainty.
 8. Make the user feel like they are actually in the room/situation.
-9. Must be 100% STANDALONE.`;
+9. Standalone vs. Continuation: Fresh posts must be completely self-contained and immediately understandable on their own. When a Continuation Directive is provided, the post must intentionally connect to and escalate the aftermath of the specified parent episode.`;
 
     const isDiscussionFormat =
       format === 'mini_mystery' ||
@@ -508,10 +564,10 @@ Regenerate the scenario resolving all identified issues:
       const isLethalB = /\b(?:die|death|lethal|killed|fatal|vipers?|boiling\s+acid|acid\s+pit|instant\s+execution)\b/i.test(descB);
 
       if (isLethalA && !isLethalB) {
-        cA.tradeOff = 'Suffers severe physical concussion and equipment loss with an 80% casualty risk.';
+        cA.tradeOff = 'Suffers severe physical concussion and equipment loss with life-threatening casualty risk.';
         cB.tradeOff = 'Forfeits career credentials permanently and faces 5 years in minimum security custody.';
       } else if (isLethalB && !isLethalA) {
-        cB.tradeOff = 'Suffers severe physical concussion and equipment loss with an 80% casualty risk.';
+        cB.tradeOff = 'Suffers severe physical concussion and equipment loss with life-threatening casualty risk.';
         cA.tradeOff = 'Forfeits career credentials permanently and faces 5 years in minimum security custody.';
       }
     }
@@ -658,7 +714,9 @@ Regenerate the scenario resolving all identified issues:
       },
     };
 
-    dilemma.qc = DilemmaQualityChecker.validateDilemmaContent(dilemma);
+    dilemma.qc = DilemmaQualityChecker.validateDilemmaContent(dilemma, {
+      recentPosts: options.recentPosts,
+    });
     return dilemma;
   }
 
@@ -674,10 +732,10 @@ Regenerate the scenario resolving all identified issues:
     if (options.continuation) {
       const cont = options.continuation;
       const winningChoice = cont.winningOptionText || 'the majority decision';
-      const pct = cont.winningPercentage ? `${cont.winningPercentage}%` : '68%';
+      const consensusPhrase = cont.winningPercentage ? `${cont.winningPercentage}% community vote` : 'the community vote';
       return {
         title: `Aftermath: ${cont.previousTitle.replace(/^(?:Aftermath:\s*)+/i, '')}`,
-        hook: `Following the ${pct} consensus to choose "${winningChoice}", the immediate consequences have unfolded in the control room.`,
+        hook: `Following the ${consensusPhrase} to choose "${winningChoice}", the immediate consequences have unfolded in the control room.`,
         setup: `In the previous situation ("${cont.previousTitle}"), the channel decided "${winningChoice}". As a direct result, ${cont.revealText || 'the immediate threat was contained, but secondary systems are now critically destabilized'}. Alarms sound across the facility as unexpected complications force an immediate follow-up decision.`,
         pressure: 'You have exactly 90 seconds to respond to the cascading aftermath before containment breaches completely.',
         pressureTypes: ['unexpected_consequences', 'time_pressure', 'limited_resources'],
@@ -689,7 +747,7 @@ Regenerate the scenario resolving all identified issues:
             id: 'choice_cont_a',
             label: `Double Down on Protocol`,
             description: `Commit all remaining emergency reserves to stabilize the outcome of ${winningChoice}.`,
-            tradeOff: 'Depletes 100% of auxiliary power grid, leaving the rest of the facility in total darkness.',
+            tradeOff: 'Depletes auxiliary power reserves entirely, leaving the rest of the facility in total darkness.',
             consequence: 'Locks the system into the current operational state.',
           },
           {
@@ -701,7 +759,7 @@ Regenerate the scenario resolving all identified issues:
           },
         ],
         pollQuestion: `How do you handle the aftermath of "${winningChoice.slice(0, 35)}"?`,
-        discussionPrompt: `Did the previous ${pct} vote create an even harder dilemma? How would you handle this fallout?`,
+        discussionPrompt: `Did the previous vote create an even harder dilemma? How would you handle this fallout?`,
         consequence: 'Second-order effects often create more severe crises than the initial dilemma.',
         payoff: {
           reveal: `The fallout from ${winningChoice} was inevitable: complex systems always transfer stress to the weakest subsystem.`,
@@ -718,7 +776,7 @@ Regenerate the scenario resolving all identified issues:
           title: 'The Golden Vault vs. Daily Sovereignty',
           hook: 'An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.',
           setup:
-            'A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.',
+            'A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.',
           pressure: 'The syndicate gives you exactly 3 minutes to decide before the offer expires forever.',
           pressureTypes: ['time_pressure', 'limited_resources', 'money'],
           twist: 'The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.',
@@ -741,10 +799,10 @@ Regenerate the scenario resolving all identified issues:
             },
           ],
           pollQuestion: 'Which contract do you sign before the 3-minute timer hits zero?',
-          consequence: 'Over 60% of high-earning executives who attempt underground grinds suffer acute burnout within 24 months.',
+          consequence: 'Prolonged underground isolation causes acute burnout and cognitive fatigue over long multi-year contracts.',
           payoff: {
             reveal: 'Most people severely underestimate the mental toll of 1,825 days without sunlight, while stipend recipients report consistently higher baseline peace of mind.',
-            surprisingOutcome: 'Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.',
+            surprisingOutcome: 'High-earners frequently abandon grueling high-compensation contracts early, while everyday autonomy compounds into lasting peace of mind.',
             communityTension: 'Guaranteed freedom today vs. unlimited purchasing power tomorrow.',
             strategicAnalysis: 'Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation.',
           },
@@ -780,8 +838,8 @@ Regenerate the scenario resolving all identified issues:
           pollQuestion: 'Do you hit "Upload" or delete the files and walk out?',
           consequence: 'Whistleblowers face years of blacklisting, yet staying silent causes devastating lifelong remorse.',
           payoff: {
-            reveal: 'Whistleblowers face an average of 4 years of career blacklisting, but silence causes irreversible moral injury.',
-            surprisingOutcome: 'In anonymous corporate simulations, 72% vote to leak until personal healthcare liabilities are introduced.',
+            reveal: 'Whistleblowers face years of intense career blacklisting, but silence causes irreversible moral injury.',
+            surprisingOutcome: 'Corporate whistleblowers almost always prepare to leak company secrets until personal legal and healthcare liabilities are placed on the table.',
             communityTension: 'Public duty to strangers vs. biological loyalty to your own children.',
             strategicAnalysis: 'Personal liability is concentrated; public benefit is diffuse.',
           },
@@ -829,7 +887,7 @@ Regenerate the scenario resolving all identified issues:
           title: 'The Hostile Takeover Bounty',
           hook: 'A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.',
           setup:
-            'You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.',
+            'You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an aggressive open-source clone backed by massive marketing spend to bankrupt your company.',
           pressure: 'The timer shows 28 minutes, and your co-founders are avoiding eye contact.',
           pressureTypes: ['betrayal', 'strategic_decisions', 'time_pressure'],
           twist: 'One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.',
@@ -855,7 +913,7 @@ Regenerate the scenario resolving all identified issues:
           consequence: 'When someone drops a cash bounty on the table, loyalty shatters fast.',
           payoff: {
             reveal: 'When someone waves a huge cash buyout in front of equal partners, panic takes over. The first person to break wins, and everyone in the room knows it.',
-            surprisingOutcome: 'In corporate crisis tests, over 80% of leadership teams suffer a defection within 12 minutes.',
+            surprisingOutcome: 'Under acute buyout ultimatums, leadership teams rarely maintain unified solidarity once individual cash incentives appear.',
             communityTension: 'Looking out for yourself vs. standing by your team.',
             strategicAnalysis: 'Trust needs everyone to hold the line. Betrayal only needs one person to crack.',
           },
@@ -891,7 +949,7 @@ Regenerate the scenario resolving all identified issues:
           pollQuestion: 'Do you hunker down in the ice or risk the blind night descent?',
           consequence: 'Movement generates warmth, but darkness turns alpine terrain into a minefield.',
           payoff: {
-            reveal: 'Mountain rescue records show climbers who dig snow caves survive at nearly triple the rate of those who move blind at night.',
+            reveal: 'Mountain rescue records show climbers who build snow caves survive far more consistently than those who attempt blind alpine descents at night.',
             surprisingOutcome: 'Panicked climbers almost always want to move, yet static snow caves provide vital thermal micro-climates.',
             communityTension: 'Active desperate risk vs. passive endurance in the dark.',
             strategicAnalysis: 'Controlled freezing is manageable with micro-insulation; gravity has zero tolerance for error.',
@@ -920,7 +978,7 @@ Regenerate the scenario resolving all identified issues:
             {
               id: 'choice_b',
               label: 'The Megaphone Truth Curse',
-              description: 'You speak 100% blunt honesty all day with zero polite filter or softening.',
+              description: 'You speak with complete blunt honesty all day with zero polite filter or softening.',
               tradeOff: 'You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.',
               consequence: 'Every polite excuse you attempt is instantly corrected at 110 decibels.',
             },
@@ -943,7 +1001,7 @@ Regenerate the scenario resolving all identified issues:
             'You sit strapped into the padded surgical chair inside the sterile clinic suite, staring up at a precision quantum laser hovering inches above your temples. The Synapse Redaction Institute offers to eliminate the synaptic memory cluster of your greatest life trauma. However, brain monitors confirm that your master career skill and proudest life triumph are biologically entangled with that exact pain; deleting the suffering will permanently erase the skills you built to survive it.',
           pressure: 'The clinic chair is prepped and the neuro-catalyst expires in 15 minutes.',
           pressureTypes: ['technology', 'unexpected_consequences', 'impossible_tradeoffs'],
-          twist: 'The neurosurgeon admits that 40% of patients who undergo the procedure experience a strange phantom emptiness where their drive used to be.',
+          twist: 'The neurosurgeon admits that patients who undergo the procedure often experience a strange phantom emptiness where their drive used to be.',
           depth: 'deep',
           format: 'impossible_dilemma',
           choices: [
@@ -966,7 +1024,7 @@ Regenerate the scenario resolving all identified issues:
           consequence: 'Adversity forms the architecture of human resilience; removing it alters the foundation.',
           payoff: {
             reveal: 'Identity is not built on comfort, but on the scar tissue of survival; deleting struggles leaves patients feeling unmoored.',
-            surprisingOutcome: 'Over 75% of people initially want the eraser, but reverse their vote when they realize mastery vanishes with it.',
+            surprisingOutcome: 'People initially want emotional pain erased, but reverse their decision once they realize hard-earned mastery vanishes alongside past struggle.',
             communityTension: 'Emotional anesthesia vs. authentic hard-won strength.',
             strategicAnalysis: 'Suffering and skill share the exact same neural pathways of adaptation.',
           },
@@ -1002,8 +1060,8 @@ Regenerate the scenario resolving all identified issues:
           pollQuestion: 'Do you blow ballast immediately or wait in the dark for rescue?',
           consequence: 'In maritime distress, disciplined composure triumphs over frantic emergency ascents.',
           payoff: {
-            reveal: 'Naval analysis confirms that calm protocol adherence in deep subs succeeds 2.5x more frequently than uncontrolled emergency ascents.',
-            surprisingOutcome: 'Panic breathing cuts oxygen reserves by 65% in high-pressure enclosures.',
+            reveal: 'Naval doctrine confirms that disciplined protocol adherence in deep subs succeeds far more reliably than frantic emergency ascents.',
+            surprisingOutcome: 'Panic breathing rapidly depletes limited oxygen reserves in sealed, high-pressure hulls.',
             communityTension: 'Active desperate gamble vs. nerve-wracking disciplined patience.',
             strategicAnalysis: 'Controlled systems beating probability vs. fatal structural mechanical failure.',
           },
@@ -1077,7 +1135,7 @@ Regenerate the scenario resolving all identified issues:
           consequence: 'Capital turns physical absurdities into solvable engineering challenges.',
           payoff: {
             reveal: 'With $20M, you can hire a contractor team to carpet your ceilings, install padded nets, and live in outdoor luxury resorts all year.',
-            surprisingOutcome: 'Over 85% of people enthusiastically accept when they realize outdoor living and customized ceilings solve 95% of the risk.',
+            surprisingOutcome: 'Accepting the eccentric deal becomes a straightforward engineering challenge once outdoor living and customized ceilings are prepared.',
             communityTension: 'Absurd daily inconvenience vs. complete financial freedom for life.',
             strategicAnalysis: 'Money converts physical constraints into manageable logistical puzzles.',
           },
@@ -1086,51 +1144,66 @@ Regenerate the scenario resolving all identified issues:
     };
 
     // Dedicated fallbacks for requested format
+    let candidate: any = null;
     if (options?.format) {
       if (options.format === 'mini_mystery') {
-        return this.getProceduralMiniMystery(options);
-      }
-      if (options.format === 'brain_logic') {
-        return this.getProceduralBrainLogic(options);
-      }
-      if (options.format === 'hot_take') {
-        return this.getProceduralHotTake(options);
-      }
-      if (options.format === 'future_tech') {
-        return this.getProceduralFutureTech(options);
-      }
-      if (options.format === 'versus_battle') {
-        return this.getProceduralVersusBattle(options);
-      }
-      if (options.format === 'interactive_minigame') {
-        return this.getProceduralMinigame(options);
-      }
-      if (options.format === 'prediction') {
-        return this.getProceduralPrediction(options);
-      }
-      if (options.format === 'strategy_challenge') {
-        return catalog.strategy[0];
-      }
-      if (options.format === 'survival_scenario') {
-        return catalog.survival[0];
-      }
-      if (options.format === 'chaotic_funny') {
-        return catalog['funny/chaotic'][0];
-      }
-      if (options.format === 'impossible_dilemma') {
-        return catalog['money/lifestyle'][0];
-      }
-
-      const allEntries = Object.values(catalog).flat();
-      const formatMatch = allEntries.find((entry) => entry.format === options.format);
-      if (formatMatch) {
-        return formatMatch;
+        candidate = this.getProceduralMiniMystery(options);
+      } else if (options.format === 'brain_logic') {
+        candidate = this.getProceduralBrainLogic(options);
+      } else if (options.format === 'hot_take') {
+        candidate = this.getProceduralHotTake(options);
+      } else if (options.format === 'future_tech') {
+        candidate = this.getProceduralFutureTech(options);
+      } else if (options.format === 'versus_battle') {
+        candidate = this.getProceduralVersusBattle(options);
+      } else if (options.format === 'interactive_minigame') {
+        candidate = this.getProceduralMinigame(options);
+      } else if (options.format === 'prediction') {
+        candidate = this.getProceduralPrediction(options);
+      } else if (options.format === 'strategy_challenge') {
+        candidate = catalog.strategy[0];
+      } else if (options.format === 'survival_scenario') {
+        candidate = catalog.survival[0];
+      } else if (options.format === 'chaotic_funny') {
+        candidate = catalog['funny/chaotic'][0];
+      } else if (options.format === 'impossible_dilemma') {
+        candidate = catalog['money/lifestyle'][0];
+      } else {
+        const allEntries = Object.values(catalog).flat();
+        const formatMatch = allEntries.find((entry) => entry.format === options.format);
+        if (formatMatch) {
+          candidate = formatMatch;
+        }
       }
     }
 
-    const categoryList = catalog[category] || catalog['money/lifestyle'];
-    const selected = categoryList[(index - 1) % categoryList.length] || categoryList[0];
-    return selected;
+    if (!candidate) {
+      const categoryList = catalog[category] || catalog['money/lifestyle'];
+      candidate = categoryList[(index - 1) % categoryList.length] || categoryList[0];
+    }
+
+    // If candidate collides with recentPosts, attempt to pick an alternative from catalog
+    if (options?.recentPosts && options.recentPosts.length > 0 && candidate) {
+      const sim = RepetitionDetector.checkSimilarity(
+        { title: candidate.title, hook: candidate.hook, setup: candidate.setup },
+        options.recentPosts,
+      );
+      if (sim.isRepetitive) {
+        const allEntries = Object.values(catalog).flat();
+        for (const alt of allEntries) {
+          if (options.format && alt.format && alt.format !== options.format) continue;
+          const altSim = RepetitionDetector.checkSimilarity(
+            { title: alt.title, hook: alt.hook, setup: alt.setup },
+            options.recentPosts,
+          );
+          if (!altSim.isRepetitive) {
+            return alt;
+          }
+        }
+      }
+    }
+
+    return candidate;
   }
 
   /**
@@ -1361,7 +1434,7 @@ Regenerate the scenario resolving all identified issues:
   private getProceduralPrediction(options: GenerateDilemmaOptions): any {
     return {
       title: 'The Free Public Transit Experiment',
-      hook: 'You monitor the city transit console on the final day of a six-month trial making all subways and buses 100% free.',
+      hook: 'You monitor the city transit console on the final day of a six-month trial making all subways and buses free of charge.',
       setup:
         'You are the lead transit data analyst reviewing traffic telemetry for a metropolitan region of 3 million residents. To combat urban gridlock, city leadership eliminated all fares across 40 subway lines and 800 bus routes for a six-month experiment. Before the trial, private cars accounted for the vast majority of downtown rush-hour commutes. The final sensor data is compiling on your screen right now.',
       scenario:

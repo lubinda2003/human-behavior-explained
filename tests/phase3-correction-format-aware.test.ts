@@ -211,4 +211,89 @@ describe('Phase 3 Correction: Format-Aware Generation & Quality Gate', () => {
       assert.ok(formatted.includes('Make your call before time runs out. Vote below!'));
     });
   });
+
+  describe('4. Phase 3 Final Baseline: Metadata & Prompt Consistency', () => {
+    it('verifies discussion-first formats in CONTENT_TYPES have mechanic: comments, needsDiscussionGroup: true, and 0 choices', async () => {
+      const { CONTENT_TYPES } = await import('../worker/src/config.js');
+
+      const discussionTypes = ['mini_mystery', 'brain_logic', 'hot_take', 'future_tech'] as const;
+      for (const typeId of discussionTypes) {
+        const spec = CONTENT_TYPES[typeId];
+        assert.ok(spec, `Missing spec for ${typeId}`);
+        assert.equal(spec.mechanic, 'comments', `${typeId} should have mechanic: comments`);
+        assert.equal(spec.needsDiscussionGroup, true, `${typeId} should have needsDiscussionGroup: true`);
+        assert.equal(spec.minChoices, 0, `${typeId} should have minChoices: 0`);
+        assert.equal(spec.maxChoices, 0, `${typeId} should have maxChoices: 0`);
+      }
+    });
+
+    it('verifies all procedural catalog entries contain zero fabricated statistical or percentage claims', () => {
+      const categories = [
+        'money/lifestyle',
+        'moral',
+        'social/relationship',
+        'strategy',
+        'survival',
+        'funny/chaotic',
+        'technology/future',
+        'adventure/travel',
+        'fantasy',
+        'bizarre hypothetical situations',
+      ] as const;
+
+      for (const cat of categories) {
+        for (let i = 0; i < 5; i++) {
+          const dilemma = generator.generateProceduralDilemma(cat, `test_${cat}_${i}`, i);
+          const fullText = [
+            dilemma.title,
+            dilemma.hook,
+            dilemma.setup,
+            dilemma.scenario,
+            dilemma.pressure,
+            dilemma.twist,
+            dilemma.consequence,
+            dilemma.discussionPrompt,
+            dilemma.pollQuestion,
+            dilemma.payoff?.reveal,
+            dilemma.payoff?.surprisingOutcome,
+            ...(dilemma.choices || []).map((c) => `${c.label} ${c.description} ${c.tradeOff}`),
+          ].filter(Boolean).join(' ');
+
+          // Verify no fabricated percent claims (e.g., "60%", "72%", "80%")
+          assert.ok(
+            !/\b\d{1,3}%\s+(?:of\s+)?(?:executives|high-earners|people|readers|creators|workers|teams|patients|leadership)\b/i.test(fullText),
+            `Found fabricated percentage in catalog entry (${cat}, index ${i}): ${fullText}`
+          );
+          // Verify no fake multiplier claims (e.g. "2.5x more frequently", "10x marketing")
+          assert.ok(
+            !/\b\d+(?:\.\d+)?x\s+(?:more\s+frequently|marketing)\b/i.test(fullText),
+            `Found fake multiplier claim in catalog entry (${cat}, index ${i}): ${fullText}`
+          );
+        }
+      }
+    });
+
+    it('verifies fresh procedural dilemma is standalone and continuation properly escalates parent outcome', () => {
+      // 1. Fresh standalone dilemma
+      const freshDilemma = generator.generateProceduralDilemma({ format: 'impossible_dilemma' });
+      assert.ok(!freshDilemma.title.startsWith('Aftermath:'));
+      assert.ok(!freshDilemma.hook.includes('consensus'));
+
+      // 2. Continuation dilemma
+      const continuationDilemma = generator.generateProceduralDilemma({
+        continuation: {
+          parentPostId: 'parent_123',
+          previousTitle: 'The Razor Ridge Whiteout',
+          category: 'survival',
+          winningOptionText: 'Dig In & Hunker in the Snow Trench',
+          winningPercentage: 62,
+          revealText: 'The snow cave provided enough micro-insulation to survive the night.',
+        },
+      });
+
+      assert.ok(continuationDilemma.title.includes('Aftermath: The Razor Ridge Whiteout'));
+      assert.ok(continuationDilemma.hook.includes('62% community vote'));
+      assert.ok(continuationDilemma.setup.includes('Dig In & Hunker in the Snow Trench'));
+    });
+  });
 });

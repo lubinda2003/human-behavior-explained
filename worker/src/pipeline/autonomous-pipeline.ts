@@ -289,6 +289,16 @@ export class AutonomousPipelineService {
         publishedAt: p.publishedAt || p.createdAt,
       }));
 
+      // Lightweight recent post summary for deep theme & semantic repetition checks
+      const recentPostsSummary = recentPosts.map((p) => ({
+        id: p.id,
+        title: p.title,
+        hook: (p.payload as any)?.hook,
+        setup: (p.payload as any)?.setup,
+        category: p.category,
+        format: p.contentType,
+      }));
+
       // Step 3: Run variety planner
       const hasDiscussionGroup = this.env.DISCUSSION_GROUP_LINKED === 'true';
       const varietyPlan = planVariety(recentHistory, { discussionGroup: hasDiscussionGroup });
@@ -314,6 +324,7 @@ export class AutonomousPipelineService {
           format: contentFormat,
           depth: 'standard',
           excludedTopics,
+          recentPosts: recentPostsSummary,
           continuation: continuationContext,
         });
       } catch (genErr) {
@@ -322,12 +333,15 @@ export class AutonomousPipelineService {
           category: pipelineCategory,
           format: contentFormat,
           depth: 'standard',
+          recentPosts: recentPostsSummary,
           continuation: continuationContext,
         });
       }
 
       // Step 6: Validate and repair if needed
-      const qc = DilemmaQualityChecker.validateDilemmaContent(dilemma);
+      const qc = DilemmaQualityChecker.validateDilemmaContent(dilemma, {
+        recentPosts: recentPostsSummary,
+      });
       if (!qc.isValid) {
         dilemma = this.generator.repairDilemma(dilemma);
       }

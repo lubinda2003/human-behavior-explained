@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-27T08:33:57.794Z",
+  "generatedAt": "2026-09-27T09:13:03.859Z",
   "channelContext": "Pick Your Fate · Interactive Dilemmas & Impossible Choices",
   "totalSamples": 16,
   "classifications": {
@@ -129,7 +129,7 @@
       "category": "strategy",
       "generatedScenario": {
         "hook": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
-        "setup": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.",
+        "setup": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an aggressive open-source clone backed by massive marketing spend to bankrupt your company.",
         "pressure": "The timer shows 28 minutes, and your co-founders are avoiding eye contact.",
         "twist": "One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.",
         "choices": [
@@ -143,7 +143,7 @@
           }
         ],
         "question": "Do you grab the pen first or trust your co-founders?",
-        "wordCount": 243
+        "wordCount": 245
       },
       "qualityChecks": {
         "immediateCuriosity": true,
@@ -172,7 +172,7 @@
       "category": "social/relationship",
       "generatedScenario": {
         "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
-        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.",
         "pressure": "The syndicate gives you exactly 3 minutes to decide before the offer expires forever.",
         "twist": "The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.",
         "choices": [
@@ -215,7 +215,7 @@
       "category": "money/lifestyle",
       "generatedScenario": {
         "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
-        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.",
         "pressure": "The syndicate gives you exactly 3 minutes to decide before the offer expires forever.",
         "twist": "The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.",
         "choices": [
@@ -258,7 +258,7 @@
       "category": "moral",
       "generatedScenario": {
         "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
-        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.",
         "pressure": "The syndicate gives you exactly 3 minutes to decide before the offer expires forever.",
         "twist": "The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.",
         "choices": [
@@ -315,7 +315,7 @@
           }
         ],
         "question": "Which chaotic curse would you rather endure tomorrow?",
-        "wordCount": 223
+        "wordCount": 224
       },
       "qualityChecks": {
         "immediateCuriosity": true,
@@ -344,7 +344,7 @@
       "category": "strategy",
       "generatedScenario": {
         "hook": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
-        "setup": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.",
+        "setup": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an aggressive open-source clone backed by massive marketing spend to bankrupt your company.",
         "pressure": "The timer shows 28 minutes, and your co-founders are avoiding eye contact.",
         "twist": "One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.",
         "choices": [
@@ -358,7 +358,7 @@
           }
         ],
         "question": "Do you grab the pen first or trust your co-founders?",
-        "wordCount": 243
+        "wordCount": 245
       },
       "qualityChecks": {
         "immediateCuriosity": true,
@@ -498,7 +498,7 @@
       "category": "strategy",
       "generatedScenario": {
         "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
-        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+        "setup": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.",
         "pressure": "The syndicate gives you exactly 3 minutes to decide before the offer expires forever.",
         "twist": "The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.",
         "choices": [
@@ -541,7 +541,7 @@
       "category": "moral",
       "generatedScenario": {
         "hook": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
-        "setup": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.",
+        "setup": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an aggressive open-source clone backed by massive marketing spend to bankrupt your company.",
         "pressure": "The timer shows 28 minutes, and your co-founders are avoiding eye contact.",
         "twist": "One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.",
         "choices": [
@@ -555,7 +555,7 @@
           }
         ],
         "question": "Do you grab the pen first or trust your co-founders?",
-        "wordCount": 243
+        "wordCount": 245
       },
       "qualityChecks": {
         "immediateCuriosity": true,

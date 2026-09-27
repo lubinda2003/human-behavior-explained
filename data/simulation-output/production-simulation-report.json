@@ -1,5 +1,5 @@
 {
-  "simulationTimestamp": "2026-09-27T08:34:05.023Z",
+  "simulationTimestamp": "2026-09-27T09:13:10.471Z",
   "dryRun": true,
   "summary": {
     "totalGenerated": 12,
@@ -223,7 +223,7 @@
         "id": "batch-01-dilemma-money",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>⚡ The Golden Vault vs. Daily Sovereignty</b>\n<i>#PickYourFate #InteractiveDilemmas #moneylifestyle #ImpossibleDilemma</i>\n\n<b>An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.</b>\n\nA private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.\n\n⚡ <b>THE PRESSURE:</b> The syndicate gives you exactly 3 minutes to decide before the offer expires forever.\n\n⚠️ <b>THE COMPLICATION:</b> The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>The $10M Vault Lockdown</b>: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.\n   ⚠️ <i>Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.</i>\n\n🅱️ <b>The $75K Freedom Stipend</b>: Accept modest lifelong income with infinite free time and zero boss.\n   ⚠️ <i>Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.</i>\n\n📊 <b>POLL:</b> Which contract do you sign before the 3-minute timer hits zero?\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "messageText": "<b>⚡ The Golden Vault vs. Daily Sovereignty</b>\n<i>#PickYourFate #InteractiveDilemmas #moneylifestyle #ImpossibleDilemma</i>\n\n<b>An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.</b>\n\nA private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.\n\n⚡ <b>THE PRESSURE:</b> The syndicate gives you exactly 3 minutes to decide before the offer expires forever.\n\n⚠️ <b>THE COMPLICATION:</b> The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>The $10M Vault Lockdown</b>: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.\n   ⚠️ <i>Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.</i>\n\n🅱️ <b>The $75K Freedom Stipend</b>: Accept modest lifelong income with infinite free time and zero boss.\n   ⚠️ <i>Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.</i>\n\n📊 <b>POLL:</b> Which contract do you sign before the 3-minute timer hits zero?\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
@@ -237,7 +237,7 @@
               "template": "thought_experiment",
               "data": {
                 "scenarioName": "The Golden Vault vs. Daily Sovereignty",
-                "dilemma": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+                "dilemma": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.",
                 "branchA": {
                   "label": "The $10M Vault Lockdown",
                   "explanation": "Endure 5 years of total isolation and grueling work to emerge with $10M in the bank. (Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.)"
@@ -246,7 +246,7 @@
                   "label": "The $75K Freedom Stipend",
                   "explanation": "Accept modest lifelong income with infinite free time and zero boss. (Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.)"
                 },
-                "psychologicalInsight": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness."
+                "psychologicalInsight": "High-earners frequently abandon grueling high-compensation contracts early, while everyday autonomy compounds into lasting peace of mind."
               }
             }
           },
@@ -271,13 +271,13 @@
           "title": "The Golden Vault vs. Daily Sovereignty",
           "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
           "wordCount": 224,
-          "characterCount": 1500,
+          "characterCount": 1504,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
             "reveal": "Most people severely underestimate the mental toll of 1,825 days without sunlight, while stipend recipients report consistently higher baseline peace of mind.",
-            "surprisingOutcome": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.",
+            "surprisingOutcome": "High-earners frequently abandon grueling high-compensation contracts early, while everyday autonomy compounds into lasting peace of mind.",
             "communityTension": "Guaranteed freedom today vs. unlimited purchasing power tomorrow.",
             "strategicAnalysis": "Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation."
           }
@@ -360,7 +360,7 @@
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
-            "reveal": "Mountain rescue records show climbers who dig snow caves survive at nearly triple the rate of those who move blind at night.",
+            "reveal": "Mountain rescue records show climbers who build snow caves survive far more consistently than those who attempt blind alpine descents at night.",
             "surprisingOutcome": "Panicked climbers almost always want to move, yet static snow caves provide vital thermal micro-climates.",
             "communityTension": "Active desperate risk vs. passive endurance in the dark.",
             "strategicAnalysis": "Controlled freezing is manageable with micro-insulation; gravity has zero tolerance for error."
@@ -391,7 +391,7 @@
         "id": "batch-03-strategy-hostile",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>⏳ The Hostile Takeover Bounty</b>\n<i>#PickYourFate #InteractiveDilemmas #strategy #StrategyChallenge</i>\n\n<b>A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.</b>\n\nYou and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.\n\n⚡ <b>THE PRESSURE:</b> The timer shows 28 minutes, and your co-founders are avoiding eye contact.\n\n⚠️ <b>THE COMPLICATION:</b> One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Sign First &amp; Take the $5M</b>: Grab the pen, sign the buyout, and walk away with an immediate fortune.\n   ⚠️ <i>Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.</i>\n\n🅱️ <b>Hold the Line &amp; Trust the Team</b>: Refuse the bounty, rally your partners, and fight the rival in the open marketplace.\n   ⚠️ <i>Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.</i>\n\n📊 <b>POLL:</b> Do you grab the pen first or trust your co-founders?\n\n👇 <i>Cast your vote and defend your strategy in the comments!</i>",
+        "messageText": "<b>⏳ The Hostile Takeover Bounty</b>\n<i>#PickYourFate #InteractiveDilemmas #strategy #StrategyChallenge</i>\n\n<b>A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.</b>\n\nYou and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an aggressive open-source clone backed by massive marketing spend to bankrupt your company.\n\n⚡ <b>THE PRESSURE:</b> The timer shows 28 minutes, and your co-founders are avoiding eye contact.\n\n⚠️ <b>THE COMPLICATION:</b> One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Sign First &amp; Take the $5M</b>: Grab the pen, sign the buyout, and walk away with an immediate fortune.\n   ⚠️ <i>Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.</i>\n\n🅱️ <b>Hold the Line &amp; Trust the Team</b>: Refuse the bounty, rally your partners, and fight the rival in the open marketplace.\n   ⚠️ <i>Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.</i>\n\n📊 <b>POLL:</b> Do you grab the pen first or trust your co-founders?\n\n👇 <i>Cast your vote and defend your strategy in the comments!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
@@ -405,7 +405,7 @@
               "template": "thought_experiment",
               "data": {
                 "scenarioName": "The Hostile Takeover Bounty",
-                "dilemma": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.",
+                "dilemma": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an aggressive open-source clone backed by massive marketing spend to bankrupt your company.",
                 "branchA": {
                   "label": "Sign First & Take the $5M",
                   "explanation": "Grab the pen, sign the buyout, and walk away with an immediate fortune. (Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.)"
@@ -414,7 +414,7 @@
                   "label": "Hold the Line & Trust the Team",
                   "explanation": "Refuse the bounty, rally your partners, and fight the rival in the open marketplace. (Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.)"
                 },
-                "psychologicalInsight": "In corporate crisis tests, over 80% of leadership teams suffer a defection within 12 minutes."
+                "psychologicalInsight": "Under acute buyout ultimatums, leadership teams rarely maintain unified solidarity once individual cash incentives appear."
               }
             }
           },
@@ -444,14 +444,14 @@
           "depth": "deep",
           "title": "The Hostile Takeover Bounty",
           "hook": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
-          "wordCount": 225,
-          "characterCount": 1483,
+          "wordCount": 227,
+          "characterCount": 1503,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
             "reveal": "When someone waves a huge cash buyout in front of equal partners, panic takes over. The first person to break wins, and everyone in the room knows it.",
-            "surprisingOutcome": "In corporate crisis tests, over 80% of leadership teams suffer a defection within 12 minutes.",
+            "surprisingOutcome": "Under acute buyout ultimatums, leadership teams rarely maintain unified solidarity once individual cash incentives appear.",
             "communityTension": "Looking out for yourself vs. standing by your team.",
             "strategicAnalysis": "Trust needs everyone to hold the line. Betrayal only needs one person to crack."
           }
@@ -623,7 +623,7 @@
         "id": "batch-06-social-secret",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>⚡ The Golden Vault vs. Daily Sovereignty</b>\n<i>#PickYourFate #InteractiveDilemmas #socialrelationship #ImpossibleDilemma</i>\n\n<b>An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.</b>\n\nA private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.\n\n⚡ <b>THE PRESSURE:</b> The syndicate gives you exactly 3 minutes to decide before the offer expires forever.\n\n⚠️ <b>THE COMPLICATION:</b> The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>The $10M Vault Lockdown</b>: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.\n   ⚠️ <i>Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.</i>\n\n🅱️ <b>The $75K Freedom Stipend</b>: Accept modest lifelong income with infinite free time and zero boss.\n   ⚠️ <i>Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.</i>\n\n📊 <b>POLL:</b> Which contract do you sign before the 3-minute timer hits zero?\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "messageText": "<b>⚡ The Golden Vault vs. Daily Sovereignty</b>\n<i>#PickYourFate #InteractiveDilemmas #socialrelationship #ImpossibleDilemma</i>\n\n<b>An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.</b>\n\nA private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.\n\n⚡ <b>THE PRESSURE:</b> The syndicate gives you exactly 3 minutes to decide before the offer expires forever.\n\n⚠️ <b>THE COMPLICATION:</b> The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>The $10M Vault Lockdown</b>: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.\n   ⚠️ <i>Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.</i>\n\n🅱️ <b>The $75K Freedom Stipend</b>: Accept modest lifelong income with infinite free time and zero boss.\n   ⚠️ <i>Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.</i>\n\n📊 <b>POLL:</b> Which contract do you sign before the 3-minute timer hits zero?\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
@@ -637,7 +637,7 @@
               "template": "thought_experiment",
               "data": {
                 "scenarioName": "The Golden Vault vs. Daily Sovereignty",
-                "dilemma": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+                "dilemma": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.",
                 "branchA": {
                   "label": "The $10M Vault Lockdown",
                   "explanation": "Endure 5 years of total isolation and grueling work to emerge with $10M in the bank. (Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.)"
@@ -646,7 +646,7 @@
                   "label": "The $75K Freedom Stipend",
                   "explanation": "Accept modest lifelong income with infinite free time and zero boss. (Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.)"
                 },
-                "psychologicalInsight": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness."
+                "psychologicalInsight": "High-earners frequently abandon grueling high-compensation contracts early, while everyday autonomy compounds into lasting peace of mind."
               }
             }
           },
@@ -671,13 +671,13 @@
           "title": "The Golden Vault vs. Daily Sovereignty",
           "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
           "wordCount": 224,
-          "characterCount": 1504,
+          "characterCount": 1508,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
             "reveal": "Most people severely underestimate the mental toll of 1,825 days without sunlight, while stipend recipients report consistently higher baseline peace of mind.",
-            "surprisingOutcome": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.",
+            "surprisingOutcome": "High-earners frequently abandon grueling high-compensation contracts early, while everyday autonomy compounds into lasting peace of mind.",
             "communityTension": "Guaranteed freedom today vs. unlimited purchasing power tomorrow.",
             "strategicAnalysis": "Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation."
           }
@@ -728,7 +728,7 @@
                 },
                 "branchB": {
                   "label": "The Megaphone Truth Curse",
-                  "explanation": "You speak 100% blunt honesty all day with zero polite filter or softening. (Cost: You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.)"
+                  "explanation": "You speak with complete blunt honesty all day with zero polite filter or softening. (Cost: You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.)"
                 },
                 "psychologicalInsight": "Curse B is hilarious to bystanders but terrifying to the speaker; Curse A creates silent internal trauma."
               }
@@ -791,14 +791,14 @@
         "id": "batch-08-prediction-fleet",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>🔮 The Free Public Transit Experiment</b>\n<i>#PickYourFate #InteractiveDilemmas #technologyfuture #Prediction</i>\n\n<b>You monitor the city transit console on the final day of a six-month trial making all subways and buses 100% free.</b>\n\nYou are the lead transit data analyst reviewing traffic telemetry for a metropolitan region of 3 million residents. To combat urban gridlock, city leadership eliminated all fares across 40 subway lines and 800 bus routes for a six-month experiment. Before the trial, private cars accounted for the vast majority of downtown rush-hour commutes. The final sensor data is compiling on your screen right now.\n\n⚡ <b>THE PRESSURE:</b> The six-month experiment has concluded, and the official traffic sensor report is published today.\n\n⚠️ <b>THE COMPLICATION:</b> While transit ridership surged immediately, private vehicle commuting patterns showed unexpected persistence.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Car traffic decreased significantly</b>: Drivers switched in large numbers to free public transit, visibly easing highway gridlock.\n   ⚠️ <i>Cost: Predicts that price is the primary obstacle preventing drivers from using public transit.</i>\n\n🅱️ <b>Car traffic stayed roughly identical</b>: Existing walkers and cyclists filled the buses, while car drivers continued driving.\n   ⚠️ <i>Cost: Predicts that drivers prioritize speed and privacy over saving ticket money.</i>\n\n🅲 <b>Car traffic actually got worse</b>: Increased bus congestion bottlenecked lanes while freed road space drew new suburban cars.\n   ⚠️ <i>Cost: Predicts that induced demand and transit bottlenecks compound road congestion.</i>\n\n📊 <b>POLL:</b> What happened to downtown car traffic by month six of the free transit trial?\n\n👇 <i>Lock in your prediction below before the clock runs out!</i>",
+        "messageText": "<b>🔮 The Free Public Transit Experiment</b>\n<i>#PickYourFate #InteractiveDilemmas #technologyfuture #Prediction</i>\n\n<b>You monitor the city transit console on the final day of a six-month trial making all subways and buses free of charge.</b>\n\nYou are the lead transit data analyst reviewing traffic telemetry for a metropolitan region of 3 million residents. To combat urban gridlock, city leadership eliminated all fares across 40 subway lines and 800 bus routes for a six-month experiment. Before the trial, private cars accounted for the vast majority of downtown rush-hour commutes. The final sensor data is compiling on your screen right now.\n\n⚡ <b>THE PRESSURE:</b> The six-month experiment has concluded, and the official traffic sensor report is published today.\n\n⚠️ <b>THE COMPLICATION:</b> While transit ridership surged immediately, private vehicle commuting patterns showed unexpected persistence.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Car traffic decreased significantly</b>: Drivers switched in large numbers to free public transit, visibly easing highway gridlock.\n   ⚠️ <i>Cost: Predicts that price is the primary obstacle preventing drivers from using public transit.</i>\n\n🅱️ <b>Car traffic stayed roughly identical</b>: Existing walkers and cyclists filled the buses, while car drivers continued driving.\n   ⚠️ <i>Cost: Predicts that drivers prioritize speed and privacy over saving ticket money.</i>\n\n🅲 <b>Car traffic actually got worse</b>: Increased bus congestion bottlenecked lanes while freed road space drew new suburban cars.\n   ⚠️ <i>Cost: Predicts that induced demand and transit bottlenecks compound road congestion.</i>\n\n📊 <b>POLL:</b> What happened to downtown car traffic by month six of the free transit trial?\n\n👇 <i>Lock in your prediction below before the clock runs out!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
           "spec": {
             "template": "thought_experiment",
             "title": "The Free Public Transit Experiment",
-            "subtitle": "You monitor the city transit console on the final day of a six-month trial making all subways and buses 100% free.",
+            "subtitle": "You monitor the city transit console on the final day of a six-month trial making all subways and buses free of charge.",
             "tag": "PREDICTION",
             "sourceCitation": "Pick Your Fate · Interactive Dilemmas",
             "payload": {
@@ -837,9 +837,9 @@
           "format": "prediction",
           "depth": "standard",
           "title": "The Free Public Transit Experiment",
-          "hook": "You monitor the city transit console on the final day of a six-month trial making all subways and buses 100% free.",
-          "wordCount": 252,
-          "characterCount": 1806,
+          "hook": "You monitor the city transit console on the final day of a six-month trial making all subways and buses free of charge.",
+          "wordCount": 253,
+          "characterCount": 1811,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
@@ -928,7 +928,7 @@
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
-            "reveal": "Mountain rescue records show climbers who dig snow caves survive at nearly triple the rate of those who move blind at night.",
+            "reveal": "Mountain rescue records show climbers who build snow caves survive far more consistently than those who attempt blind alpine descents at night.",
             "surprisingOutcome": "Panicked climbers almost always want to move, yet static snow caves provide vital thermal micro-climates.",
             "communityTension": "Active desperate risk vs. passive endurance in the dark.",
             "strategicAnalysis": "Controlled freezing is manageable with micro-insulation; gravity has zero tolerance for error."
@@ -959,7 +959,7 @@
         "id": "batch-10-moral-whistleblower-fallback",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>⏳ The Hostile Takeover Bounty</b>\n<i>#PickYourFate #InteractiveDilemmas #moral #StrategyChallenge</i>\n\n<b>A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.</b>\n\nYou and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.\n\n⚡ <b>THE PRESSURE:</b> The timer shows 28 minutes, and your co-founders are avoiding eye contact.\n\n⚠️ <b>THE COMPLICATION:</b> One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Sign First &amp; Take the $5M</b>: Grab the pen, sign the buyout, and walk away with an immediate fortune.\n   ⚠️ <i>Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.</i>\n\n🅱️ <b>Hold the Line &amp; Trust the Team</b>: Refuse the bounty, rally your partners, and fight the rival in the open marketplace.\n   ⚠️ <i>Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.</i>\n\n📊 <b>POLL:</b> Do you grab the pen first or trust your co-founders?\n\n👇 <i>Cast your vote and defend your strategy in the comments!</i>",
+        "messageText": "<b>⏳ The Hostile Takeover Bounty</b>\n<i>#PickYourFate #InteractiveDilemmas #moral #StrategyChallenge</i>\n\n<b>A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.</b>\n\nYou and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an aggressive open-source clone backed by massive marketing spend to bankrupt your company.\n\n⚡ <b>THE PRESSURE:</b> The timer shows 28 minutes, and your co-founders are avoiding eye contact.\n\n⚠️ <b>THE COMPLICATION:</b> One co-founder secretly has massive gambling debts and is sweating profusely while staring at their pen.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Sign First &amp; Take the $5M</b>: Grab the pen, sign the buyout, and walk away with an immediate fortune.\n   ⚠️ <i>Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.</i>\n\n🅱️ <b>Hold the Line &amp; Trust the Team</b>: Refuse the bounty, rally your partners, and fight the rival in the open marketplace.\n   ⚠️ <i>Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.</i>\n\n📊 <b>POLL:</b> Do you grab the pen first or trust your co-founders?\n\n👇 <i>Cast your vote and defend your strategy in the comments!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
@@ -973,7 +973,7 @@
               "template": "thought_experiment",
               "data": {
                 "scenarioName": "The Hostile Takeover Bounty",
-                "dilemma": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an open-source clone with 10x marketing spend to bankrupt your company.",
+                "dilemma": "You and three equal co-founders built an enterprise software firm valued at $12,000,000. Your main competitor enters the boardroom with a predatory buyout ultimatum: the FIRST founder to sign over their voting shares receives $5,000,000 cash on the spot. If nobody signs within 30 minutes, the rival launches an aggressive open-source clone backed by massive marketing spend to bankrupt your company.",
                 "branchA": {
                   "label": "Sign First & Take the $5M",
                   "explanation": "Grab the pen, sign the buyout, and walk away with an immediate fortune. (Cost: Permanently burns bridges with your team, destroys company equity, and brands you a sellout.)"
@@ -982,7 +982,7 @@
                   "label": "Hold the Line & Trust the Team",
                   "explanation": "Refuse the bounty, rally your partners, and fight the rival in the open marketplace. (Cost: If even ONE of your partners defects, you walk away with zero dollars while they take the $5M.)"
                 },
-                "psychologicalInsight": "In corporate crisis tests, over 80% of leadership teams suffer a defection within 12 minutes."
+                "psychologicalInsight": "Under acute buyout ultimatums, leadership teams rarely maintain unified solidarity once individual cash incentives appear."
               }
             }
           },
@@ -1001,14 +1001,14 @@
           "depth": "deep",
           "title": "The Hostile Takeover Bounty",
           "hook": "A rival CEO slides $5,000,000 cash across the table to whichever founder defects first. The countdown is 30 minutes.",
-          "wordCount": 225,
-          "characterCount": 1480,
+          "wordCount": 227,
+          "characterCount": 1500,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
             "reveal": "When someone waves a huge cash buyout in front of equal partners, panic takes over. The first person to break wins, and everyone in the room knows it.",
-            "surprisingOutcome": "In corporate crisis tests, over 80% of leadership teams suffer a defection within 12 minutes.",
+            "surprisingOutcome": "Under acute buyout ultimatums, leadership teams rarely maintain unified solidarity once individual cash incentives appear.",
             "communityTension": "Looking out for yourself vs. standing by your team.",
             "strategicAnalysis": "Trust needs everyone to hold the line. Betrayal only needs one person to crack."
           }
@@ -1038,7 +1038,7 @@
         "id": "batch-11-fantasy-dragon",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>⚡ The Golden Vault vs. Daily Sovereignty</b>\n<i>#PickYourFate #InteractiveDilemmas #fantasy #ImpossibleDilemma</i>\n\n<b>An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.</b>\n\nA private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.\n\n⚡ <b>THE PRESSURE:</b> The syndicate gives you exactly 3 minutes to decide before the offer expires forever.\n\n⚠️ <b>THE COMPLICATION:</b> The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>The $10M Vault Lockdown</b>: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.\n   ⚠️ <i>Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.</i>\n\n🅱️ <b>The $75K Freedom Stipend</b>: Accept modest lifelong income with infinite free time and zero boss.\n   ⚠️ <i>Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.</i>\n\n📊 <b>POLL:</b> Which contract do you sign before the 3-minute timer hits zero?\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
+        "messageText": "<b>⚡ The Golden Vault vs. Daily Sovereignty</b>\n<i>#PickYourFate #InteractiveDilemmas #fantasy #ImpossibleDilemma</i>\n\n<b>An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.</b>\n\nA private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.\n\n⚡ <b>THE PRESSURE:</b> The syndicate gives you exactly 3 minutes to decide before the offer expires forever.\n\n⚠️ <b>THE COMPLICATION:</b> The underground facility will have 4 other people who took the same deal—and one of them is your fiercest rival.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>The $10M Vault Lockdown</b>: Endure 5 years of total isolation and grueling work to emerge with $10M in the bank.\n   ⚠️ <i>Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.</i>\n\n🅱️ <b>The $75K Freedom Stipend</b>: Accept modest lifelong income with infinite free time and zero boss.\n   ⚠️ <i>Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.</i>\n\n📊 <b>POLL:</b> Which contract do you sign before the 3-minute timer hits zero?\n\n👇 <i>Vote in the poll and defend your choice in the comments!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
@@ -1052,7 +1052,7 @@
               "template": "thought_experiment",
               "data": {
                 "scenarioName": "The Golden Vault vs. Daily Sovereignty",
-                "dilemma": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with 100% calendar freedom.",
+                "dilemma": "A private research syndicate places an irrevocable contract before you: receive an immediate $10,000,000 cash deposit into an offshore trust, but you must spend the next 5 years living inside an underground research facility working 80 hours a week with zero outside communication. Alternatively, you can walk out with a guaranteed $75,000 annual stipend for life with complete calendar freedom.",
                 "branchA": {
                   "label": "The $10M Vault Lockdown",
                   "explanation": "Endure 5 years of total isolation and grueling work to emerge with $10M in the bank. (Cost: Lose 5 prime years of life, relationships, and sunlight with zero early exit.)"
@@ -1061,7 +1061,7 @@
                   "label": "The $75K Freedom Stipend",
                   "explanation": "Accept modest lifelong income with infinite free time and zero boss. (Cost: Permanently caps your wealth; you will never own luxury properties or high-end assets.)"
                 },
-                "psychologicalInsight": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness."
+                "psychologicalInsight": "High-earners frequently abandon grueling high-compensation contracts early, while everyday autonomy compounds into lasting peace of mind."
               }
             }
           },
@@ -1086,13 +1086,13 @@
           "title": "The Golden Vault vs. Daily Sovereignty",
           "hook": "An armored briefcase sits on your desk with $10,000,000 in bearer bonds—and a contract requiring 5 years underground.",
           "wordCount": 224,
-          "characterCount": 1493,
+          "characterCount": 1497,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
           "revealPayoff": {
             "reveal": "Most people severely underestimate the mental toll of 1,825 days without sunlight, while stipend recipients report consistently higher baseline peace of mind.",
-            "surprisingOutcome": "Over 60% of high-earners quit grueling contracts early, while simple autonomy compounds into deep happiness.",
+            "surprisingOutcome": "High-earners frequently abandon grueling high-compensation contracts early, while everyday autonomy compounds into lasting peace of mind.",
             "communityTension": "Guaranteed freedom today vs. unlimited purchasing power tomorrow.",
             "strategicAnalysis": "Time is non-renewable; compound interest makes early capital powerful, but only if you survive the isolation."
           }
@@ -1122,7 +1122,7 @@
         "id": "batch-12-chaotic-gravity",
         "publicationTarget": "telegram_channel",
         "channelId": "@PickYourFateDevDryRun",
-        "messageText": "<b>🎭 The 24-Hour Telepathic Megaphone</b>\n<i>#PickYourFate #InteractiveDilemmas #bizarrehypotheticalsituations #ChaoticFunny</i>\n\n<b>For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.</b>\n\nA mischievous cosmic trickster traps you in an inescapable 24-hour social experiment. You must choose Curse A: you hear an audible whisper of every thought anyone within 20 feet has regarding your clothes, intelligence, and personality. Or Curse B: you can only speak pure, unvarnished truths—and any white lie or polite deflection is blasted through a megaphone.\n\n⚡ <b>THE PRESSURE:</b> You have a high-stakes performance review with your boss and dinner with your in-laws scheduled for tomorrow.\n\n⚠️ <b>THE COMPLICATION:</b> You cannot cancel your appointments or stay in bed without forfeiting your life savings.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Hear All Secret Thoughts</b>: Listen to every private reaction from your colleagues, boss, and family members.\n   ⚠️ <i>Cost: Will likely demolish your self-esteem and permanently distort how you view your loved ones.</i>\n\n🅱️ <b>The Megaphone Truth Curse</b>: You speak 100% blunt honesty all day with zero polite filter or softening.\n   ⚠️ <i>Cost: You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.</i>\n\n📊 <b>POLL:</b> Which chaotic curse would you rather endure tomorrow?\n\n👇 <i>Pick your poison below and see how chaotic the channel gets!</i>",
+        "messageText": "<b>🎭 The 24-Hour Telepathic Megaphone</b>\n<i>#PickYourFate #InteractiveDilemmas #bizarrehypotheticalsituations #ChaoticFunny</i>\n\n<b>For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.</b>\n\nA mischievous cosmic trickster traps you in an inescapable 24-hour social experiment. You must choose Curse A: you hear an audible whisper of every thought anyone within 20 feet has regarding your clothes, intelligence, and personality. Or Curse B: you can only speak pure, unvarnished truths—and any white lie or polite deflection is blasted through a megaphone.\n\n⚡ <b>THE PRESSURE:</b> You have a high-stakes performance review with your boss and dinner with your in-laws scheduled for tomorrow.\n\n⚠️ <b>THE COMPLICATION:</b> You cannot cancel your appointments or stay in bed without forfeiting your life savings.\n\n<b>⚖️ YOUR CHOICES:</b>\n🅰️ <b>Hear All Secret Thoughts</b>: Listen to every private reaction from your colleagues, boss, and family members.\n   ⚠️ <i>Cost: Will likely demolish your self-esteem and permanently distort how you view your loved ones.</i>\n\n🅱️ <b>The Megaphone Truth Curse</b>: You speak with complete blunt honesty all day with zero polite filter or softening.\n   ⚠️ <i>Cost: You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.</i>\n\n📊 <b>POLL:</b> Which chaotic curse would you rather endure tomorrow?\n\n👇 <i>Pick your poison below and see how chaotic the channel gets!</i>",
         "parseMode": "HTML",
         "visualAsset": {
           "template": "thought_experiment",
@@ -1143,7 +1143,7 @@
                 },
                 "branchB": {
                   "label": "The Megaphone Truth Curse",
-                  "explanation": "You speak 100% blunt honesty all day with zero polite filter or softening. (Cost: You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.)"
+                  "explanation": "You speak with complete blunt honesty all day with zero polite filter or softening. (Cost: You will insult coworkers, offend your in-laws, and trigger outrageous social mayhem.)"
                 },
                 "psychologicalInsight": "Curse B is hilarious to bystanders but terrifying to the speaker; Curse A creates silent internal trauma."
               }
@@ -1169,8 +1169,8 @@
           "depth": "standard",
           "title": "The 24-Hour Telepathic Megaphone",
           "hook": "For tomorrow only: you either hear every unfiltered thought about you, or every lie you tell sounds over a stadium loudspeaker.",
-          "wordCount": 214,
-          "characterCount": 1498,
+          "wordCount": 215,
+          "characterCount": 1507,
           "standaloneVerified": true,
           "antiSlopPassed": true,
           "qcPassed": true,
