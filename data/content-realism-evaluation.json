@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T21:36:34.093Z",
+  "generatedAt": "2026-09-27T08:33:57.794Z",
   "channelContext": "Pick Your Fate · Interactive Dilemmas & Impossible Choices",
   "totalSamples": 16,
   "classifications": {
@@ -388,7 +388,7 @@
       "generatedScenario": {
         "hook": "By 2042, neural implants can stream a full four-year degree directly into your sleep—at the cost of mandatory corporate sponsored dreams.",
         "setup": "A neurotech conglomerate unveils the \"Neuro-Diploma\": a consumer neural link that compresses four years of medical, engineering, or legal training into 180 nights of deep sleep learning. But to keep the service free for working-class families, the system injects 30 minutes of subconscious targeted advertising directly into your dream state every night. The ads feel completely real, altering your brand affinity and waking preferences without your conscious control.",
-        "pressure": "College tuition has reached $300,000, making this the only viable economic ladder for 90% of young workers.",
+        "pressure": "Traditional college tuition has become unaffordable, turning accelerated neuro-learning into the fastest economic ladder for debt-strapped workers.",
         "twist": "Independent neurologists warn that subconscious dream marketing permanently alters emotional attachment patterns and personal opinions.",
         "choices": [],
         "question": "Would you surrender control of your dream life to escape generational poverty, or is subconscious autonomy non-negotiable? Defend your position in the comments!",

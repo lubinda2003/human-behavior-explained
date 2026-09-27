@@ -1157,7 +1157,7 @@ Regenerate the scenario resolving all identified issues:
       consequence: 'Review the timeline and physical evidence carefully before jumping to conclusions.',
       payoff: {
         reveal: 'Officer Vance staged the theft. Knowing the exterior gate clock was running 15 minutes fast, he badged at the gate to create a false alibi, then returned through the maintenance vents using master keys that leave no tool marks on the vault door.',
-        surprisingOutcome: 'Over 70% of readers suspect the indebted biochemist, but physical access to the roof vent ruled everyone else out.',
+        surprisingOutcome: 'The indebted biochemist is the most obvious suspect, but physical access to the roof vent ruled everyone else out.',
         communityTension: 'Circumstantial financial motive vs. forensic timeline discrepancies.',
         strategicAnalysis: 'Physical constraints and timeline anomalies are far more reliable than emotional motives in forensic deduction.',
       },
@@ -1202,14 +1202,14 @@ Regenerate the scenario resolving all identified issues:
   private getProceduralHotTake(options: GenerateDilemmaOptions): any {
     return {
       title: 'The Human Artwork Copyright Freeze',
-      hook: 'Should tech companies be legally barred from training AI models on public human artwork without paying direct cash royalties to each creator?',
+      hook: 'Should tech platforms be legally barred from training AI models on public human artwork without paying direct cash royalties to each creator?',
       setup:
         'A controversial new bill proposes an absolute ban on AI models using publicly accessible human art, code, and writing for training data unless every single creator is compensated per scrape. Proponents argue this protects human livelihood and prevents industrial theft. Opponents argue this kills open-source innovation, creates monopoly moats for trillion-dollar incumbents who can afford licensing, and misunderstands that human brains also learn by studying public art.',
       scenario:
         'A controversial new bill proposes an absolute ban on AI models using publicly accessible human art, code, and writing for training data unless every single creator is compensated per scrape. Proponents argue this protects human livelihood and prevents industrial theft. Opponents argue this kills open-source innovation, creates monopoly moats for trillion-dollar incumbents who can afford licensing, and misunderstands that human brains also learn by studying public art.',
       pressure: 'The parliamentary vote happens tomorrow morning, and both sides claim the other will permanently destroy human culture.',
       pressureTypes: ['social_pressure', 'conflicting_goals'],
-      twist: 'If passed, small open-source developers will be sued out of existence while tech giants continue via private licensing deals.',
+      twist: 'If passed, small open-source developers will face crushing copyright lawsuits while tech giants continue via private licensing deals.',
       depth: options.depth || 'standard',
       format: 'hot_take',
       interactionType: 'open_discussion',
@@ -1218,8 +1218,8 @@ Regenerate the scenario resolving all identified issues:
       discussionPrompt: 'Is learning from public data theft, or is banning it just handing the future to corporate monopolies? Pick a side and defend your reasoning!',
       consequence: 'Every policy position carries severe tradeoffs for the future of human creative work.',
       payoff: {
-        reveal: 'History shows copyright expansions almost always consolidate market power in massive publishers rather than individual creators, but unregulated automated extraction rapidly hollows out entry-level creative work.',
-        surprisingOutcome: 'Over 80% of creators support the ban until they discover it gives big tech companies an exclusive legal monopoly on AI development.',
+        reveal: 'Copyright expansions historically consolidate market power in massive publishers rather than individual creators, while unregulated automated extraction rapidly pressures entry-level creative work.',
+        surprisingOutcome: 'Broad copyright restrictions often entrench the largest media conglomerates who can afford massive private licensing agreements, leaving independent creators with minimal bargaining power.',
         communityTension: 'Protecting individual creator property vs. maintaining permissionless open knowledge.',
         strategicAnalysis: 'Policy interventions often produce the exact opposite of their intended economic protection.',
       },
@@ -1238,7 +1238,7 @@ Regenerate the scenario resolving all identified issues:
         'A neurotech conglomerate unveils the "Neuro-Diploma": a consumer neural link that compresses four years of medical, engineering, or legal training into 180 nights of deep sleep learning. But to keep the service free for working-class families, the system injects 30 minutes of subconscious targeted advertising directly into your dream state every night. The ads feel completely real, altering your brand affinity and waking preferences without your conscious control.',
       scenario:
         'A neurotech conglomerate unveils the "Neuro-Diploma": a consumer neural link that compresses four years of medical, engineering, or legal training into 180 nights of deep sleep learning. But to keep the service free for working-class families, the system injects 30 minutes of subconscious targeted advertising directly into your dream state every night. The ads feel completely real, altering your brand affinity and waking preferences without your conscious control.',
-      pressure: 'College tuition has reached $300,000, making this the only viable economic ladder for 90% of young workers.',
+      pressure: 'Traditional college tuition has become unaffordable, turning accelerated neuro-learning into the fastest economic ladder for debt-strapped workers.',
       pressureTypes: ['technology', 'social_pressure', 'impossible_tradeoffs'],
       twist: 'Independent neurologists warn that subconscious dream marketing permanently alters emotional attachment patterns and personal opinions.',
       depth: options.depth || 'standard',
@@ -1250,7 +1250,7 @@ Regenerate the scenario resolving all identified issues:
       consequence: 'Convenience is the greatest Trojan horse against personal autonomy.',
       payoff: {
         reveal: 'Whenever a vital human necessity is offered for free in exchange for subconscious attention, the consumer ceases to be the customer and becomes the product.',
-        surprisingOutcome: 'Surveys show young workers overwhelmingly accept neurological invasive trade-offs when economic mobility is on the line.',
+        surprisingOutcome: 'When faced with crushing financial barriers, workers consistently trade personal privacy and cognitive autonomy for immediate economic mobility.',
         communityTension: 'Financial survival and rapid upward mobility vs. mental sovereignty and free will.',
         strategicAnalysis: 'Economic desperation reliably forces populations to accept terms that previous generations considered dystopia.',
       },
@@ -1263,11 +1263,11 @@ Regenerate the scenario resolving all identified issues:
   private getProceduralVersusBattle(options: GenerateDilemmaOptions): any {
     return {
       title: 'The Veteran Detective vs. The Predictive AI',
-      hook: 'A serial arsonist strikes tonight: do you dispatch based on thirty years of detective intuition or 99.4% algorithmic certainty?',
+      hook: 'A serial arsonist strikes tonight: do you dispatch based on thirty years of detective intuition or high algorithmic confidence?',
       setup:
-        'You are the city emergency dispatch director. A three-alarm fire is spreading in the warehouse district. Detective Miller, a 30-year veteran who caught the arsonist\'s mentor, insists the suspect will strike the old grain elevator on 4th Street. Meanwhile, your newly installed predictive AI predicts with 99.4% statistical confidence that the suspect is en route to the chemical harbor two miles south. You only have enough squad units to secure one location.',
+        'You are the city emergency dispatch director. A three-alarm fire is spreading in the warehouse district. Detective Miller, a 30-year veteran who caught the arsonist\'s mentor, insists the suspect will strike the old grain elevator on 4th Street. Meanwhile, your newly installed predictive AI predicts with high algorithmic confidence that the suspect is en route to the chemical harbor two miles south. You only have enough squad units to secure one location.',
       scenario:
-        'You are the city emergency dispatch director. A three-alarm fire is spreading in the warehouse district. Detective Miller, a 30-year veteran who caught the arsonist\'s mentor, insists the suspect will strike the old grain elevator on 4th Street. Meanwhile, your newly installed predictive AI predicts with 99.4% statistical confidence that the suspect is en route to the chemical harbor two miles south. You only have enough squad units to secure one location.',
+        'You are the city emergency dispatch director. A three-alarm fire is spreading in the warehouse district. Detective Miller, a 30-year veteran who caught the arsonist\'s mentor, insists the suspect will strike the old grain elevator on 4th Street. Meanwhile, your newly installed predictive AI predicts with high algorithmic confidence that the suspect is en route to the chemical harbor two miles south. You only have enough squad units to secure one location.',
       pressure: 'Units must be dispatched in 45 seconds before the perimeter bridges close.',
       pressureTypes: ['time_pressure', 'conflicting_goals'],
       twist: 'Detective Miller was disciplined last year for insubordination, but the AI model hasn\'t been recalibrated since last month\'s flood.',
@@ -1347,7 +1347,7 @@ Regenerate the scenario resolving all identified issues:
       consequence: 'Every triage choice forces you to price different kinds of catastrophic loss.',
       payoff: {
         reveal: 'Hospitals have mandatory diesel fail-safes by design; water infrastructure has zero secondary redundancy.',
-        surprisingOutcome: 'Over 80% reflexively save the hospital first, unaware that the hospital diesel generators are 99.9% reliable.',
+        surprisingOutcome: 'Most operators reflexively protect the hospital first, unaware that hospitals maintain emergency diesel backups while municipal water infrastructure has zero secondary redundancy.',
         communityTension: 'Direct human compassion vs. hidden systemic dependencies.',
         strategicAnalysis: 'In complex systems, protect the asset with zero fallback capacity first.',
       },
@@ -1356,44 +1356,53 @@ Regenerate the scenario resolving all identified issues:
 
   /**
    * Dedicated poll fallback for prediction.
+   * Subscribers predict an observable future outcome rather than choosing an action.
    */
   private getProceduralPrediction(options: GenerateDilemmaOptions): any {
     return {
-      title: 'The Autonomous Fleet Flash-Crash',
-      hook: 'You watch your emergency dispatch screen in disbelief as 10,000 autonomous electric freight haulers drop to 15 MPH simultaneously across Interstate 80.',
+      title: 'The Free Public Transit Experiment',
+      hook: 'You monitor the city transit console on the final day of a six-month trial making all subways and buses 100% free.',
       setup:
-        'You sit at the regional emergency transportation console as a rogue firmware patch triggers an emergency sensor lock on 10,000 self-driving 18-wheelers carrying critical perishable freight. Highway traffic behind your fleet is backing up for 75 miles in freezing sleet, and warehouse supply chains will grind to an absolute halt in 4 hours.',
+        'You are the lead transit data analyst reviewing traffic telemetry for a metropolitan region of 3 million residents. To combat urban gridlock, city leadership eliminated all fares across 40 subway lines and 800 bus routes for a six-month experiment. Before the trial, private cars accounted for the vast majority of downtown rush-hour commutes. The final sensor data is compiling on your screen right now.',
       scenario:
-        'You sit at the regional emergency transportation console as a rogue firmware patch triggers an emergency sensor lock on 10,000 self-driving 18-wheelers carrying critical perishable freight. Highway traffic behind your fleet is backing up for 75 miles in freezing sleet, and warehouse supply chains will grind to an absolute halt in 4 hours.',
-      pressure: 'Perishable refrigerated cargo batteries begin dying within 90 minutes.',
-      pressureTypes: ['clock_deadline', 'physical_hazard'],
-      twist: 'Transmitting an over-the-air hard reboot shuts down truck hazard lights and braking telemetry for 6 minutes.',
+        'You are the lead transit data analyst reviewing traffic telemetry for a metropolitan region of 3 million residents. To combat urban gridlock, city leadership eliminated all fares across 40 subway lines and 800 bus routes for a six-month experiment. Before the trial, private cars accounted for the vast majority of downtown rush-hour commutes. The final sensor data is compiling on your screen right now.',
+      pressure: 'The six-month experiment has concluded, and the official traffic sensor report is published today.',
+      pressureTypes: ['strategic_decisions', 'technology', 'social_pressure'],
+      twist: 'While transit ridership surged immediately, private vehicle commuting patterns showed unexpected persistence.',
       depth: options.depth || 'standard',
       format: 'prediction',
+      interactionType: 'prediction_vote',
       choices: [
         {
           id: 'choice_a',
-          label: 'Emergency Global Broadcast Reboot',
-          description: 'Send an immediate force-reboot to all 10,000 trucks simultaneously over satellite telemetry.',
-          tradeOff: 'Shuts down all truck hazard beacons and lights on dark, icy interstate lanes for 6 minutes.',
-          consequence: 'The broadcast ping transmits to all 10,000 onboard telemetry computers.',
+          label: 'Car traffic decreased significantly',
+          description: 'Drivers switched in large numbers to free public transit, visibly easing highway gridlock.',
+          tradeOff: 'Predicts that price is the primary obstacle preventing drivers from using public transit.',
+          consequence: 'Locks in prediction: Fare elimination directly reduces rush-hour traffic.',
         },
         {
           id: 'choice_b',
-          label: 'Manual Dispatch Escort Protocol',
-          description: 'Keep trucks creeping at 15 MPH and dispatch 500 regional police cruisers to guide them off exits.',
-          tradeOff: 'Guarantees 100% spoilage of $450M in perishable insulin and fresh food cargo in sub-zero traffic.',
-          consequence: 'State highway patrols receive emergency coordination orders to shepherd the convoy.',
+          label: 'Car traffic stayed roughly identical',
+          description: 'Existing walkers and cyclists filled the buses, while car drivers continued driving.',
+          tradeOff: 'Predicts that drivers prioritize speed and privacy over saving ticket money.',
+          consequence: 'Locks in prediction: Fare elimination changes transit ridership without clearing roads.',
+        },
+        {
+          id: 'choice_c',
+          label: 'Car traffic actually got worse',
+          description: 'Increased bus congestion bottlenecked lanes while freed road space drew new suburban cars.',
+          tradeOff: 'Predicts that induced demand and transit bottlenecks compound road congestion.',
+          consequence: 'Locks in prediction: Induced demand paradoxically increases total traffic.',
         },
       ],
-      pollQuestion: 'Lock in your prediction: Which command protocol minimizes catastrophic loss?',
-      discussionPrompt: 'What happens next when 10,000 trucks reboot simultaneously on an icy highway?',
-      consequence: 'A software failure at scale forces human operators to choose between physical collision risk and economic paralysis.',
+      pollQuestion: 'What happened to downtown car traffic by month six of the free transit trial?',
+      discussionPrompt: 'Lock in your prediction: does free transit actually pull drivers out of cars, or do commuting habits stay stubborn?',
+      consequence: 'Subsidies alter consumer choices only when the alternative matches the speed and convenience of the default.',
       payoff: {
-        reveal: 'In stress tests, staggering rolling reboots in batches of 500 prevented total highway blackouts.',
-        surprisingOutcome: 'Most engineers choose the manual slow-crawl to avoid immediate collision liability.',
-        communityTension: 'Immediate physical safety risk vs. massive systemic supply chain collapse.',
-        strategicAnalysis: 'Distributed systems require graduated fail-safes rather than binary all-or-nothing resets.',
+        reveal: 'Empirical transit trials show car traffic remains roughly identical: free fares convert pedestrians, cyclists, and existing riders rather than dedicated car drivers.',
+        surprisingOutcome: 'Car drivers prioritize direct routes, schedule autonomy, and comfort far more than the cost of a transit fare.',
+        communityTension: 'Economic price incentives vs. daily lifestyle convenience.',
+        strategicAnalysis: 'To reduce car congestion, transit must compete on speed and door-to-door convenience, not just ticket price.',
       },
     };
   }

@@ -75,6 +75,25 @@ describe('Phase 3 Correction: Format-Aware Generation & Quality Gate', () => {
       assert.ok(tech.discussionPrompt && tech.discussionPrompt.length > 15);
       assert.ok(tech.setup.length >= 40);
     });
+
+    it('procedural hot_take and discussion fallbacks contain no fabricated percentage or statistical claims', () => {
+      const take = generator.generateProceduralDilemma({ format: 'hot_take' });
+      const mystery = generator.generateProceduralDilemma({ format: 'mini_mystery' });
+      const tech = generator.generateProceduralDilemma({ format: 'future_tech' });
+      const minigame = generator.generateProceduralDilemma({ format: 'interactive_minigame' });
+
+      for (const item of [take, mystery, tech, minigame]) {
+        const fullContent = `${item.hook} ${item.setup} ${item.pressure} ${item.twist} ${item.discussionPrompt || ''} ${item.payoff?.reveal || ''} ${item.payoff?.surprisingOutcome || ''}`;
+        assert.ok(
+          !/\b\d{1,3}%\s+(?:of\s+)?(?:creators|readers|people|users|workers|engineers)\b/i.test(fullContent),
+          `Found fabricated percentage claim in ${item.format}: ${fullContent}`
+        );
+        assert.ok(
+          !/\bsurveys\s+show\b/i.test(fullContent),
+          `Found unsupported survey claim in ${item.format}: ${fullContent}`
+        );
+      }
+    });
   });
 
   describe('2. Poll formats continue to require valid choices and poll questions', () => {
@@ -113,6 +132,36 @@ describe('Phase 3 Correction: Format-Aware Generation & Quality Gate', () => {
         assert.equal(qc.checks.tradeOffsExplicit, true);
       });
     }
+
+    it('prediction fallback choices represent observable future outcomes rather than user actions', () => {
+      const prediction = generator.generateProceduralDilemma({ format: 'prediction' });
+      assert.equal(prediction.format, 'prediction');
+      assert.ok(prediction.choices && prediction.choices.length >= 2);
+
+      // Verify question is asking what happens / observable outcome
+      assert.ok(
+        prediction.pollQuestion?.toLowerCase().includes('what happened') ||
+        prediction.pollQuestion?.toLowerCase().includes('what happens') ||
+        prediction.pollQuestion?.toLowerCase().includes('prediction') ||
+        prediction.pollQuestion?.toLowerCase().includes('outcome'),
+        `Expected pollQuestion to ask for an outcome prediction, got "${prediction.pollQuestion}"`
+      );
+
+      // Verify choices represent outcomes (e.g. "Car traffic decreased", "Car traffic stayed roughly identical", etc.)
+      for (const choice of prediction.choices!) {
+        assert.ok(
+          choice.label.toLowerCase().includes('traffic') ||
+          choice.label.toLowerCase().includes('increased') ||
+          choice.label.toLowerCase().includes('decreased') ||
+          choice.label.toLowerCase().includes('stayed') ||
+          choice.label.toLowerCase().includes('worse'),
+          `Choice label "${choice.label}" should describe an outcome rather than a first-person command action`
+        );
+      }
+
+      // Verify reveal explains what actually happens
+      assert.ok(prediction.payoff?.reveal && prediction.payoff.reveal.length > 20);
+    });
 
     it('rejects poll format if choices are missing', () => {
       const invalidPollDilemma: InteractiveDilemma = {
