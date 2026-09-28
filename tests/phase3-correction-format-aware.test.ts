@@ -61,19 +61,19 @@ describe('Phase 3 Correction: Format-Aware Generation & Quality Gate', () => {
     it('brain_logic provides a solvable puzzle with numbers/constraints and step-by-step logic in payoff.reveal', () => {
       const logic = generator.generateProceduralDilemma({ format: 'brain_logic' });
       assert.ok(logic.payoff?.reveal && logic.payoff.reveal.length > 20);
-      assert.ok(logic.setup.includes('minute'), 'Setup contains concrete constraints');
+      assert.ok(logic.setup?.includes('minute'), 'Setup contains concrete constraints');
     });
 
     it('hot_take presents a concrete debatable premise with discussionPrompt', () => {
       const take = generator.generateProceduralDilemma({ format: 'hot_take' });
       assert.ok(take.discussionPrompt && take.discussionPrompt.length > 15);
-      assert.ok(take.setup.length >= 40);
+      assert.ok((take.setup?.length ?? 0) >= 40);
     });
 
     it('future_tech focuses on emerging tech with human cost and personal choice', () => {
       const tech = generator.generateProceduralDilemma({ format: 'future_tech' });
       assert.ok(tech.discussionPrompt && tech.discussionPrompt.length > 15);
-      assert.ok(tech.setup.length >= 40);
+      assert.ok((tech.setup?.length ?? 0) >= 40);
     });
 
     it('procedural hot_take and discussion fallbacks contain no fabricated percentage or statistical claims', () => {
@@ -293,7 +293,7 @@ describe('Phase 3 Correction: Format-Aware Generation & Quality Gate', () => {
 
       assert.ok(continuationDilemma.title.includes('Aftermath: The Razor Ridge Whiteout'));
       assert.ok(continuationDilemma.hook.includes('62% community vote'));
-      assert.ok(continuationDilemma.setup.includes('Dig In & Hunker in the Snow Trench'));
+      assert.ok(continuationDilemma.setup?.includes('Dig In & Hunker in the Snow Trench'));
     });
   });
 });

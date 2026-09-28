@@ -333,15 +333,37 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
           formattedTelegramText: '<b>The Whistleblower Crossroads</b>\n\nWould you sacrifice...',
         }),
         repairDilemma: (d: any, opts: any) => {
-          // Repair returns a dilemma that still has the duplicate title and theme
+          // Repair deliberately returns a dilemma with a stale/falsely-valid embedded qc object,
+          // while retaining the actual conflicting title and hook.
           return {
             ...d,
             qc: {
-              isValid: false,
+              isValid: true, // Falsely claiming valid embedded QC
               dilemmaId: d.id,
-              errors: ['Repetition check failed: Exact title duplicate with recent post: "The Whistleblower Crossroads"'],
+              errors: [],
               warnings: [],
-              checks: { noRepetitiveTheme: false, noRepetitiveOpening: true },
+              checks: {
+                choiceCountValid: true,
+                tradeOffsExplicit: true,
+                noAcademicJargon: true,
+                plainLanguageVoiceValid: true,
+                noSerializedStory: true,
+                noGenericWYR: true,
+                noFormulaicTradeoff: true,
+                hasSituationalImmersion: true,
+                depthRequirementsMet: true,
+                telegramHtmlValid: true,
+                visualAssetValid: true,
+                noDominantChoice: true,
+                noCostFreeChoices: true,
+                noUngroundedHypothetical: true,
+                telegramLengthValid: true,
+                interactionConfigValid: true,
+                schemaFieldsValid: true,
+                formatRequirementsMet: true,
+                noRepetitiveOpening: true,
+                noRepetitiveTheme: true, // Falsely true
+              },
             },
           };
         },
@@ -414,7 +436,10 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
           depth: 'standard',
           choices: [], // Missing choices triggers repair
           pollQuestion: 'Do you blow ballast or wait?',
-          payoff: { reveal: 'Controlled ascent is essential.' },
+          payoff: {
+            reveal: 'Controlled ascent is essential.',
+            surprisingOutcome: 'Ascending too fast risks decompression sickness and hull implosion.',
+          },
           formattedTelegramText: '<b>The Submarine Oxygen Valve</b>\n\nA high-pressure seal ruptures...',
         }),
         repairDilemma: (d: any) => ({
@@ -423,6 +448,10 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
             { id: 'a', label: 'Blow Ballast', description: 'Ascend fast', tradeOff: 'Risk bends' },
             { id: 'b', label: 'Wait Rescue', description: 'Conserve oxygen', tradeOff: 'Risk suffocation' },
           ],
+          payoff: {
+            reveal: 'Controlled ascent is essential.',
+            surprisingOutcome: 'Ascending too fast risks decompression sickness and hull implosion.',
+          },
           formattedTelegramText: '<b>The Submarine Oxygen Valve</b>\n\nA high-pressure seal ruptures...',
           qc: {
             isValid: true,
