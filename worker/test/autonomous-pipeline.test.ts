@@ -385,8 +385,14 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
       // Assert pipeline halted safely
       assert.equal(result.success, false);
       assert.equal(result.postGenerated, false);
+      assert.equal(result.postId, undefined);
       assert.ok(result.skipReason?.includes('Final content quality/repetition gate failure'));
       assert.equal(publishInteractionCalled, false, 'TelegramInteractionPublisher must NEVER be called for repetitive content');
+
+      // Assert that NO new post was persisted to D1 database
+      const posts = await repo.getRecentPosts(10);
+      assert.equal(posts.length, 1, 'Only the pre-seeded recent post should exist in D1');
+      assert.equal(posts[0].id, 'post_recent_1');
     });
 
     it('successfully publishes valid repaired content when repair resolves quality/repetition checks', async () => {

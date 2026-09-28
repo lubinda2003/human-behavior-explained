@@ -132,23 +132,33 @@ describe('Phase 4: Content Variety & Repetition Control Test Suite', () => {
       assert.ok(result.reasons.some((r) => r.includes('Repeated opening hook phrase pattern')));
     });
 
-    it('enforces word-boundary matching so substrings (e.g. "ai" in "train" or "claim") do not falsely trigger concept clusters', () => {
-      const benignText = 'The train conductor makes a claim about the paint on the main airplane cabin.';
-      const tags = RepetitionDetector.extractConceptTags(benignText);
+    it('enforces word-boundary matching so substrings (e.g. "ai" in "train", "brain", "claim", "airplane", "contain", "paint", "daily") do not falsely trigger concept clusters', () => {
+      const benignWords = ['train', 'brain', 'claim', 'airplane', 'contain', 'paint', 'daily'];
+      for (const word of benignWords) {
+        const text = `The conductor noted that a ${word} was inspected during the routine operation.`;
+        const tags = RepetitionDetector.extractConceptTags(text);
+        assert.equal(
+          tags.has('technology_ai'),
+          false,
+          `Word "${word}" containing substring "ai" must NOT trigger the technology_ai concept cluster`
+        );
+      }
 
-      assert.equal(
-        tags.has('technology_ai'),
-        false,
-        'Substring "ai" inside words like "train" or "claim" must NOT trigger the technology_ai concept cluster'
-      );
+      const validAiPhrases = [
+        'An advanced AI diagnostic system scans the patient records.',
+        'An artificial intelligence model optimizes the power grid.',
+        'The autonomous AI system handles reactor emergency protocols.',
+        'An AI-powered assistant flags the data discrepancy.',
+      ];
 
-      const aiText = 'An autonomous AI diagnostic system scans the patient.';
-      const aiTags = RepetitionDetector.extractConceptTags(aiText);
-      assert.equal(
-        aiTags.has('technology_ai'),
-        true,
-        'Standalone keyword "AI" must trigger the technology_ai concept cluster'
-      );
+      for (const phrase of validAiPhrases) {
+        const tags = RepetitionDetector.extractConceptTags(phrase);
+        assert.equal(
+          tags.has('technology_ai'),
+          true,
+          `Phrase "${phrase}" must legitimately trigger the technology_ai concept cluster`
+        );
+      }
     });
   });
 
