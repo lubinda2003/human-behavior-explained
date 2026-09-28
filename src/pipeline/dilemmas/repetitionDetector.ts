@@ -103,14 +103,18 @@ export class RepetitionDetector {
 
   /**
    * Extracts canonical concept tags present in a text.
+   * Uses word-boundary-safe matching to ensure substrings (e.g. 'ai' in 'claim' or 'train')
+   * do not trigger false positive concept cluster tags.
    */
   public static extractConceptTags(text: string): Set<string> {
-    const lower = text.toLowerCase();
+    const normalized = ` ${this.normalize(text)} `;
     const tags = new Set<string>();
 
     for (const [tag, keywords] of Object.entries(CONCEPT_CLUSTERS)) {
       for (const kw of keywords) {
-        if (lower.includes(kw)) {
+        const normKw = this.normalize(kw);
+        if (!normKw) continue;
+        if (normalized.includes(` ${normKw} `)) {
           tags.add(tag);
           break;
         }

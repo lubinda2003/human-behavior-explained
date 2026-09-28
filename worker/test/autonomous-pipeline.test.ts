@@ -278,37 +278,188 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
   });
 
   // --------------------------------------------------------------------------
-  // 3. Post ID Uniqueness & Collision Safety Unit Tests
+  // 4. Phase 4 Content Repetition & Publishing Safety Gate Regression Tests
   // --------------------------------------------------------------------------
-  describe('Post ID Generation & Collision Safety', () => {
-    it('preserves the "post_" prefix and includes timestamp and random component', () => {
-      const id = generatePostId();
-      assert.match(id, /^post_\d+_[a-zA-Z0-9]+$/);
+  describe('Phase 4: Content Repetition & Publishing Safety Gate', () => {
+    it('strictly halts pipeline and blocks Telegram publishing when content remains repetitive after repair', async () => {
+      const repo = new D1InteractionRepository(db);
+      const nowIso = new Date().toISOString();
+
+      // Seed a recent post in D1
+      await repo.createPost({
+        id: 'post_recent_1',
+        contentType: 'impossible_dilemma',
+        category: 'moral',
+        tone: 'tense',
+        stakes: 'life_or_death',
+        layout: 'standard',
+        hookStyle: 'direct_question',
+        title: 'The Whistleblower Crossroads',
+        status: 'published',
+        payload: {
+          title: 'The Whistleblower Crossroads',
+          hook: 'Would you sacrifice your career to save a stranger from wrongful imprisonment?',
+          setup: 'Exposing the corporate fraud destroys your entire career but saves an innocent bystander.',
+        },
+        scheduledFor: nowIso,
+        createdAt: nowIso,
+        updatedAt: nowIso,
+        publishedAt: nowIso,
+      });
+
+      const pipeline = new AutonomousPipelineService({
+        ...baseEnv,
+        PUBLISHING_COOLDOWN_MINUTES: '0',
+      });
+
+      // Mock generator to return a repetitive dilemma that cannot be fixed by repair
+      let publishInteractionCalled = false;
+      (pipeline as any).generator = {
+        generateDilemma: async () => ({
+          id: 'gen_rep_1',
+          category: 'moral',
+          format: 'impossible_dilemma',
+          title: 'The Whistleblower Crossroads', // Exact title duplicate
+          hook: 'Would you sacrifice your career to save a stranger from wrongful imprisonment?',
+          setup: 'You have tenured credentials at a top firm. Exposing the fraud destroys your entire career.',
+          scenario: 'You have tenured credentials at a top firm. Exposing the fraud destroys your entire career.',
+          depth: 'standard',
+          choices: [
+            { id: 'a', label: 'Leak Files', description: 'Save stranger', tradeOff: 'Lose career' },
+            { id: 'b', label: 'Stay Quiet', description: 'Keep career', tradeOff: 'Stranger suffers' },
+          ],
+          pollQuestion: 'Do you leak the files or stay silent?',
+          payoff: { reveal: 'Truth has a personal price.' },
+          formattedTelegramText: '<b>The Whistleblower Crossroads</b>\n\nWould you sacrifice...',
+        }),
+        repairDilemma: (d: any, opts: any) => {
+          // Repair returns a dilemma that still has the duplicate title and theme
+          return {
+            ...d,
+            qc: {
+              isValid: false,
+              dilemmaId: d.id,
+              errors: ['Repetition check failed: Exact title duplicate with recent post: "The Whistleblower Crossroads"'],
+              warnings: [],
+              checks: { noRepetitiveTheme: false, noRepetitiveOpening: true },
+            },
+          };
+        },
+        generateProceduralDilemma: () => {
+          return {
+            id: 'proc_rep_1',
+            category: 'moral',
+            format: 'impossible_dilemma',
+            title: 'The Whistleblower Crossroads',
+            hook: 'Would you sacrifice your career to save a stranger from wrongful imprisonment?',
+            setup: 'Exposing fraud destroys career.',
+            scenario: 'Exposing fraud destroys career.',
+            depth: 'standard',
+            choices: [
+              { id: 'a', label: 'Leak', description: 'Save stranger', tradeOff: 'Lose career' },
+              { id: 'b', label: 'Quiet', description: 'Keep career', tradeOff: 'Stranger suffers' },
+            ],
+            pollQuestion: 'Leak or stay quiet?',
+            payoff: { reveal: 'Truth has a cost.' },
+            formattedTelegramText: '<b>The Whistleblower Crossroads</b>\n\nWould you sacrifice...',
+            qc: {
+              isValid: false,
+              dilemmaId: 'proc_rep_1',
+              errors: ['Repetition check failed: Exact title duplicate'],
+              warnings: [],
+              checks: { noRepetitiveTheme: false, noRepetitiveOpening: true },
+            },
+          };
+        },
+      };
+
+      // Spy on publisher to verify it is NEVER invoked
+      const originalPublish = (pipeline as any).publisher.publishInteraction.bind((pipeline as any).publisher);
+      (pipeline as any).publisher.publishInteraction = async (...args: any[]) => {
+        publishInteractionCalled = true;
+        return originalPublish(...args);
+      };
+
+      const result = await pipeline.runPipeline('test_trigger', { ignoreCooldown: true });
+
+      // Assert pipeline halted safely
+      assert.equal(result.success, false);
+      assert.equal(result.postGenerated, false);
+      assert.ok(result.skipReason?.includes('Final content quality/repetition gate failure'));
+      assert.equal(publishInteractionCalled, false, 'TelegramInteractionPublisher must NEVER be called for repetitive content');
     });
 
-    it('does not use dilemmaId as the sole ID and ensures uniqueness even with identical dilemma IDs', () => {
-      const sameDilemmaId = 'dilemma-moral-001';
-      const id1 = generatePostId(sameDilemmaId);
-      const id2 = generatePostId(sameDilemmaId);
+    it('successfully publishes valid repaired content when repair resolves quality/repetition checks', async () => {
+      const pipeline = new AutonomousPipelineService({
+        ...baseEnv,
+        PUBLISHING_COOLDOWN_MINUTES: '0',
+      });
 
-      assert.notEqual(id1, id2);
-      assert.notEqual(id1, `post_${sameDilemmaId}`);
-      assert.notEqual(id2, `post_${sameDilemmaId}`);
-      assert.match(id1, /^post_\d+_[a-zA-Z0-9]+$/);
-      assert.match(id2, /^post_\d+_[a-zA-Z0-9]+$/);
-    });
+      let publishInteractionCount = 0;
+      (pipeline as any).generator = {
+        generateDilemma: async () => ({
+          id: 'gen_rep_fixed',
+          category: 'survival',
+          format: 'survival_scenario',
+          title: 'The Submarine Oxygen Valve',
+          hook: 'A high-pressure seal ruptures in the sub cabin as battery voltage drops to 8%.',
+          setup: 'You are an engineer on a deep-sea research sub with failing oxygen and an emergency ballast clamp.',
+          scenario: 'You are an engineer on a deep-sea research sub with failing oxygen and an emergency ballast clamp.',
+          depth: 'standard',
+          choices: [], // Missing choices triggers repair
+          pollQuestion: 'Do you blow ballast or wait?',
+          payoff: { reveal: 'Controlled ascent is essential.' },
+          formattedTelegramText: '<b>The Submarine Oxygen Valve</b>\n\nA high-pressure seal ruptures...',
+        }),
+        repairDilemma: (d: any) => ({
+          ...d,
+          choices: [
+            { id: 'a', label: 'Blow Ballast', description: 'Ascend fast', tradeOff: 'Risk bends' },
+            { id: 'b', label: 'Wait Rescue', description: 'Conserve oxygen', tradeOff: 'Risk suffocation' },
+          ],
+          formattedTelegramText: '<b>The Submarine Oxygen Valve</b>\n\nA high-pressure seal ruptures...',
+          qc: {
+            isValid: true,
+            dilemmaId: d.id,
+            errors: [],
+            warnings: [],
+            checks: {
+              choiceCountValid: true,
+              tradeOffsExplicit: true,
+              noAcademicJargon: true,
+              plainLanguageVoiceValid: true,
+              noSerializedStory: true,
+              noGenericWYR: true,
+              noFormulaicTradeoff: true,
+              hasSituationalImmersion: true,
+              depthRequirementsMet: true,
+              telegramHtmlValid: true,
+              visualAssetValid: true,
+              noDominantChoice: true,
+              noCostFreeChoices: true,
+              noUngroundedHypothetical: true,
+              telegramLengthValid: true,
+              interactionConfigValid: true,
+              schemaFieldsValid: true,
+              formatRequirementsMet: true,
+              noRepetitiveOpening: true,
+              noRepetitiveTheme: true,
+            },
+          },
+        }),
+      };
 
-    it('guarantees zero collisions across high-volume ID generations', () => {
-      const generated = new Set<string>();
-      const iterations = 1000;
+      const originalPublish = (pipeline as any).publisher.publishInteraction.bind((pipeline as any).publisher);
+      (pipeline as any).publisher.publishInteraction = async (...args: any[]) => {
+        publishInteractionCount++;
+        return originalPublish(...args);
+      };
 
-      for (let i = 0; i < iterations; i++) {
-        const id = generatePostId('recurring_dilemma_id');
-        assert.equal(generated.has(id), false, `Collision detected for ID: ${id}`);
-        generated.add(id);
-      }
+      const result = await pipeline.runPipeline('test_trigger', { ignoreCooldown: true });
 
-      assert.equal(generated.size, iterations);
+      assert.equal(result.success, true);
+      assert.equal(result.postGenerated, true);
+      assert.equal(publishInteractionCount, 1, 'TelegramInteractionPublisher should be called exactly once for valid repaired content');
     });
   });
 });

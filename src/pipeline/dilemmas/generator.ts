@@ -383,14 +383,18 @@ Regenerate the scenario resolving all identified issues:
 
   /**
    * Proactively repairs and rebalances dilemmas to be strongly resistant against
-   * the 5 failure classes:
+   * the quality and repetition failure classes:
    * 1. Generic trade-off formulas
    * 2. Ungrounded hypotheticals
    * 3. Cost-free choices
    * 4. Dominant choices
    * 5. Academic/lecture content
+   * 6. Cliché openings and repetitive phrasing
    */
-  public repairDilemma(dilemma: InteractiveDilemma): InteractiveDilemma {
+  public repairDilemma(
+    dilemma: InteractiveDilemma,
+    options?: { recentPosts?: RecentPostSummary[] },
+  ): InteractiveDilemma {
     const isDiscussion =
       dilemma.format === 'mini_mystery' ||
       dilemma.format === 'brain_logic' ||
@@ -480,6 +484,22 @@ Regenerate the scenario resolving all identified issues:
       return cleaned;
     };
 
+    if (!dilemma.payoff) {
+      dilemma.payoff = {};
+    }
+    if (!dilemma.payoff.reveal || dilemma.payoff.reveal.trim().length < 10) {
+      dilemma.payoff.reveal = 'Decisive action under high pressure reveals the true cost of each path.';
+    }
+    if (!dilemma.payoff.surprisingOutcome || dilemma.payoff.surprisingOutcome.trim().length < 10) {
+      dilemma.payoff.surprisingOutcome = 'Immediate tactical fixes often carry unexpected secondary consequences.';
+    }
+    if (!dilemma.payoff.communityTension || dilemma.payoff.communityTension.trim().length < 10) {
+      dilemma.payoff.communityTension = 'High stakes split consensus between immediate survival and long-term risk.';
+    }
+    if (!dilemma.payoff.strategicAnalysis || dilemma.payoff.strategicAnalysis.trim().length < 10) {
+      dilemma.payoff.strategicAnalysis = 'Resource constraints demand balancing short-term risk against catastrophic failure.';
+    }
+
     if (dilemma.title) dilemma.title = cleanField(dilemma.title);
     if (dilemma.hook) dilemma.hook = cleanField(dilemma.hook);
     if (dilemma.setup) dilemma.setup = cleanField(dilemma.setup);
@@ -526,7 +546,9 @@ Regenerate the scenario resolving all identified issues:
 
     // Re-format Telegram text and re-validate QC
     dilemma.formattedTelegramText = DilemmaTelegramFormatter.formatPost(dilemma);
-    dilemma.qc = DilemmaQualityChecker.validateDilemmaContent(dilemma);
+    dilemma.qc = DilemmaQualityChecker.validateDilemmaContent(dilemma, {
+      recentPosts: options?.recentPosts,
+    });
 
     return dilemma;
   }

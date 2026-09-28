@@ -131,6 +131,25 @@ describe('Phase 4: Content Variety & Repetition Control Test Suite', () => {
       assert.equal(result.isRepetitive, true);
       assert.ok(result.reasons.some((r) => r.includes('Repeated opening hook phrase pattern')));
     });
+
+    it('enforces word-boundary matching so substrings (e.g. "ai" in "train" or "claim") do not falsely trigger concept clusters', () => {
+      const benignText = 'The train conductor makes a claim about the paint on the main airplane cabin.';
+      const tags = RepetitionDetector.extractConceptTags(benignText);
+
+      assert.equal(
+        tags.has('technology_ai'),
+        false,
+        'Substring "ai" inside words like "train" or "claim" must NOT trigger the technology_ai concept cluster'
+      );
+
+      const aiText = 'An autonomous AI diagnostic system scans the patient.';
+      const aiTags = RepetitionDetector.extractConceptTags(aiText);
+      assert.equal(
+        aiTags.has('technology_ai'),
+        true,
+        'Standalone keyword "AI" must trigger the technology_ai concept cluster'
+      );
+    });
   });
 
   describe('2. Quality Gate & Anti-Repetition Integration', () => {
@@ -168,6 +187,75 @@ describe('Phase 4: Content Variety & Repetition Control Test Suite', () => {
       assert.equal(qc.isValid, false);
       assert.equal(qc.checks.noRepetitiveTheme, false);
       assert.ok(qc.errors.some((e) => e.includes('Repetition check failed')));
+    });
+
+    it('proves repairDilemma preserves recent-post context and re-validates against it', () => {
+      const recentPosts: RecentPostSummary[] = [
+        {
+          id: 'post_201',
+          title: 'The Whistleblower Crossroads',
+          hook: 'Would you sacrifice your career to save a stranger from wrongful imprisonment?',
+          setup: 'You have tenured credentials at a top firm. Exposing the fraud destroys your entire career.',
+        },
+      ];
+
+      // Repetitive dilemma with invalid choices to trigger repair
+      const ungroundedRepetitiveDilemma: InteractiveDilemma = {
+        id: 'candidate_repair_test',
+        category: 'moral',
+        format: 'impossible_dilemma',
+        title: 'The Silent Sacrifice Protocol',
+        hook: 'Would you give up your entire future to rescue someone you dont know from a lethal sentence?',
+        setup: 'A tenured scientist must forfeit their livelihood and reputation to protect an unknown person.',
+        scenario: 'A tenured scientist must forfeit their livelihood and reputation to protect an unknown person.',
+        depth: 'standard',
+        choices: [], // Missing choices triggers repair
+        pollQuestion: 'Which path do you take?',
+        discussionPrompt: 'Defend your choice in the comments.',
+        payoff: { reveal: 'Reputation is fragile.' },
+        formattedTelegramText: '',
+      };
+
+      const repaired = generator.repairDilemma(ungroundedRepetitiveDilemma, { recentPosts });
+
+      assert.ok(repaired.qc);
+      assert.equal(repaired.qc.isValid, false, 'Repaired dilemma must fail QC when it retains a conflicting theme with recentPosts');
+      assert.equal(repaired.qc.checks.noRepetitiveTheme, false);
+      assert.ok(repaired.qc.errors.some((e) => e.includes('Repetition check failed')));
+    });
+
+    it('proves valid non-repetitive content successfully passes repair and re-validation', () => {
+      const recentPosts: RecentPostSummary[] = [
+        {
+          id: 'post_201',
+          title: 'The Whistleblower Crossroads',
+          hook: 'Would you sacrifice your career to save a stranger from wrongful imprisonment?',
+        },
+      ];
+
+      // Non-repetitive dilemma with missing choices that can be cleanly repaired
+      const distinctDilemma: InteractiveDilemma = {
+        id: 'candidate_clean_repair',
+        category: 'survival',
+        format: 'survival_scenario',
+        title: 'The High Arctic Trench Whiteout',
+        hook: 'The thermal generators stall in a -40°C blizzard with 18 minutes of auxiliary power left.',
+        setup: 'You are an engineer stationed at an arctic seismic sensor outpost during a Category 5 blizzard.',
+        scenario: 'You are an engineer stationed at an arctic seismic sensor outpost during a Category 5 blizzard.',
+        depth: 'standard',
+        choices: [], // Missing choices will be populated by repair
+        pollQuestion: 'Do you reroute battery power or venture out to clear the intake?',
+        discussionPrompt: 'What is your tactical protocol?',
+        payoff: { reveal: 'Direct intake clearing restores generator airflow and prevents thermal shutdown.' },
+        formattedTelegramText: '',
+      };
+
+      const repaired = generator.repairDilemma(distinctDilemma, { recentPosts });
+
+      assert.ok(repaired.qc);
+      assert.equal(repaired.qc.isValid, true, `Clean distinct dilemma should pass QC after repair. Errors: ${repaired.qc.errors.join('; ')}`);
+      assert.equal(repaired.qc.checks.noRepetitiveTheme, true);
+      assert.equal(repaired.qc.checks.choiceCountValid, true);
     });
 
     it('rejects candidate posts with cliché formula openings in Quality Gate', () => {

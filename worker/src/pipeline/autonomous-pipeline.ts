@@ -339,11 +339,32 @@ export class AutonomousPipelineService {
       }
 
       // Step 6: Validate and repair if needed
-      const qc = DilemmaQualityChecker.validateDilemmaContent(dilemma, {
+      let qc = DilemmaQualityChecker.validateDilemmaContent(dilemma, {
         recentPosts: recentPostsSummary,
       });
       if (!qc.isValid) {
-        dilemma = this.generator.repairDilemma(dilemma);
+        dilemma = this.generator.repairDilemma(dilemma, {
+          recentPosts: recentPostsSummary,
+        });
+        qc = dilemma.qc || DilemmaQualityChecker.validateDilemmaContent(dilemma, {
+          recentPosts: recentPostsSummary,
+        });
+      }
+
+      // Final Quality & Repetition Safety Gate before publishing:
+      // A repetitive or invalid dilemma must NEVER reach D1 or Telegram publishing
+      if (!qc.isValid) {
+        console.warn('Final quality/repetition gate rejected dilemma. Halting pipeline before publish.', qc.errors);
+        return {
+          success: false,
+          skipped: true,
+          skipReason: `Final content quality/repetition gate failure: ${qc.errors.join('; ')}`,
+          closedInteractionsCount: closedInteractions.length,
+          postGenerated: false,
+          publishingEnabled: this.env.PUBLISHING_ENABLED === 'true',
+          durationMs: Date.now() - startTime,
+          error: `Quality/repetition verification failed: ${qc.errors.join('; ')}`,
+        };
       }
 
       // Format clean Telegram HTML post text
