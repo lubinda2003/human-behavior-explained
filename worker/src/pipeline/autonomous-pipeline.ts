@@ -346,7 +346,7 @@ export class AutonomousPipelineService {
         dilemma = this.generator.repairDilemma(dilemma, {
           recentPosts: recentPostsSummary,
         });
-        // Always independently recalculate QC on the repaired dilemma against recent-post history
+
         qc = DilemmaQualityChecker.validateDilemmaContent(dilemma, {
           recentPosts: recentPostsSummary,
         });

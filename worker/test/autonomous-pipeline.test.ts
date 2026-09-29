@@ -333,14 +333,12 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
           formattedTelegramText: '<b>The Whistleblower Crossroads</b>\n\nWould you sacrifice...',
         }),
         repairDilemma: (d: any, opts: any) => {
-          // Repair deliberately returns a dilemma with a stale/falsely-valid embedded qc object,
-          // while retaining the actual conflicting title and hook.
           return {
             ...d,
             qc: {
-              isValid: true, // Falsely claiming valid embedded QC
+              isValid: false,
               dilemmaId: d.id,
-              errors: [],
+              errors: ['Repetition check failed: Exact title duplicate'],
               warnings: [],
               checks: {
                 choiceCountValid: true,
@@ -362,7 +360,7 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
                 schemaFieldsValid: true,
                 formatRequirementsMet: true,
                 noRepetitiveOpening: true,
-                noRepetitiveTheme: true, // Falsely true
+                noRepetitiveTheme: false,
               },
             },
           };
@@ -415,6 +413,124 @@ describe('Autonomous Production Pipeline & Taxonomy Integration', () => {
       const posts = await repo.getRecentPosts(10);
       assert.equal(posts.length, 1, 'Only the pre-seeded recent post should exist in D1');
       assert.equal(posts[0].id, 'post_recent_1');
+    });
+
+    it('independently executes fresh QC on repaired dilemma and blocks persistence/publishing when repair returns falsely-valid embedded qc', async () => {
+      const repo = new D1InteractionRepository(db);
+      const nowIso = new Date().toISOString();
+
+      // Seed recent post in D1
+      await repo.createPost({
+        id: 'post_recent_stale_qc',
+        contentType: 'impossible_dilemma',
+        category: 'moral',
+        tone: 'tense',
+        stakes: 'life_or_death',
+        layout: 'standard',
+        hookStyle: 'direct_question',
+        title: 'The Whistleblower Crossroads',
+        status: 'published',
+        payload: {
+          title: 'The Whistleblower Crossroads',
+          hook: 'Would you sacrifice your career to save a stranger from wrongful imprisonment?',
+          setup: 'Exposing the corporate fraud destroys your entire career but saves an innocent bystander.',
+        },
+        scheduledFor: nowIso,
+        createdAt: nowIso,
+        updatedAt: nowIso,
+        publishedAt: nowIso,
+      });
+
+      const pipeline = new AutonomousPipelineService({
+        ...baseEnv,
+        PUBLISHING_COOLDOWN_MINUTES: '0',
+      });
+
+      let publishInteractionCalled = false;
+      let repairDilemmaCalled = false;
+
+      (pipeline as any).generator = {
+        generateDilemma: async () => ({
+          id: 'gen_stale_qc_1',
+          category: 'moral',
+          format: 'impossible_dilemma',
+          title: 'The Whistleblower Crossroads', // Repetitive with recent post
+          hook: 'Would you sacrifice your career to save a stranger from wrongful imprisonment?',
+          setup: 'You have tenured credentials at a top firm. Exposing the fraud destroys your entire career.',
+          scenario: 'You have tenured credentials at a top firm. Exposing the fraud destroys your entire career.',
+          depth: 'standard',
+          choices: [
+            { id: 'a', label: 'Leak Files', description: 'Save stranger', tradeOff: 'Lose career' },
+            { id: 'b', label: 'Stay Quiet', description: 'Keep career', tradeOff: 'Stranger suffers' },
+          ],
+          pollQuestion: 'Do you leak the files or stay silent?',
+          payoff: { reveal: 'Truth has a personal price.' },
+          formattedTelegramText: '<b>The Whistleblower Crossroads</b>\n\nWould you sacrifice...',
+        }),
+        repairDilemma: (d: any, opts: any) => {
+          repairDilemmaCalled = true;
+          // Deliberately return repetitive content with FALSELY VALID embedded QC
+          return {
+            ...d,
+            qc: {
+              isValid: true, // Deliberately FALSE
+              dilemmaId: d.id,
+              errors: [],
+              warnings: [],
+              checks: {
+                choiceCountValid: true,
+                tradeOffsExplicit: true,
+                noAcademicJargon: true,
+                plainLanguageVoiceValid: true,
+                noSerializedStory: true,
+                noGenericWYR: true,
+                noFormulaicTradeoff: true,
+                hasSituationalImmersion: true,
+                depthRequirementsMet: true,
+                telegramHtmlValid: true,
+                visualAssetValid: true,
+                noDominantChoice: true,
+                noCostFreeChoices: true,
+                noUngroundedHypothetical: true,
+                telegramLengthValid: true,
+                interactionConfigValid: true,
+                schemaFieldsValid: true,
+                formatRequirementsMet: true,
+                noRepetitiveOpening: true,
+                noRepetitiveTheme: true, // Deliberately FALSE
+              },
+            },
+          };
+        },
+        generateProceduralDilemma: () => {
+          throw new Error('generateProceduralDilemma should not be reached in this test');
+        },
+      };
+
+      const originalPublish = (pipeline as any).publisher.publishInteraction.bind((pipeline as any).publisher);
+      (pipeline as any).publisher.publishInteraction = async (...args: any[]) => {
+        publishInteractionCalled = true;
+        return originalPublish(...args);
+      };
+
+      const result = await pipeline.runPipeline('test_trigger', { ignoreCooldown: true });
+
+      // 1. Initial dilemma failed QC and repair was executed
+      assert.equal(repairDilemmaCalled, true, 'repairDilemma should have been invoked after initial QC failure');
+
+      // 2. The pipeline independently revalidated the repaired dilemma against recentPosts and halted
+      assert.equal(result.success, false, 'Pipeline must fail when repaired content remains repetitive');
+      assert.equal(result.postGenerated, false);
+      assert.equal(result.postId, undefined);
+      assert.ok(result.skipReason?.includes('Final content quality/repetition gate failure'));
+
+      // 3. Publishing was blocked (0 Telegram publishes)
+      assert.equal(publishInteractionCalled, false, 'TelegramInteractionPublisher must NEVER be called');
+
+      // 4. Persistence was blocked (0 new D1 posts)
+      const posts = await repo.getRecentPosts(10);
+      assert.equal(posts.length, 1, 'Only the pre-seeded recent post should exist in D1 (0 new persisted posts)');
+      assert.equal(posts[0].id, 'post_recent_stale_qc');
     });
 
     it('successfully publishes valid repaired content when repair resolves quality/repetition checks', async () => {
