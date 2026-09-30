@@ -24,8 +24,8 @@ export interface TelegramClient {
 }
 
 export interface TelegramCallHistory {
-  messages: SendMessageParams[];
-  polls: SendPollParams[];
+  messages: Array<SendMessageParams & { id?: number }>;
+  polls: Array<SendPollParams & { id?: number; poll_id?: string }>;
   stoppedPolls: StopPollParams[];
 }
 
@@ -77,8 +77,8 @@ export class MockTelegramClient implements TelegramClient {
 
   async sendMessage(params: SendMessageParams): Promise<TelegramMessage> {
     this.checkFailure();
-    this.history.messages.push({ ...params });
     const msgId = ++MockTelegramClient.globalMessageCounter;
+    this.history.messages.push({ ...params, id: msgId });
     return {
       message_id: msgId,
       date: Math.floor(Date.now() / 1000),
@@ -89,9 +89,9 @@ export class MockTelegramClient implements TelegramClient {
 
   async sendPoll(params: SendPollParams): Promise<TelegramMessage> {
     this.checkFailure();
-    this.history.polls.push({ ...params });
     const msgId = ++MockTelegramClient.globalMessageCounter;
     const pollId = `tg_poll_${++MockTelegramClient.globalPollCounter}`;
+    this.history.polls.push({ ...params, id: msgId, poll_id: pollId });
 
     const poll: TelegramPoll = {
       id: pollId,

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-29T05:30:14.944Z",
+  "timestamp": "2026-09-30T05:31:11.929Z",
   "dryRun": true,
   "summary": {
     "scenariosExecuted": 6,
@@ -154,7 +154,7 @@
       "workerB_outcome": {
         "interactionId": "int_post_concurrency_01",
         "processed": false,
-        "reason": "already_closed_or_not_open"
+        "reason": "resolving_in_progress"
       },
       "totalPollStops": 1,
       "totalResultPosts": 1,

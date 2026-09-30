@@ -1,7 +1,7 @@
 # Pick Your Fate — End-to-End Interaction Engine Simulation Report
 
 **Execution Mode:** Dry-Run Only (Zero Real Telegram API Calls)  
-**Timestamp:** `2026-09-29T05:30:14.944Z`  
+**Timestamp:** `2026-09-30T05:31:11.929Z`  
 **Overall Status:** **6/6 SCENARIOS PASSED** (0 Failures)  
 **Data Integrity:** Complete referential integrity (0 orphan records)  
 **Publication Safety:** 100% duplicate prevention across concurrency & retries  
@@ -64,7 +64,7 @@ Content Engine
 ### Scenario 4: Concurrency & Lock Contention
 - **Simulation:** Two worker instances simultaneously triggered closure on `int_post_concurrency_01`.
 - **Worker A Result:** `processed = true`
-- **Worker B Result:** `processed = false` (`reason = already_closed_or_not_open`)
+- **Worker B Result:** `processed = false` (`reason = resolving_in_progress`)
 - **Telegram Invocations:** Exactly **1** stopPoll and **1** result post.
 
 ### Scenario 5: Webhook Security & Ingestion

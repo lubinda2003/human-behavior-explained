@@ -7,6 +7,8 @@
 export type LifecycleState =
   | 'DRAFT'
   | 'VALIDATED'
+  | 'PUBLISHING'
+  | 'PARTIALLY_PUBLISHED'
   | 'PUBLISHED'
   | 'OPEN'
   | 'CLOSED'
@@ -229,7 +231,27 @@ export interface TelegramMessage {
   date: number;
   chat: { id: number | string; type: string; title?: string };
   text?: string;
+  from?: TelegramUser;
+  reply_to_message?: TelegramMessage & {
+    forward_from_message_id?: number;
+    forward_origin?: { type: string; message_id?: number };
+  };
+  message_thread_id?: number;
   poll?: TelegramPoll;
+}
+
+export interface DiscussionProcessingResult {
+  status:
+    | 'discussion_recorded'
+    | 'ignored_closed'
+    | 'ignored_not_found'
+    | 'unassociated_message'
+    | 'noop';
+  interactionId?: string;
+  postId?: string;
+  userId?: string;
+  messageId: number;
+  threadId?: number;
 }
 
 export interface TelegramUpdate {

@@ -101,7 +101,11 @@ export class D1InteractionRepository {
           id, content_type, category, tone, stakes, layout, hook_style, title,
           status, payload_json, parent_post_id, telegram_message_id, telegram_poll_message_id,
           raw_r2_key, scheduled_for, published_at, failure_reason, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (id) DO UPDATE SET
+          title = excluded.title,
+          payload_json = excluded.payload_json,
+          updated_at = excluded.updated_at`,
       )
       .bind(
         post.id,
@@ -163,6 +167,28 @@ export class D1InteractionRepository {
       failureReason?: string;
     },
   ): Promise<void> {
+    const current = await this.getPost(id);
+    if (current) {
+      if (
+        current.telegramMessageId &&
+        extra?.telegramMessageId &&
+        current.telegramMessageId !== extra.telegramMessageId
+      ) {
+        throw new Error(
+          `Conflict: Cannot overwrite existing post ${id} telegramMessageId (${current.telegramMessageId}) with conflicting ID (${extra.telegramMessageId})`,
+        );
+      }
+      if (
+        current.telegramPollMessageId &&
+        extra?.telegramPollMessageId &&
+        current.telegramPollMessageId !== extra.telegramPollMessageId
+      ) {
+        throw new Error(
+          `Conflict: Cannot overwrite existing post ${id} telegramPollMessageId (${current.telegramPollMessageId}) with conflicting ID (${extra.telegramPollMessageId})`,
+        );
+      }
+    }
+
     const now = new Date().toISOString();
     await this.db
       .prepare(
@@ -258,6 +284,20 @@ export class D1InteractionRepository {
   // ---------------------------------------------------------
 
   async createPublishedMessage(msg: PublishedMessageRecord): Promise<void> {
+    const existing = await this.db
+      .prepare('SELECT telegram_message_id FROM published_messages WHERE id = ?')
+      .bind(msg.id)
+      .first<{ telegram_message_id: number }>();
+
+    if (existing) {
+      if (existing.telegram_message_id !== msg.telegramMessageId) {
+        throw new Error(
+          `Conflict: Cannot overwrite existing published message ${msg.id} telegram_message_id (${existing.telegram_message_id}) with conflicting ID (${msg.telegramMessageId})`,
+        );
+      }
+      return;
+    }
+
     await this.db
       .prepare(
         `INSERT INTO published_messages (
@@ -295,6 +335,24 @@ export class D1InteractionRepository {
     }));
   }
 
+  async getPublishedMessageByMessageId(messageId: number): Promise<PublishedMessageRecord | null> {
+    const row = await this.db
+      .prepare('SELECT * FROM published_messages WHERE telegram_message_id = ?')
+      .bind(messageId)
+      .first<any>();
+    if (!row) return null;
+    return {
+      id: row.id,
+      postId: row.post_id,
+      telegramMessageId: row.telegram_message_id,
+      telegramChatId: row.telegram_chat_id,
+      messageType: row.message_type,
+      parseMode: row.parse_mode,
+      textContent: row.text_content,
+      publishedAt: row.published_at,
+    };
+  }
+
   // ---------------------------------------------------------
   // INTERACTIONS
   // ---------------------------------------------------------
@@ -306,7 +364,10 @@ export class D1InteractionRepository {
           id, post_id, interaction_type, lifecycle_state, target_chat_id, main_message_id,
           close_strategy, duration_seconds, opens_at, closes_at, closed_at, resolved_at,
           result_post_id, metadata_json, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (id) DO UPDATE SET
+          target_chat_id = excluded.target_chat_id,
+          updated_at = excluded.updated_at`,
       )
       .bind(
         interaction.id,
@@ -315,7 +376,7 @@ export class D1InteractionRepository {
         interaction.lifecycleState,
         interaction.targetChatId,
         interaction.mainMessageId ?? null,
-        interaction.closeStrategy,
+        interaction.closeStrategy ?? 'scheduled',
         interaction.durationSeconds ?? null,
         interaction.opensAt ?? null,
         interaction.closesAt ?? null,
@@ -341,16 +402,21 @@ export class D1InteractionRepository {
     return this.mapInteractionRow(row);
   }
 
+  async getInteractionByMainMessageId(mainMessageId: number): Promise<InteractionRecord | null> {
+    const row = await this.db.prepare('SELECT * FROM interactions WHERE main_message_id = ?').bind(mainMessageId).first<any>();
+    if (!row) return null;
+    return this.mapInteractionRow(row);
+  }
+
   async getInteractionsDueForClosure(nowIso: string): Promise<InteractionRecord[]> {
     const result = await this.db
       .prepare(
         `SELECT * FROM interactions
-         WHERE lifecycle_state = 'OPEN'
-           AND closes_at IS NOT NULL
-           AND closes_at <= ?
+         WHERE (lifecycle_state = 'OPEN' AND closes_at IS NOT NULL AND closes_at <= ?)
+            OR (lifecycle_state IN ('CLOSED', 'RESOLVING') AND closes_at IS NOT NULL AND closes_at <= ?)
          ORDER BY closes_at ASC`,
       )
-      .bind(nowIso)
+      .bind(nowIso, nowIso)
       .all<any>();
 
     return (result.results ?? []).map((row) => this.mapInteractionRow(row));
@@ -374,6 +440,79 @@ export class D1InteractionRepository {
     return (result.meta?.changes ?? 0) > 0;
   }
 
+  /**
+   * Atomic resolving lease acquisition.
+   * Ensures only one worker actively resolves a closed/resolving interaction.
+   * Allows recovery of stale resolving attempts (> staleThresholdIso).
+   */
+  async atomicClaimResolvingLease(
+    id: string,
+    nowIso: string,
+    staleThresholdIso: string,
+  ): Promise<boolean> {
+    const result = await this.db
+      .prepare(
+        `UPDATE interactions
+         SET lifecycle_state = 'RESOLVING', updated_at = ?
+         WHERE id = ? AND (
+           lifecycle_state IN ('CLOSED', 'FAILED')
+           OR (lifecycle_state = 'RESOLVING' AND updated_at <= ?)
+         )`,
+      )
+      .bind(nowIso, id, staleThresholdIso)
+      .run();
+
+    return (result.meta?.changes ?? 0) > 0;
+  }
+
+  async recordInteractionDiscussionActivity(
+    id: string,
+    activity: { threadId?: number; lastCommentAt: string },
+  ): Promise<void> {
+    const current = await this.getInteraction(id);
+    if (!current) return;
+    const metadata = {
+      ...(current.metadata || {}),
+      discussionThreadId: activity.threadId ?? (current.metadata as any)?.discussionThreadId,
+      lastDiscussionCommentAt: activity.lastCommentAt,
+      discussionCommentCount: ((current.metadata as any)?.discussionCommentCount || 0) + 1,
+    };
+    await this.db
+      .prepare('UPDATE interactions SET metadata_json = ?, updated_at = ? WHERE id = ?')
+      .bind(JSON.stringify(metadata), activity.lastCommentAt, id)
+      .run();
+  }
+
+  /**
+   * Atomic publishing lease acquisition.
+   * Ensures that only one worker can actively transition an interaction to PUBLISHING.
+   *
+   * An interaction can be claimed if:
+   * 1. It is in 'DRAFT', 'VALIDATED', 'PARTIALLY_PUBLISHED', or 'FAILED'
+   * 2. It is in 'PUBLISHING' BUT updated_at <= staleThresholdIso (stale lease recovery)
+   *
+   * If another worker currently holds an active (non-stale) lease, returns false.
+   */
+  async atomicClaimPublishingLease(
+    id: string,
+    nowIso: string,
+    staleThresholdIso: string,
+  ): Promise<boolean> {
+    const result = await this.db
+      .prepare(
+        `UPDATE interactions
+         SET lifecycle_state = 'PUBLISHING', updated_at = ?
+         WHERE id = ? AND (
+           lifecycle_state IN ('DRAFT', 'VALIDATED', 'PARTIALLY_PUBLISHED', 'FAILED')
+           OR (lifecycle_state = 'PUBLISHING' AND updated_at <= ?)
+         )`,
+      )
+      .bind(nowIso, id, staleThresholdIso)
+      .run();
+
+    return (result.meta?.changes ?? 0) > 0;
+  }
+
   async updateInteractionLifecycle(
     id: string,
     nextState: LifecycleState,
@@ -384,7 +523,40 @@ export class D1InteractionRepository {
       throw new Error(`Interaction ${id} not found`);
     }
 
+    if (
+      current.mainMessageId &&
+      extra?.mainMessageId &&
+      current.mainMessageId !== extra.mainMessageId
+    ) {
+      throw new Error(
+        `Conflict: Cannot overwrite existing interaction ${id} mainMessageId (${current.mainMessageId}) with conflicting ID (${extra.mainMessageId})`,
+      );
+    }
+
     assertValidTransition(current.lifecycleState, nextState, id);
+
+    if (nextState === 'OPEN') {
+      const mainMsgId = extra?.mainMessageId ?? current.mainMessageId;
+      if (!mainMsgId) {
+        throw new Error(
+          `Cannot transition interaction ${id} to OPEN: Missing telegram mainMessageId. Publishing is incomplete.`,
+        );
+      }
+      const post = await this.getPost(current.postId);
+      if (!post || (post.status !== 'published' && post.status !== 'partially_published' && !post.telegramMessageId)) {
+        throw new Error(
+          `Cannot transition interaction ${id} to OPEN: Associated post ${current.postId} is not published.`,
+        );
+      }
+      if (current.interactionType === 'poll' || current.interactionType === 'prediction_vote') {
+        const poll = await this.getPollByInteractionId(id);
+        if (!poll || (!poll.telegramPollId && !poll.telegramMessageId)) {
+          throw new Error(
+            `Cannot transition interaction ${id} to OPEN: Required poll component is missing or incomplete.`,
+          );
+        }
+      }
+    }
 
     const now = new Date().toISOString();
     const result = await this.db
@@ -396,6 +568,7 @@ export class D1InteractionRepository {
           resolved_at = COALESCE(?, resolved_at),
           result_post_id = COALESCE(?, result_post_id),
           main_message_id = COALESCE(?, main_message_id),
+          metadata_json = COALESCE(?, metadata_json),
           updated_at = ?
          WHERE id = ? AND lifecycle_state = ?`,
       )
@@ -406,6 +579,7 @@ export class D1InteractionRepository {
         extra?.resolvedAt ?? null,
         extra?.resultPostId ?? null,
         extra?.mainMessageId ?? null,
+        extra?.metadata ? JSON.stringify(extra.metadata) : null,
         now,
         id,
         current.lifecycleState,
@@ -441,6 +615,19 @@ export class D1InteractionRepository {
   // ---------------------------------------------------------
 
   async createPoll(poll: PollRecord, options: PollOptionRecord[]): Promise<void> {
+    const existing = await this.getPoll(poll.id);
+    if (existing) {
+      if (
+        (existing.telegramPollId && poll.telegramPollId && existing.telegramPollId !== poll.telegramPollId) ||
+        (existing.telegramMessageId && poll.telegramMessageId && existing.telegramMessageId !== poll.telegramMessageId)
+      ) {
+        throw new Error(
+          `Conflict: Cannot overwrite existing poll ${poll.id} with conflicting Telegram identifiers (existing poll_id=${existing.telegramPollId}, msg_id=${existing.telegramMessageId}; new poll_id=${poll.telegramPollId}, msg_id=${poll.telegramMessageId})`,
+        );
+      }
+      return;
+    }
+
     const statements: D1PreparedStatement[] = [];
 
     statements.push(
@@ -478,13 +665,21 @@ export class D1InteractionRepository {
         this.db
           .prepare(
             `INSERT INTO poll_options (id, poll_id, option_index, option_text, trade_off, vote_count)
-             VALUES (?, ?, ?, ?, ?, ?)`,
+             VALUES (?, ?, ?, ?, ?, ?)
+             ON CONFLICT (id) DO UPDATE SET
+               option_text = excluded.option_text`,
           )
           .bind(opt.id, opt.pollId, opt.optionIndex, opt.optionText, opt.tradeOff ?? null, opt.voteCount),
       );
     }
 
     await this.db.batch(statements);
+  }
+
+  async getPoll(id: string): Promise<PollRecord | null> {
+    const row = await this.db.prepare('SELECT * FROM polls WHERE id = ?').bind(id).first<any>();
+    if (!row) return null;
+    return this.mapPollRow(row);
   }
 
   async getPollByTelegramId(telegramPollId: string): Promise<PollRecord | null> {
@@ -495,6 +690,12 @@ export class D1InteractionRepository {
 
   async getPollByInteractionId(interactionId: string): Promise<PollRecord | null> {
     const row = await this.db.prepare('SELECT * FROM polls WHERE interaction_id = ?').bind(interactionId).first<any>();
+    if (!row) return null;
+    return this.mapPollRow(row);
+  }
+
+  async getPollByMessageId(messageId: number): Promise<PollRecord | null> {
+    const row = await this.db.prepare('SELECT * FROM polls WHERE telegram_message_id = ?').bind(messageId).first<any>();
     if (!row) return null;
     return this.mapPollRow(row);
   }
@@ -822,6 +1023,16 @@ export class D1InteractionRepository {
       .first<any>();
 
     if (!row) return null;
+    return this.mapResultRow(row);
+  }
+
+  async getResultById(id: string): Promise<ResultRecord | null> {
+    const row = await this.db.prepare('SELECT * FROM results WHERE id = ?').bind(id).first<any>();
+    if (!row) return null;
+    return this.mapResultRow(row);
+  }
+
+  private mapResultRow(row: any): ResultRecord {
     return {
       id: row.id,
       interactionId: row.interaction_id,
@@ -830,8 +1041,8 @@ export class D1InteractionRepository {
       winningOptionIndex: row.winning_option_index,
       winningOptionText: row.winning_option_text,
       winningPercentage: row.winning_percentage,
-      voteDistribution: JSON.parse(row.vote_distribution_json),
-      payoff: JSON.parse(row.payoff_json),
+      voteDistribution: JSON.parse(row.vote_distribution_json || '[]'),
+      payoff: JSON.parse(row.payoff_json || '{}'),
       revealText: row.reveal_text,
       resultPostMessageId: row.result_post_message_id,
       status: row.status,
@@ -845,6 +1056,18 @@ export class D1InteractionRepository {
     status: 'generated' | 'published' | 'failed',
     extra?: { publishedAt?: string; resultPostMessageId?: number },
   ): Promise<void> {
+    const current = await this.getResultById(id);
+    if (
+      current &&
+      current.resultPostMessageId &&
+      extra?.resultPostMessageId &&
+      current.resultPostMessageId !== extra.resultPostMessageId
+    ) {
+      throw new Error(
+        `Conflict: Cannot overwrite existing result ${id} resultPostMessageId (${current.resultPostMessageId}) with conflicting ID (${extra.resultPostMessageId})`,
+      );
+    }
+
     await this.db
       .prepare(
         `UPDATE results SET
