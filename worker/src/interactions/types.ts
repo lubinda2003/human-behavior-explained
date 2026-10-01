@@ -188,7 +188,31 @@ export interface WebhookEventRecord {
   payloadJson?: string | null;
   receivedAt: string;
   processedAt?: string | null;
-  status: 'processed' | 'ignored' | 'failed';
+  status: 'processing' | 'processed' | 'failed' | 'ignored';
+  attempts?: number;
+  lastError?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface ClaimWebhookResult {
+  claimed: boolean;
+  status: 'processing' | 'processed' | 'failed' | 'ignored';
+  reason?: 'new_event' | 'retry_claimed' | 'already_processed' | 'in_progress';
+}
+
+export interface DiscussionMessageRecord {
+  id: string;
+  interactionId: string;
+  postId: string;
+  telegramMessageId: number;
+  telegramChatId: string;
+  telegramUserId?: number | null;
+  userId?: string | null;
+  replyToMessageId?: number | null;
+  threadId?: number | null;
+  textContent?: string | null;
+  receivedAt: string;
+  createdAt: string;
 }
 
 /** Telegram Bot API update models */
@@ -246,17 +270,23 @@ export interface DiscussionProcessingResult {
     | 'ignored_closed'
     | 'ignored_not_found'
     | 'unassociated_message'
+    | 'ignored_bot_message'
+    | 'ignored_edited_message'
     | 'noop';
   interactionId?: string;
   postId?: string;
   userId?: string;
   messageId: number;
   threadId?: number;
+  associationMethod?: string;
 }
 
 export interface TelegramUpdate {
   update_id: number;
   message?: TelegramMessage;
+  edited_message?: TelegramMessage;
+  channel_post?: TelegramMessage;
+  edited_channel_post?: TelegramMessage;
   poll?: TelegramPoll;
   poll_answer?: TelegramPollAnswer;
 }

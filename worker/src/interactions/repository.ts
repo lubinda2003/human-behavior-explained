@@ -1,5 +1,7 @@
 import type {
+  ClaimWebhookResult,
   CompletedContinuationContext,
+  DiscussionMessageRecord,
   InteractionRecord,
   LifecycleState,
   PollOptionRecord,
@@ -408,15 +410,17 @@ export class D1InteractionRepository {
     return this.mapInteractionRow(row);
   }
 
-  async getInteractionsDueForClosure(nowIso: string): Promise<InteractionRecord[]> {
+  async getInteractionsDueForClosure(nowIso: string, limit: number = 10): Promise<InteractionRecord[]> {
     const result = await this.db
       .prepare(
         `SELECT * FROM interactions
          WHERE (lifecycle_state = 'OPEN' AND closes_at IS NOT NULL AND closes_at <= ?)
             OR (lifecycle_state IN ('CLOSED', 'RESOLVING') AND closes_at IS NOT NULL AND closes_at <= ?)
-         ORDER BY closes_at ASC`,
+            OR (lifecycle_state = 'FAILED' AND closed_at IS NOT NULL)
+         ORDER BY closes_at ASC
+         LIMIT ?`,
       )
-      .bind(nowIso, nowIso)
+      .bind(nowIso, nowIso, limit)
       .all<any>();
 
     return (result.results ?? []).map((row) => this.mapInteractionRow(row));
@@ -669,7 +673,14 @@ export class D1InteractionRepository {
              ON CONFLICT (id) DO UPDATE SET
                option_text = excluded.option_text`,
           )
-          .bind(opt.id, opt.pollId, opt.optionIndex, opt.optionText, opt.tradeOff ?? null, opt.voteCount),
+          .bind(
+            opt.id,
+            opt.pollId ?? poll.id,
+            opt.optionIndex,
+            opt.optionText,
+            opt.tradeOff ?? null,
+            opt.voteCount ?? 0,
+          ),
       );
     }
 
@@ -1160,23 +1171,130 @@ export class D1InteractionRepository {
   }
 
   // ---------------------------------------------------------
-  // WEBHOOK EVENTS DEDUPLICATION
+  // WEBHOOK EVENTS DEDUPLICATION & PERSISTENCE
   // ---------------------------------------------------------
 
   async hasProcessedWebhookEvent(updateId: number): Promise<boolean> {
     const row = await this.db
-      .prepare('SELECT update_id FROM webhook_events WHERE update_id = ?')
+      .prepare("SELECT update_id FROM webhook_events WHERE update_id = ? AND status = 'processed'")
       .bind(updateId)
       .first<{ update_id: number }>();
     return Boolean(row);
   }
 
+  async getWebhookEvent(updateId: number): Promise<WebhookEventRecord | null> {
+    const row = await this.db
+      .prepare('SELECT * FROM webhook_events WHERE update_id = ?')
+      .bind(updateId)
+      .first<any>();
+    if (!row) return null;
+    return {
+      updateId: row.update_id,
+      eventType: row.event_type,
+      payloadJson: row.payload_json,
+      receivedAt: row.received_at,
+      processedAt: row.processed_at,
+      status: row.status,
+      attempts: row.attempts ?? 1,
+      lastError: row.last_error,
+      updatedAt: row.updated_at,
+    };
+  }
+
+  /**
+   * Atomically claims a webhook event for processing.
+   * If the event is new, inserts with status = 'processing'.
+   * If the event already succeeded ('processed'), returns claimed: false, reason: 'already_processed'.
+   * If the event failed or timed out (stale lease), reclaims with status = 'processing'.
+   * If another worker is actively processing it, returns claimed: false, reason: 'in_progress'.
+   */
+  async claimWebhookEvent(
+    updateId: number,
+    eventType: string,
+    payloadJson: string | null,
+    nowIso: string,
+    staleThresholdSeconds: number = 60,
+  ): Promise<ClaimWebhookResult> {
+    const staleThresholdIso = new Date(new Date(nowIso).getTime() - staleThresholdSeconds * 1000).toISOString();
+
+    // 1. Try to insert as new event with status = 'processing'
+    try {
+      await this.db
+        .prepare(
+          `INSERT INTO webhook_events (update_id, event_type, payload_json, received_at, status, attempts, updated_at)
+           VALUES (?, ?, ?, ?, 'processing', 1, ?)`,
+        )
+        .bind(updateId, eventType, payloadJson, nowIso, nowIso)
+        .run();
+      return { claimed: true, status: 'processing', reason: 'new_event' };
+    } catch {
+      // Row already exists. Inspect current status.
+    }
+
+    // 2. Fetch existing row
+    const existing = await this.getWebhookEvent(updateId);
+    if (!existing) {
+      return { claimed: false, status: 'failed', reason: 'already_processed' };
+    }
+
+    if (existing.status === 'processed') {
+      return { claimed: false, status: 'processed', reason: 'already_processed' };
+    }
+
+    // 3. If failed OR processing but timed out (stale lease), attempt atomic claim
+    const isStale = existing.status === 'processing' && (!existing.updatedAt || existing.updatedAt <= staleThresholdIso);
+    const shouldReclaim = existing.status === 'failed' || isStale;
+
+    if (shouldReclaim) {
+      const res = await this.db
+        .prepare(
+          `UPDATE webhook_events
+           SET status = 'processing', attempts = attempts + 1, updated_at = ?
+           WHERE update_id = ? AND (
+             status = 'failed' OR (status = 'processing' AND (updated_at IS NULL OR updated_at <= ?))
+           )`,
+        )
+        .bind(nowIso, updateId, staleThresholdIso)
+        .run();
+
+      if ((res.meta?.changes ?? 0) > 0) {
+        return { claimed: true, status: 'processing', reason: 'retry_claimed' };
+      }
+    }
+
+    // 4. Currently being processed by another worker within lease window
+    return { claimed: false, status: 'processing', reason: 'in_progress' };
+  }
+
+  async markWebhookEventProcessed(updateId: number, processedAt: string): Promise<void> {
+    await this.db
+      .prepare(
+        `UPDATE webhook_events
+         SET status = 'processed', processed_at = ?, updated_at = ?
+         WHERE update_id = ?`,
+      )
+      .bind(processedAt, processedAt, updateId)
+      .run();
+  }
+
+  async markWebhookEventFailed(updateId: number, errorMessage: string, failedAt: string): Promise<void> {
+    await this.db
+      .prepare(
+        `UPDATE webhook_events
+         SET status = 'failed', last_error = ?, updated_at = ?
+         WHERE update_id = ?`,
+      )
+      .bind(errorMessage, failedAt, updateId)
+      .run();
+  }
+
+  /** Legacy helper for backward compatibility */
   async recordWebhookEvent(event: WebhookEventRecord): Promise<boolean> {
     try {
       await this.db
         .prepare(
-          `INSERT INTO webhook_events (update_id, event_type, payload_json, received_at, processed_at, status)
-           VALUES (?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO webhook_events (update_id, event_type, payload_json, received_at, processed_at, status, attempts, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, 1, ?)`,
         )
         .bind(
           event.updateId,
@@ -1185,13 +1303,124 @@ export class D1InteractionRepository {
           event.receivedAt,
           event.processedAt ?? event.receivedAt,
           event.status,
+          event.receivedAt,
         )
         .run();
       return true;
     } catch {
-      // Primary key constraint violation on update_id
       return false;
     }
+  }
+
+  // ---------------------------------------------------------
+  // DISCUSSION MESSAGES TRACKING
+  // ---------------------------------------------------------
+
+  async recordDiscussionMessage(message: {
+    id?: string;
+    interactionId: string;
+    postId: string;
+    telegramMessageId: number;
+    telegramChatId: string;
+    telegramUserId?: number | null;
+    userId?: string | null;
+    replyToMessageId?: number | null;
+    threadId?: number | null;
+    textContent?: string | null;
+    receivedAt: string;
+    createdAt?: string;
+  }): Promise<{ recorded: boolean; id: string }> {
+    const id = message.id ?? `disc_${message.telegramChatId}_${message.telegramMessageId}`;
+    const createdAt = message.createdAt ?? message.receivedAt;
+
+    // Use INSERT OR IGNORE so genuine duplicate constraint conflicts do not throw,
+    // but any transient/unknown database errors (connection down, syntax, disk) will throw.
+    const res = await this.db
+      .prepare(
+        `INSERT OR IGNORE INTO discussion_messages (
+          id, interaction_id, post_id, telegram_message_id, telegram_chat_id,
+          telegram_user_id, user_id, reply_to_message_id, thread_id, text_content,
+          received_at, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .bind(
+        id,
+        message.interactionId,
+        message.postId,
+        message.telegramMessageId,
+        message.telegramChatId,
+        message.telegramUserId ?? null,
+        message.userId ?? null,
+        message.replyToMessageId ?? null,
+        message.threadId ?? null,
+        message.textContent ?? null,
+        message.receivedAt,
+        createdAt,
+      )
+      .run();
+
+    const changes = res.meta?.changes ?? 0;
+    if (changes > 0) {
+      // Successfully recorded new discussion message: update interaction activity count.
+      // If this activity update fails, the error MUST propagate so the webhook event becomes failed/retryable.
+      await this.recordInteractionDiscussionActivity(message.interactionId, {
+        threadId: message.threadId ?? undefined,
+        lastCommentAt: message.receivedAt,
+      });
+
+      return { recorded: true, id };
+    }
+
+    // Duplicate message in this chat: do not double-increment count!
+    return { recorded: false, id };
+  }
+
+  async getDiscussionMessageByTelegramId(
+    telegramChatId: string,
+    telegramMessageId: number,
+  ): Promise<DiscussionMessageRecord | null> {
+    const row = await this.db
+      .prepare(
+        'SELECT * FROM discussion_messages WHERE telegram_chat_id = ? AND telegram_message_id = ?',
+      )
+      .bind(telegramChatId, telegramMessageId)
+      .first<any>();
+    if (!row) return null;
+    return {
+      id: row.id,
+      interactionId: row.interaction_id,
+      postId: row.post_id,
+      telegramMessageId: row.telegram_message_id,
+      telegramChatId: row.telegram_chat_id,
+      telegramUserId: row.telegram_user_id ?? null,
+      userId: row.user_id ?? null,
+      replyToMessageId: row.reply_to_message_id ?? null,
+      threadId: row.thread_id ?? null,
+      textContent: row.text_content ?? null,
+      receivedAt: row.received_at,
+      createdAt: row.created_at,
+    };
+  }
+
+  async getDiscussionMessagesForInteraction(interactionId: string): Promise<DiscussionMessageRecord[]> {
+    const { results } = await this.db
+      .prepare('SELECT * FROM discussion_messages WHERE interaction_id = ? ORDER BY received_at ASC')
+      .bind(interactionId)
+      .all<any>();
+    return (results || []).map((row) => ({
+      id: row.id,
+      interactionId: row.interaction_id,
+      postId: row.post_id,
+      telegramMessageId: row.telegram_message_id,
+      telegramChatId: row.telegram_chat_id,
+      telegramUserId: row.telegram_user_id ?? null,
+      userId: row.user_id ?? null,
+      replyToMessageId: row.reply_to_message_id ?? null,
+      threadId: row.thread_id ?? null,
+      textContent: row.text_content ?? null,
+      receivedAt: row.received_at,
+      createdAt: row.created_at,
+    }));
   }
 
   // ---------------------------------------------------------

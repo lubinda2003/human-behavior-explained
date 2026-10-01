@@ -158,10 +158,33 @@ export const SCHEMA_STATEMENTS: string[] = [
     payload_json TEXT,
     received_at TEXT NOT NULL,
     processed_at TEXT,
-    status TEXT NOT NULL DEFAULT 'processed'
+    status TEXT NOT NULL DEFAULT 'processed',
+    attempts INTEGER NOT NULL DEFAULT 1,
+    last_error TEXT,
+    updated_at TEXT
   )`,
 
-  // 10. Interaction Locks table
+  // 10. Discussion Messages table
+  `CREATE TABLE IF NOT EXISTS discussion_messages (
+    id TEXT PRIMARY KEY,
+    interaction_id TEXT NOT NULL REFERENCES interactions(id),
+    post_id TEXT NOT NULL REFERENCES posts(id),
+    telegram_message_id INTEGER NOT NULL,
+    telegram_chat_id TEXT NOT NULL,
+    telegram_user_id INTEGER,
+    user_id TEXT REFERENCES users(id),
+    reply_to_message_id INTEGER,
+    thread_id INTEGER,
+    text_content TEXT,
+    received_at TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS idx_disc_msgs_chat_msg ON discussion_messages (telegram_chat_id, telegram_message_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_disc_msgs_interaction ON discussion_messages (interaction_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_disc_msgs_reply ON discussion_messages (telegram_chat_id, reply_to_message_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_disc_msgs_thread ON discussion_messages (telegram_chat_id, thread_id)`,
+
+  // 11. Interaction Locks table
   `CREATE TABLE IF NOT EXISTS interaction_locks (
     interaction_id TEXT PRIMARY KEY,
     locked_by TEXT NOT NULL,
@@ -169,7 +192,7 @@ export const SCHEMA_STATEMENTS: string[] = [
     expires_at TEXT NOT NULL
   )`,
 
-  // 11. Legacy compatibility tables
+  // 12. Legacy compatibility tables
   `CREATE TABLE IF NOT EXISTS poll_results (
     post_id TEXT PRIMARY KEY,
     total_voters INTEGER NOT NULL,
@@ -187,14 +210,43 @@ export const SCHEMA_STATEMENTS: string[] = [
 ];
 
 /**
- * Creates the D1 tables on first run. The KV flag avoids re-running on every request;
- * because the statements are idempotent, a stale flag is harmless.
+ * Creates the D1 tables on first run and performs safe, additive schema upgrades
+ * for existing pre-v2 databases.
+ * The KV flag avoids re-running on every request; because the statements and upgrade
+ * inspections are idempotent, a stale flag is harmless.
  */
 export async function ensureSchema(env: Pick<Env, 'DB' | 'KV'>): Promise<'created' | 'current'> {
   const current = await env.KV.get(SCHEMA_KEY);
   if (current === SCHEMA_VERSION) return 'current';
 
+  // 1. Run base idempotent schema statements (creates tables & indexes if not present)
   await env.DB.batch(SCHEMA_STATEMENTS.map((sql) => env.DB.prepare(sql)));
+
+  // 2. Safe schema upgrades for existing pre-v2 databases
+  try {
+    const tableInfo = await env.DB.prepare("PRAGMA table_info('webhook_events')").all<{ name: string }>();
+    const existingColumns = new Set((tableInfo.results || []).map((col) => col.name));
+
+    const upgradeStatements: string[] = [];
+    if (!existingColumns.has('attempts')) {
+      upgradeStatements.push('ALTER TABLE webhook_events ADD COLUMN attempts INTEGER NOT NULL DEFAULT 1');
+    }
+    if (!existingColumns.has('last_error')) {
+      upgradeStatements.push('ALTER TABLE webhook_events ADD COLUMN last_error TEXT');
+    }
+    if (!existingColumns.has('updated_at')) {
+      upgradeStatements.push('ALTER TABLE webhook_events ADD COLUMN updated_at TEXT');
+    }
+
+    if (upgradeStatements.length > 0) {
+      for (const stmt of upgradeStatements) {
+        await env.DB.prepare(stmt).run();
+      }
+    }
+  } catch {
+    // If pragma inspection fails or table was just created, base statements already initialized it
+  }
+
   await env.KV.put(SCHEMA_KEY, SCHEMA_VERSION);
   return 'created';
 }

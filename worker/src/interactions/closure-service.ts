@@ -148,12 +148,15 @@ export class InteractionClosureService {
     } catch (err) {
       // On error, mark interaction as FAILED so subsequent retry can re-claim the lease immediately
       try {
-        await this.repo.updateInteractionLifecycle(interaction.id, 'FAILED', {
-          metadata: {
-            ...(interaction.metadata || {}),
-            failureReason: err instanceof Error ? err.message : String(err),
-          },
-        });
+        const freshInt = await this.repo.getInteraction(interaction.id);
+        if (freshInt && freshInt.lifecycleState !== 'COMPLETED') {
+          await this.repo.updateInteractionLifecycle(interaction.id, 'FAILED', {
+            metadata: {
+              ...(freshInt.metadata || interaction.metadata || {}),
+              failureReason: err instanceof Error ? err.message : String(err),
+            },
+          });
+        }
       } catch {}
       throw err;
     }
@@ -288,13 +291,23 @@ export class InteractionClosureService {
 
     if (reveal) {
       const pubMsgs = await this.repo.getPublishedMessagesForPost(interaction.postId);
-      const existingResultMsg = pubMsgs.find((m) => m.messageType === 'result_reveal');
+      const resultMsgRecordId = `msg_${interaction.postId}_discussion_resolution`;
+      const existingResultMsg = pubMsgs.find(
+        (m) => m.id === resultMsgRecordId || m.messageType === 'result_reveal',
+      );
+
+      const existingResult = await this.repo.getResultByInteractionId(interaction.id);
+
+      // Reconcile existing Telegram result message ID from D1 records
+      resultMsgId =
+        (interaction.metadata as any)?.resultMessageId ??
+        existingResult?.resultPostMessageId ??
+        existingResultMsg?.telegramMessageId ??
+        undefined;
 
       const text = `<b>🎯 DISCUSSION RESOLUTION: ${escapeHtml(post.title)}</b>\n\n<b>⚡ THE REVEAL:</b>\n<tg-spoiler>${escapeHtml(
         reveal,
       )}</tg-spoiler>`;
-
-      resultMsgId = existingResultMsg?.telegramMessageId ?? undefined;
 
       if (!resultMsgId) {
         const sentMsg = await this.telegram.sendMessage({
@@ -306,19 +319,54 @@ export class InteractionClosureService {
 
         resultMsgId = sentMsg.message_id;
 
-        await this.repo.createPublishedMessage({
-          id: `msg_${interaction.postId}_discussion_resolution`,
-          postId: interaction.postId,
-          telegramMessageId: resultMsgId,
-          telegramChatId: String(interaction.targetChatId),
-          messageType: 'result_reveal',
-          parseMode: 'HTML',
-          textContent: text,
-          publishedAt: now,
-        });
+        // Immediately anchor published message in D1
+        try {
+          await this.repo.createPublishedMessage({
+            id: resultMsgRecordId,
+            postId: interaction.postId,
+            telegramMessageId: resultMsgId,
+            telegramChatId: String(interaction.targetChatId),
+            messageType: 'result_reveal',
+            parseMode: 'HTML',
+            textContent: text,
+            publishedAt: now,
+          });
+        } catch (d1Err) {
+          // Emergency anchor: preserve Telegram message ID in interaction metadata so retry will not duplicate!
+          try {
+            const freshInt = await this.repo.getInteraction(interaction.id);
+            await this.repo.updateInteractionLifecycle(interaction.id, 'RESOLVING', {
+              metadata: {
+                ...(freshInt?.metadata || interaction.metadata || {}),
+                resultMessageId: resultMsgId,
+                failureReason: d1Err instanceof Error ? d1Err.message : String(d1Err),
+              },
+            });
+          } catch {}
+          throw d1Err;
+        }
+      } else {
+        // Re-anchor missing published message record if needed
+        try {
+          await this.repo.createPublishedMessage({
+            id: resultMsgRecordId,
+            postId: interaction.postId,
+            telegramMessageId: resultMsgId,
+            telegramChatId: String(interaction.targetChatId),
+            messageType: 'result_reveal',
+            parseMode: 'HTML',
+            textContent: text,
+            publishedAt: now,
+          });
+        } catch {}
       }
 
-      await this.repo.updateInteractionLifecycle(interaction.id, 'RESULT_POSTED');
+      await this.repo.updateInteractionLifecycle(interaction.id, 'RESULT_POSTED', {
+        metadata: {
+          ...(interaction.metadata || {}),
+          resultMessageId: resultMsgId,
+        },
+      });
     }
 
     await this.repo.updateInteractionLifecycle(interaction.id, 'COMPLETED');
