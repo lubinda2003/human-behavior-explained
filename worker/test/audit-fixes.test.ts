@@ -285,9 +285,9 @@ describe('Phase 5 Final Audit Hardening Suite', () => {
   });
 
   // --------------------------------------------------------------------------
-  // E. Existing schema upgrade path is explicitly tested for pre-v2 databases
+  // E. Schema Upgrade Safety & Failure Recovery
   // --------------------------------------------------------------------------
-  it('E. ensureSchema() safely upgrades an existing v1 webhook_events table adding missing columns', async () => {
+  it('E1. ensureSchema() safely upgrades an existing v1 webhook_events table adding missing columns', async () => {
     // Create an isolated fresh database
     const freshDb = createMockD1Database();
     const freshKv = createMockKV();
@@ -325,5 +325,75 @@ describe('Phase 5 Final Audit Hardening Suite', () => {
     // Verify KV schema version was set
     const schemaVersion = await freshKv.get('schema_version');
     assert.equal(schemaVersion, SCHEMA_VERSION);
+  });
+
+  it('E2. Simulated ALTER TABLE failure causes ensureSchema() to reject and does NOT write schema_version=2 to KV', async () => {
+    const freshDb = createMockD1Database();
+    const freshKv = createMockKV();
+
+    // Old v1 table
+    await freshDb.prepare(`
+      CREATE TABLE IF NOT EXISTS webhook_events (
+        update_id INTEGER PRIMARY KEY,
+        event_type TEXT NOT NULL,
+        payload_json TEXT,
+        received_at TEXT NOT NULL,
+        processed_at TEXT,
+        status TEXT NOT NULL DEFAULT 'processed'
+      )
+    `).run();
+
+    // Mock prepare to simulate ALTER TABLE failure
+    const origPrepare = freshDb.prepare.bind(freshDb);
+    (freshDb as any).prepare = (sql: string) => {
+      if (sql.includes('ALTER TABLE webhook_events ADD COLUMN attempts')) {
+        throw new Error('D1 transient lock timeout during ALTER TABLE');
+      }
+      return origPrepare(sql);
+    };
+
+    // ensureSchema MUST reject
+    await assert.rejects(
+      async () => {
+        await ensureSchema({ DB: freshDb, KV: freshKv });
+      },
+      (err: Error) => {
+        assert.ok(err.message.includes('D1 transient lock timeout'));
+        return true;
+      },
+    );
+
+    // KV MUST NOT claim schema_version = 2!
+    const kvValue = await freshKv.get('schema_version');
+    assert.equal(kvValue, null);
+  });
+
+  it('E3. Already-v2 schema remains idempotent and returns current when KV matches', async () => {
+    const freshDb = createMockD1Database();
+    const freshKv = createMockKV();
+
+    // First run creates schema
+    const status1 = await ensureSchema({ DB: freshDb, KV: freshKv });
+    assert.equal(status1, 'created');
+
+    // Second run with existing KV key returns 'current' immediately
+    const status2 = await ensureSchema({ DB: freshDb, KV: freshKv });
+    assert.equal(status2, 'current');
+  });
+
+  it('E4. Final PRAGMA verification confirms all three required columns before KV is updated', async () => {
+    const freshDb = createMockD1Database();
+    const freshKv = createMockKV();
+
+    // Run ensureSchema on clean database
+    await ensureSchema({ DB: freshDb, KV: freshKv });
+
+    // Verify all 3 required columns strictly present
+    const tableInfo = await freshDb.prepare("PRAGMA table_info('webhook_events')").all<{ name: string }>();
+    const colNames = (tableInfo.results || []).map((c) => c.name);
+
+    assert.ok(colNames.includes('attempts'), 'attempts column exists');
+    assert.ok(colNames.includes('last_error'), 'last_error column exists');
+    assert.ok(colNames.includes('updated_at'), 'updated_at column exists');
   });
 });

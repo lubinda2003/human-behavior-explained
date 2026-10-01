@@ -212,8 +212,8 @@ export const SCHEMA_STATEMENTS: string[] = [
 /**
  * Creates the D1 tables on first run and performs safe, additive schema upgrades
  * for existing pre-v2 databases.
- * The KV flag avoids re-running on every request; because the statements and upgrade
- * inspections are idempotent, a stale flag is harmless.
+ * Guarantees failure-safety: Any PRAGMA, batch, or ALTER TABLE failure propagates immediately,
+ * and KV is only updated after a final verification confirms all required v2 columns exist.
  */
 export async function ensureSchema(env: Pick<Env, 'DB' | 'KV'>): Promise<'created' | 'current'> {
   const current = await env.KV.get(SCHEMA_KEY);
@@ -222,31 +222,35 @@ export async function ensureSchema(env: Pick<Env, 'DB' | 'KV'>): Promise<'create
   // 1. Run base idempotent schema statements (creates tables & indexes if not present)
   await env.DB.batch(SCHEMA_STATEMENTS.map((sql) => env.DB.prepare(sql)));
 
-  // 2. Safe schema upgrades for existing pre-v2 databases
-  try {
-    const tableInfo = await env.DB.prepare("PRAGMA table_info('webhook_events')").all<{ name: string }>();
-    const existingColumns = new Set((tableInfo.results || []).map((col) => col.name));
+  // 2. Inspect existing columns on webhook_events (propagates any D1 error)
+  const tableInfo = await env.DB.prepare("PRAGMA table_info('webhook_events')").all<{ name: string }>();
+  const existingColumns = new Set((tableInfo.results || []).map((col) => col.name));
 
-    const upgradeStatements: string[] = [];
-    if (!existingColumns.has('attempts')) {
-      upgradeStatements.push('ALTER TABLE webhook_events ADD COLUMN attempts INTEGER NOT NULL DEFAULT 1');
-    }
-    if (!existingColumns.has('last_error')) {
-      upgradeStatements.push('ALTER TABLE webhook_events ADD COLUMN last_error TEXT');
-    }
-    if (!existingColumns.has('updated_at')) {
-      upgradeStatements.push('ALTER TABLE webhook_events ADD COLUMN updated_at TEXT');
-    }
-
-    if (upgradeStatements.length > 0) {
-      for (const stmt of upgradeStatements) {
-        await env.DB.prepare(stmt).run();
-      }
-    }
-  } catch {
-    // If pragma inspection fails or table was just created, base statements already initialized it
+  // 3. Add missing columns for pre-v2 databases (propagates any D1 ALTER TABLE error)
+  if (!existingColumns.has('attempts')) {
+    await env.DB.prepare('ALTER TABLE webhook_events ADD COLUMN attempts INTEGER NOT NULL DEFAULT 1').run();
+  }
+  if (!existingColumns.has('last_error')) {
+    await env.DB.prepare('ALTER TABLE webhook_events ADD COLUMN last_error TEXT').run();
+  }
+  if (!existingColumns.has('updated_at')) {
+    await env.DB.prepare('ALTER TABLE webhook_events ADD COLUMN updated_at TEXT').run();
   }
 
+  // 4. Final verification: confirm all required v2 columns strictly exist in D1
+  const finalInfo = await env.DB.prepare("PRAGMA table_info('webhook_events')").all<{ name: string }>();
+  const verifiedColumns = new Set((finalInfo.results || []).map((col) => col.name));
+
+  const REQUIRED_V2_COLUMNS = ['attempts', 'last_error', 'updated_at'];
+  for (const col of REQUIRED_V2_COLUMNS) {
+    if (!verifiedColumns.has(col)) {
+      throw new Error(
+        `Schema upgrade verification failed: column '${col}' is missing from webhook_events table after migration.`,
+      );
+    }
+  }
+
+  // 5. Only record SCHEMA_VERSION in KV after full verification succeeds
   await env.KV.put(SCHEMA_KEY, SCHEMA_VERSION);
   return 'created';
 }
